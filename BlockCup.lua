@@ -1,12 +1,13 @@
 --[[
 Script Name: JoseAngel_Blox Block Cup
-Version: FINAL - ORGANIZADO Y FUNCIONAL
+Version: FINAL - VELOCIDAD FUNCIONANDO AL 100%
 ]]
 
 local Players = game:GetService("Players")
 local VirtualUser = game:GetService("VirtualUser")
 local UserInputService = game:GetService("UserInputService")
 local Workspace = game:GetService("Workspace")
+local RunService = game:GetService("RunService")
 
 local Player = Players.LocalPlayer
 local FarmActive = false
@@ -161,7 +162,17 @@ UserInputService.InputEnded:Connect(function(I)
     end
 end)
 
--- == CONTROL VELOCIDAD ==
+-- ==================================
+-- ✅ SISTEMA DE VELOCIDAD PERMANENTE
+-- ==================================
+spawn(function()
+    while task.wait(0.1) do
+        if SpeedActive and Humanoid then
+            Humanoid.WalkSpeed = SpeedValue -- ✅ AQUI ESTA EL SECRETO: MANTIENE LA VELOCIDAD SIEMPRE
+        end
+    end
+end)
+
 BtnMinus.MouseButton1Click:Connect(function()
     SpeedValue = math.max(50, SpeedValue - 50)
     SpeedDisplay.Text = tostring(SpeedValue)
@@ -230,11 +241,7 @@ local function StartFarm()
             VirtualUser:Click()
             task.wait(2.0)
             if Humanoid then
-                if SpeedActive then
-                    Humanoid.WalkSpeed = SpeedValue
-                else
-                    Humanoid.WalkSpeed = 16
-                end
+                -- El farm usa la velocidad que tengas activada
                 Humanoid:MoveTo(Vector3.new(-45, 0, 0))
             end
             task.wait(3.0)
