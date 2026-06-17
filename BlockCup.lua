@@ -1,6 +1,6 @@
 --[[
 Script Name: JoseAngel_Blox Block Cup
-Version: OPTIMIZADO - SIN LAG / PISO NORMAL
+Version: FINAL - INTERFAZ NORMAL / SIN LAG
 ]]
 
 local Players = game:GetService("Players")
@@ -40,7 +40,7 @@ Main.BackgroundColor3 = Color3.new(0.05, 0.05, 0.05)
 Main.BorderColor3 = Color3.new(1, 0, 0)
 Main.BorderSizePixel = 2
 Main.Position = UDim2.new(0.05, 0, 0.2, 0)
-Main.Size = UDim2.new(240, 0, 180, 0)
+Main.Size = UDim2.new(0, 240, 0, 180)
 Main.Active = true
 
 -- TITULO
@@ -48,10 +48,10 @@ Title.Name = "Title"
 Title.Parent = Main
 Title.BackgroundTransparency = 1
 Title.Position = UDim2.new(0.05, 0, 0.05, 0)
-Title.Size = UDim2.new(0.9, 0, 30, 0)
+Title.Size = UDim2.new(0.9, 0, 0, 30)
 Title.Font = Enum.Font.GothamBold
 Title.Text = "JoseAngel_Blox"
-Title.TextColor3 = Color3.new(1,1,1)
+Title.TextColor3 = Color3.new(1, 1, 1)
 Title.TextSize = 20
 
 -- ==================================
@@ -60,7 +60,7 @@ Title.TextSize = 20
 FarmLabel.Parent = Main
 FarmLabel.BackgroundTransparency = 1
 FarmLabel.Position = UDim2.new(0.05, 0, 0.35, 0)
-FarmLabel.Size = UDim2.new(0.9, 0, 20, 0)
+FarmLabel.Size = UDim2.new(0.9, 0, 0, 20)
 FarmLabel.Text = "Auto farm pelotas"
 FarmLabel.TextColor3 = Color3.new(1, 1, 1)
 FarmLabel.TextSize = 14
@@ -69,10 +69,10 @@ ToggleFarmBtn.Name = "ToggleFarm"
 ToggleFarmBtn.Parent = Main
 ToggleFarmBtn.BackgroundColor3 = Color3.new(0.2, 0, 0)
 ToggleFarmBtn.BorderColor3 = Color3.new(1, 1, 1)
-ToggleFarmBtn.Position = UDim2.new(0.05, 0, 0.50, 0)
-ToggleFarmBtn.Size = UDim2.new(0.9, 0, 45, 0)
+ToggleFarmBtn.Position = UDim2.new(0.05, 0, 0.55, 0)
+ToggleFarmBtn.Size = UDim2.new(0.9, 0, 0, 45)
 ToggleFarmBtn.Text = "ACTIVAR AUTO FARMELO DE PELOTAS"
-ToggleFarmBtn.TextColor3 = Color3.new(1,1,1)
+ToggleFarmBtn.TextColor3 = Color3.new(1, 1, 1)
 ToggleFarmBtn.Font = Enum.Font.GothamBold
 ToggleFarmBtn.TextSize = 13
 
@@ -97,22 +97,18 @@ UserInputService.InputEnded:Connect(function(I)
 end)
 
 -- =============================================
--- 🧲 IMÁN OPTIMIZADO: SOLO PELOTAS, NO SUELO
+-- 🧲 IMÁN: SOLO PELOTAS, NO SUELO / SIN LAG
 -- =============================================
 spawn(function()
-    while task.wait(0.2) do -- ✅ MAS LENTO = MAS FPS Y SIN LAG
+    while task.wait(0.2) do
         if FarmActive and RootPart then
             local MyPos = RootPart.Position
             for _, v in pairs(Workspace:GetDescendants()) do
-                
-                -- ✅ FILTRO SEGURO: Tamaño pequeño y forma redonda
                 if v:IsA("BasePart") and not v:IsDescendantOf(Character) and v.Size.Magnitude < 15 then
-                    
                     local Name = string.lower(v.Name)
                     if string.find(Name,"ball")or string.find(Name,"orb")or string.find(Name,"rare")or string.find(Name,"epic")or string.find(Name,"legendary")or string.find(Name,"mutation")or string.find(Name,"double")or string.find(Name,"chance")then
                         
                         local Dist = (MyPos - v.Position).Magnitude
-                        
                         if Dist < 100 then
                             v.CFrame = v.CFrame:Lerp(RootPart.CFrame, 0.8)
                             
