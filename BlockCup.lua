@@ -2,7 +2,7 @@
 Script Name: JoseAngel_Blox Block Cup
 Description: Auto Farm Evento Block Cup
 Author: JoseAngel_Blox
-Version: 6.1 - SUELO NORMAL, SIN BUGS
+Version: 7.0 - ULTRA OPTIMIZADO SIN LAG
 ]]
 
 local Players = game:GetService("Players")
@@ -46,7 +46,7 @@ Main.Parent = ScreenGui
 Main.BackgroundColor3 = Color3.new(0.05, 0.05, 0.05)
 Main.BorderColor3 = Color3.new(1, 0, 0)
 Main.BorderSizePixel = 2
-Main.Position = UDim2.new(0.05, 0, 0.2, 0)
+Main.Position = UDim2.new(0.05, 0, 0, 0.2)
 Main.Size = UDim2.new(0, 300, 0, 160)
 Main.Active = true
 
@@ -124,22 +124,23 @@ UserInputService.InputEnded:Connect(function(Input)
     end
 end)
 
--- == 2. SISTEMA IMÁN SEGURO (SOLO BOLAS) ==
--- ✅ ARREGLO: Ahora solo mueve objetos que sean ESFERAS (Shape == Ball)
+-- =============================================
+-- 🚀 VERSIÓN OPTIMIZADA AL MÁXIMO
+-- =============================================
 spawn(function()
-    while task.wait(0.03) do
+    while task.wait(0.1) do -- ⚡ OPTIMIZACIÓN: Esperamos un poquito más para no saturar
         if FarmActive and RootPart then
             local MyPos = RootPart.Position
-            for _, v in pairs(Workspace:GetDescendants()) do
-                -- 💡 CONDICIÓN NUEVA: Solo si es una BOLA / ESFERA
-                if v:IsA("BasePart") and v.Shape == Enum.PartType.Ball and not v:IsDescendantOf(Character) then
+            for _, v in pairs(Workspace:GetChildren()) do -- ⚡ Solo buscamos en la raíz, no en todo el mapa
+                
+                -- ✅ SOLO BOLAS, NADA DE SUELO
+                if v:IsA("BasePart") and v.Shape == Enum.PartType.Ball then
                     
                     local Name = string.lower(v.Name)
                     
                     -- DETECTA TODAS
                     if string.find(Name, "ball") or 
                        string.find(Name, "orb") or 
-                       string.find(Name, "collect") or 
                        string.find(Name, "rare") or
                        string.find(Name, "epic") or
                        string.find(Name, "legendary") or
@@ -150,12 +151,12 @@ spawn(function()
                         local Dist = (MyPos - v.Position).Magnitude
                         
                         if Dist < 60 then
-                            -- 🧲 ATRACCIÓN
+                            -- 🧲 FUERZA PERO LIGERA
                             v.CFrame = v.CFrame:Lerp(RootPart.CFrame, 0.5)
                             
-                            -- ✅ PONER EN PIES
-                            if Dist < 5 then
-                                v.CFrame = RootPart.CFrame + Vector3.new(0, -0.5, 0)
+                            -- ✅ CONTABILIZAR
+                            if Dist < 4 then
+                                v.CFrame = RootPart.CFrame
                                 v.Anchored = false
                                 v.CanCollide = false
                             end
