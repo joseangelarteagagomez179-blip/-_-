@@ -1,18 +1,20 @@
 --[[
 Script Name: JoseAngel_Blox Block Cup
-Version: 10.0 - MINI, VELOCIDAD INFINITA Y SIN LAG
+Version: 12.0 - LAS BOLAS SE QUEDAN / NO DESAPARECEN
 ]]
 
 local Players = game:GetService("Players")
 local VirtualUser = game:GetService("VirtualUser")
 local UserInputService = game:GetService("UserInputService")
 local Workspace = game:GetService("Workspace")
+local RunService = game:GetService("RunService")
 
 local Player = Players.LocalPlayer
 local FarmActive = false
 local Loop = nil
 local Dragging, DragStart, StartPos = nil, nil, nil
 local Character, Humanoid, RootPart
+local SpeedValue = 500
 
 -- == ACTUALIZAR PERSONAJE ==
 local function UpdateCharacter()
@@ -23,13 +25,15 @@ end
 Player.CharacterAdded:Connect(UpdateCharacter)
 UpdateCharacter()
 
--- == GUI PEQUEÑO Y DESLIZABLE ==
+-- == GUI ==
 local ScreenGui = Instance.new("ScreenGui")
 local Main = Instance.new("Frame")
 local Title = Instance.new("TextLabel")
 local ToggleBtn = Instance.new("TextButton")
 local SpeedLabel = Instance.new("TextLabel")
-local SpeedInput = Instance.new("TextBox")
+local BtnMinus = Instance.new("TextButton")
+local BtnPlus = Instance.new("TextButton")
+local SpeedDisplay = Instance.new("TextLabel")
 
 ScreenGui.Name = "UI"
 ScreenGui.Parent = game:GetService("CoreGui")
@@ -41,7 +45,7 @@ Main.BackgroundColor3 = Color3.new(0.05, 0.05, 0.05)
 Main.BorderColor3 = Color3.new(1, 0, 0)
 Main.BorderSizePixel = 2
 Main.Position = UDim2.new(0.05, 0, 0.2, 0)
-Main.Size = UDim2.new(0, 220, 0, 180) -- 💡 MAS PEQUEÑO
+Main.Size = UDim2.new(0, 220, 0, 200)
 Main.Active = true
 
 -- TITULO
@@ -55,30 +59,51 @@ Title.Text = "JoseAngel_Blox"
 Title.TextColor3 = Color3.new(1,1,1)
 Title.TextSize = 20
 
--- CONTROL DE VELOCIDAD
+-- VELOCIDAD
 SpeedLabel.Parent = Main
 SpeedLabel.BackgroundTransparency = 1
-SpeedLabel.Position = UDim2.new(0.05, 0, 0.22, 0)
+SpeedLabel.Position = UDim2.new(0.05, 0, 0.20, 0)
 SpeedLabel.Size = UDim2.new(0.9, 0, 0, 20)
-SpeedLabel.Text = "⚡ WalkSpeed (Max: 1000)"
+SpeedLabel.Text = "⚡ Velocidad"
 SpeedLabel.TextColor3 = Color3.new(1, 1, 1)
 SpeedLabel.TextSize = 14
 
-SpeedInput.Parent = Main
-SpeedInput.Position = UDim2.new(0.05, 0, 0.32, 0)
-SpeedInput.Size = UDim2.new(0.9, 0, 0, 25)
-SpeedInput.BackgroundColor3 = Color3.new(0.1,0.1,0.1)
-SpeedInput.BorderColor3 = Color3.new(1,1,1)
-SpeedInput.Text = "500" -- ✅ VELOCIDAD INFINITA / AJUSTABLE
-SpeedInput.TextColor3 = Color3.new(1,1,1)
-SpeedInput.Font = Enum.Font.GothamBold
-SpeedInput.TextSize = 14
+BtnMinus.Name = "Minus"
+BtnMinus.Parent = Main
+BtnMinus.Position = UDim2.new(0.05, 0, 0.32, 0)
+BtnMinus.Size = UDim2.new(0.25, 0, 0, 30)
+BtnMinus.BackgroundColor3 = Color3.new(0.2,0.2,0.2)
+BtnMinus.BorderColor3 = Color3.new(1,1,1)
+BtnMinus.Text = "-"
+BtnMinus.TextColor3 = Color3.new(1,1,1)
+BtnMinus.Font = Enum.Font.GothamBold
+BtnMinus.TextSize = 20
 
--- BOTON
+SpeedDisplay.Name = "SpeedDisplay"
+SpeedDisplay.Parent = Main
+SpeedDisplay.BackgroundTransparency = 1
+SpeedDisplay.Position = UDim2.new(0.35, 0, 0.32, 0)
+SpeedDisplay.Size = UDim2.new(0.3, 0, 0, 30)
+SpeedDisplay.Text = tostring(SpeedValue)
+SpeedDisplay.TextColor3 = Color3.new(1,1,1)
+SpeedDisplay.Font = Enum.Font.GothamBold
+SpeedDisplay.TextSize = 16
+
+BtnPlus.Name = "Plus"
+BtnPlus.Parent = Main
+BtnPlus.Position = UDim2.new(0.70, 0, 0.32, 0)
+BtnPlus.Size = UDim2.new(0.25, 0, 0, 30)
+BtnPlus.BackgroundColor3 = Color3.new(0.2,0.2,0.2)
+BtnPlus.BorderColor3 = Color3.new(1,1,1)
+BtnPlus.Text = "+"
+BtnPlus.TextColor3 = Color3.new(1,1,1)
+BtnPlus.Font = Enum.Font.GothamBold
+BtnPlus.TextSize = 20
+
 ToggleBtn.Name = "Toggle"
 ToggleBtn.Parent = Main
 ToggleBtn.BackgroundColor3 = Color3.new(0.2, 0, 0)
-ToggleBtn.BorderColor3 = Color3.new(1,1,1)
+ToggleBtn.BorderColor3 = Color3.new(1, 1, 1)
 ToggleBtn.Position = UDim2.new(0.05, 0, 0.55, 0)
 ToggleBtn.Size = UDim2.new(0.9, 0, 0, 40)
 ToggleBtn.Text = "ACTIVAR"
@@ -86,7 +111,7 @@ ToggleBtn.TextColor3 = Color3.new(1,1,1)
 ToggleBtn.Font = Enum.Font.GothamBold
 ToggleBtn.TextSize = 16
 
--- == FUNCION DESLIZAR ==
+-- == DESLIZAR ==
 Main.InputBegan:Connect(function(I)
     if I.UserInputType == Enum.UserInputType.MouseButton1 then
         Dragging = true
@@ -106,23 +131,45 @@ UserInputService.InputEnded:Connect(function(I)
     end
 end)
 
+-- == BOTONES +/- ==
+BtnMinus.MouseButton1Click:Connect(function()
+    SpeedValue = math.max(50, SpeedValue - 50)
+    SpeedDisplay.Text = tostring(SpeedValue)
+end)
+BtnPlus.MouseButton1Click:Connect(function()
+    SpeedValue = SpeedValue + 50
+    SpeedDisplay.Text = tostring(SpeedValue)
+end)
+
 -- =============================================
--- 🚀 IMÁN ULTRA LIGERO
+-- ✅ TRUCO MAESTRO: LAS BOLAS SE QUEDAN
 -- =============================================
 spawn(function()
-    while task.wait(0.2) do
+    while task.wait(0.15) do
         if FarmActive and RootPart then
             local MyPos = RootPart.Position
-            for _, v in pairs(Workspace:GetChildren()) do
-                if v:IsA("BasePart") and v.Shape == Enum.PartType.Ball and v.Anchored == false then
+            for _, v in pairs(Workspace:GetDescendants()) do
+                if v:IsA("BasePart") and v.Shape == Enum.PartType.Ball and v.Anchored == false and not v:IsDescendantOf(Character) then
                     local Name = string.lower(v.Name)
                     if string.find(Name,"ball")or string.find(Name,"orb")or string.find(Name,"rare")or string.find(Name,"epic")or string.find(Name,"legendary")or string.find(Name,"mutation")or string.find(Name,"double")or string.find(Name,"chance")then
+                        
                         local Dist = (MyPos - v.Position).Magnitude
+                        
                         if Dist < 80 then
-                            v.CFrame = v.CFrame:Lerp(RootPart.CFrame, 0.8)
-                            if Dist < 5 then
+                            -- 🧲 ATRACCIÓN SUAVE PERO SEGURA
+                            v.CFrame = v.CFrame:Lerp(RootPart.CFrame, 0.4)
+                            
+                            -- ✅ EL SECRETO: HACER QUE "TOQUE" AL PERSONAJE
+                            if Dist < 6 then
+                                -- La ponemos justo en el cuerpo
                                 v.CFrame = RootPart.CFrame
+                                -- Desactivamos todo para que entre suave
                                 v.CanCollide = false
+                                v.Anchored = false
+                                
+                                -- 🔥 SIMULAMOS EL TOQUE PARA QUE EL JUEGO LA CUENTE
+                                firetouchinterest(Character, v, 0)
+                                firetouchinterest(Character, v, 1)
                             end
                         end
                     end
@@ -145,9 +192,7 @@ local function StartFarm()
             VirtualUser:Click()
             task.wait(2.0)
             if Humanoid then
-                -- ✅ TOMAR VELOCIDAD DEL TEXTO
-                local Speed = tonumber(SpeedInput.Text) or 500
-                Humanoid.WalkSpeed = Speed
+                Humanoid.WalkSpeed = SpeedValue
                 Humanoid:MoveTo(Vector3.new(-45, 0, 0))
             end
             task.wait(3.0)
