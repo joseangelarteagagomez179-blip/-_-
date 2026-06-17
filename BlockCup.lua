@@ -1,13 +1,12 @@
 --[[
 Script Name: JoseAngel_Blox Block Cup
-Version: FINAL - VELOCIDAD FUNCIONANDO AL 100%
+Version: OPTIMIZADO - SIN LAG / VELOCIDAD FUNCIONANDO
 ]]
 
 local Players = game:GetService("Players")
 local VirtualUser = game:GetService("VirtualUser")
 local UserInputService = game:GetService("UserInputService")
 local Workspace = game:GetService("Workspace")
-local RunService = game:GetService("RunService")
 
 local Player = Players.LocalPlayer
 local FarmActive = false
@@ -20,8 +19,8 @@ local SpeedValue = 500
 -- == ACTUALIZAR PERSONAJE ==
 local function UpdateCharacter()
     Character = Player.Character or Player.CharacterAdded:Wait()
-    Humanoid = Character:WaitForChild("Humanoid")
-    RootPart = Character:WaitForChild("HumanoidRootPart")
+    Humanoid = Character:FindFirstChildOfClass("Humanoid")
+    RootPart = Character.PrimaryPart
 end
 Player.CharacterAdded:Connect(UpdateCharacter)
 UpdateCharacter()
@@ -163,13 +162,14 @@ UserInputService.InputEnded:Connect(function(I)
 end)
 
 -- ==================================
--- ✅ SISTEMA DE VELOCIDAD PERMANENTE
+-- ✅ VELOCIDAD ULTRA LIGERA
 -- ==================================
-spawn(function()
-    while task.wait(0.1) do
-        if SpeedActive and Humanoid then
-            Humanoid.WalkSpeed = SpeedValue -- ✅ AQUI ESTA EL SECRETO: MANTIENE LA VELOCIDAD SIEMPRE
-        end
+-- Usamos RenderStepped pero muy optimizado
+local LastSpeedUpdate = 0
+RunService.Heartbeat:Connect(function()
+    if SpeedActive and Humanoid and tick() - LastSpeedUpdate > 0.1 then
+        Humanoid.WalkSpeed = SpeedValue
+        LastSpeedUpdate = tick()
     end
 end)
 
@@ -198,10 +198,10 @@ ToggleSpeedBtn.MouseButton1Click:Connect(function()
 end)
 
 -- =============================================
--- 🧲 IMÁN Y AUTO FARM
+-- 🧲 IMÁN OPTIMIZADO
 -- =============================================
 spawn(function()
-    while task.wait(0.1) do
+    while task.wait(0.15) do -- Un poco mas lento = MAS RENDIMIENTO
         if FarmActive and RootPart then
             local MyPos = RootPart.Position
             for _, v in pairs(Workspace:GetDescendants()) do
@@ -210,7 +210,6 @@ spawn(function()
                     if string.find(Name,"ball")or string.find(Name,"orb")or string.find(Name,"rare")or string.find(Name,"epic")or string.find(Name,"legendary")or string.find(Name,"mutation")or string.find(Name,"double")or string.find(Name,"chance")then
                         
                         local Dist = (MyPos - v.Position).Magnitude
-                        
                         if Dist < 100 then
                             v.CFrame = v.CFrame:Lerp(RootPart.CFrame, 0.8)
                             
@@ -241,7 +240,6 @@ local function StartFarm()
             VirtualUser:Click()
             task.wait(2.0)
             if Humanoid then
-                -- El farm usa la velocidad que tengas activada
                 Humanoid:MoveTo(Vector3.new(-45, 0, 0))
             end
             task.wait(3.0)
