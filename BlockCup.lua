@@ -2,7 +2,7 @@
 Script Name: JoseAngel_Blox Block Cup
 Description: Auto Farm Evento Block Cup
 Author: JoseAngel_Blox
-Version: 4.1 - ESTABLE Y SIN ERRORES
+Version: 6.0 - RECOGE TODAS LAS BOLAS ESPECIALES
 ]]
 
 local Players = game:GetService("Players")
@@ -27,11 +27,8 @@ local function UpdateCharacter()
     RootPart = Character:WaitForChild("HumanoidRootPart")
 end
 
--- Actualizar cuando el personaje revive
-Player.CharacterAdded:Connect(function()
-    UpdateCharacter()
-end)
-UpdateCharacter() -- Al inicio
+Player.CharacterAdded:Connect(UpdateCharacter)
+UpdateCharacter()
 
 -- == GUI ==
 local ScreenGui = Instance.new("ScreenGui")
@@ -127,22 +124,39 @@ UserInputService.InputEnded:Connect(function(Input)
     end
 end)
 
--- == 2. IMÁN FUNCIONANDO AL 100% ==
+-- == 2. SISTEMA IMÁN QUE ATRAE TODAS ==
+-- ✅ Ahora detecta NORMALES, RARE, EPIC, LEGENDARY, MUTATION, DOUBLE, ETC.
 spawn(function()
-    while task.wait(0.05) do
-        if FarmActive and RootPart then -- Comprobación extra
+    while task.wait(0.03) do
+        if FarmActive and RootPart then
             local MyPos = RootPart.Position
             for _, v in pairs(Workspace:GetDescendants()) do
-                if v:IsA("BasePart") then
+                if v:IsA("BasePart") and not v:IsDescendantOf(Character) then
                     local Name = string.lower(v.Name)
-                    if string.find(Name, "ball") or string.find(Name, "orb") or string.find(Name, "collect") or string.find(Name, "event") then
+                    
+                    -- 🔍 LISTA COMPLETA DE DETECCIÓN
+                    if string.find(Name, "ball") or 
+                       string.find(Name, "orb") or 
+                       string.find(Name, "collect") or 
+                       string.find(Name, "rare") or
+                       string.find(Name, "epic") or
+                       string.find(Name, "legendary") or
+                       string.find(Name, "mutation") or
+                       string.find(Name, "double") or
+                       string.find(Name, "chance") or
+                       string.find(Name, "big") then
                         
                         local Dist = (MyPos - v.Position).Magnitude
+                        
                         if Dist < 60 then
-                            v.CFrame = v.CFrame:Lerp(RootPart.CFrame, 0.9)
+                            -- 🧲 ATRACCIÓN FUERTE PERO SEGURA
+                            v.CFrame = v.CFrame:Lerp(RootPart.CFrame, 0.5)
                             
-                            if Dist < 3 then
-                                v.CFrame = RootPart.CFrame
+                            -- ✅ PONER EN PIES PARA CONTABILIZAR
+                            if Dist < 5 then
+                                v.CFrame = RootPart.CFrame + Vector3.new(0, -0.5, 0)
+                                v.Anchored = false
+                                v.CanCollide = false
                             end
                         end
                     end
@@ -161,7 +175,6 @@ local function StartFarm()
     
     Loop = spawn(function()
         while FarmActive do
-            -- Asegurar que existe antes de hacer nada
             if not Humanoid then UpdateCharacter() end
             
             -- PATEAR
