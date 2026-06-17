@@ -1,19 +1,17 @@
 --[[
 Script Name: JoseAngel_Blox Block Cup
-Version: 16.0 - CON BURBUJA FLOTANTE
+Version: 16.1 - FUNCIONA Y CARGA
 ]]
 
 local Players = game:GetService("Players")
 local VirtualUser = game:GetService("VirtualUser")
 local UserInputService = game:GetService("UserInputService")
 local Workspace = game:GetService("Workspace")
-local TweenService = game:GetService("TweenService")
 
 local Player = Players.LocalPlayer
 local FarmActive = false
 local SpeedActive = false
 local Loop = nil
-local SpeedLoop = nil
 local Character, Humanoid, RootPart
 local SpeedValue = 500
 
@@ -42,7 +40,6 @@ Bubble.Font = Enum.Font.GothamBold
 Bubble.TextSize = 20
 Bubble.Active = true
 
--- Efecto de sombra/borde
 local UIStroke = Instance.new("UIStroke")
 UIStroke.Thickness = 2
 UIStroke.Color = Color3.new(1,1,1)
@@ -71,9 +68,8 @@ Main.BorderSizePixel = 2
 Main.Position = UDim2.new(0.05, 0, 0.2, 0)
 Main.Size = UDim2.new(0, 220, 0, 280)
 Main.Active = true
-Main.Visible = false -- Empieza oculto
+Main.Visible = false
 
--- Esquinas redondeadas
 local UICornerMain = Instance.new("UICorner")
 UICornerMain.CornerRadius = UDim.new(0,8)
 UICornerMain.Parent = Main
@@ -173,7 +169,7 @@ BtnFarm.Font = Enum.Font.GothamBold
 BtnFarm.TextSize = 16
 
 -- =============================================
--- ✨ FUNCIONES DRAG (MOVER)
+-- ✨ FUNCIONES DRAG
 -- =============================================
 -- Drag Burbuja
 local DBubble, DragStartB, StartPosB = false, nil, nil
@@ -218,7 +214,7 @@ UserInputService.InputEnded:Connect(function(I)
 end)
 
 -- =============================================
--- 🔘 BOTON BURBUJA (MOSTRAR/OCULTAR)
+-- 🔘 BOTON BURBUJA
 -- =============================================
 Bubble.MouseButton1Click:Connect(function()
     Main.Visible = not Main.Visible
