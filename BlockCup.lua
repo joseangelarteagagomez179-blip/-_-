@@ -1,6 +1,6 @@
 --[[
 Script Name: JoseAngel_Blox Block Cup
-Version: 16.1 - FUNCIONA Y CARGA
+Version: 17.0 - 100% FUNCIONAL Y LIGERO
 ]]
 
 local Players = game:GetService("Players")
@@ -18,8 +18,8 @@ local SpeedValue = 500
 -- == ACTUALIZAR PERSONAJE ==
 local function UpdateCharacter()
     Character = Player.Character or Player.CharacterAdded:Wait()
-    Humanoid = Character:WaitForChild("Humanoid")
-    RootPart = Character:WaitForChild("HumanoidRootPart")
+    Humanoid = Character:FindFirstChild("Humanoid") or Character:WaitForChild("Humanoid")
+    RootPart = Character:FindFirstChild("HumanoidRootPart") or Character:WaitForChild("HumanoidRootPart")
 end
 Player.CharacterAdded:Connect(UpdateCharacter)
 UpdateCharacter()
@@ -39,15 +39,6 @@ Bubble.TextColor3 = Color3.new(1,1,1)
 Bubble.Font = Enum.Font.GothamBold
 Bubble.TextSize = 20
 Bubble.Active = true
-
-local UIStroke = Instance.new("UIStroke")
-UIStroke.Thickness = 2
-UIStroke.Color = Color3.new(1,1,1)
-UIStroke.Parent = Bubble
-
-local UICorner = Instance.new("UICorner")
-UICorner.CornerRadius = UDim.new(1,0)
-UICorner.Parent = Bubble
 
 -- =============================================
 -- 📦 MENU PRINCIPAL
@@ -69,10 +60,6 @@ Main.Position = UDim2.new(0.05, 0, 0.2, 0)
 Main.Size = UDim2.new(0, 220, 0, 280)
 Main.Active = true
 Main.Visible = false
-
-local UICornerMain = Instance.new("UICorner")
-UICornerMain.CornerRadius = UDim.new(0,8)
-UICornerMain.Parent = Main
 
 -- TITULO
 Title.Name = "Title"
