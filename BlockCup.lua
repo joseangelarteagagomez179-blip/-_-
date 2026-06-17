@@ -1,13 +1,12 @@
 --[[
 Script Name: JoseAngel_Blox Block Cup
-Version: 13.0 - FUNCIONA AL 100%
+Version: 14.0 - SUELO NORMAL / BOLAS VOLANDO
 ]]
 
 local Players = game:GetService("Players")
 local VirtualUser = game:GetService("VirtualUser")
-local UserInputService = game:GetService("UserInputService")
+local UserInputService = game:GetService("UserInput")
 local Workspace = game:GetService("Workspace")
-local RunService = game:GetService("RunService")
 
 local Player = Players.LocalPlayer
 local FarmActive = false
@@ -135,41 +134,38 @@ end)
 BtnMinus.MouseButton1Click:Connect(function()
     SpeedValue = math.max(50, SpeedValue - 50)
     SpeedDisplay.Text = tostring(SpeedValue)
-    -- Aplicar velocidad al instante
     if Humanoid then Humanoid.WalkSpeed = SpeedValue end
 end)
 BtnPlus.MouseButton1Click:Connect(function()
     SpeedValue = SpeedValue + 50
     SpeedDisplay.Text = tostring(SpeedValue)
-    -- Aplicar velocidad al instante
     if Humanoid then Humanoid.WalkSpeed = SpeedValue end
 end)
 
 -- =============================================
--- 🧲 IMÁN FUNCIONANDO AL 100%
+-- 🧲 IMÁN PERFECTO: SOLO BOLAS, NO SUELO
 -- =============================================
 spawn(function()
     while task.wait(0.1) do
         if FarmActive and RootPart then
             local MyPos = RootPart.Position
-            -- ✅ BUSCAR EN TODO LADO
             for _, v in pairs(Workspace:GetDescendants()) do
-                -- ✅ QUITÉ LOS FILTROS QUE FALLABAN
-                if v:IsA("BasePart") and not v:IsDescendantOf(Character) then
+                
+                -- ✅ LA SOLUCIÓN: Si es muy grande NO LO TOCO (El suelo es grande)
+                if v:IsA("BasePart") and not v:IsDescendantOf(Character) and v.Size.X < 50 then
+                    
                     local Name = string.lower(v.Name)
                     if string.find(Name,"ball")or string.find(Name,"orb")or string.find(Name,"rare")or string.find(Name,"epic")or string.find(Name,"legendary")or string.find(Name,"mutation")or string.find(Name,"double")or string.find(Name,"chance")then
                         
                         local Dist = (MyPos - v.Position).Magnitude
                         
                         if Dist < 100 then
-                            -- 🚀 FUERZA MAXIMA PARA QUE VENGAN VOLANDO
-                            v.CFrame = v.CFrame:Lerp(RootPart.CFrame, 0.9)
+                            v.CFrame = v.CFrame:Lerp(RootPart.CFrame, 0.8)
                             
-                            -- ✅ AGARRAR Y CONTAR
                             if Dist < 6 then
                                 v.CFrame = RootPart.CFrame
                                 v.CanCollide = false
-                                -- SIMULAR TOQUE
+                                -- SIMULAR TOQUE PARA QUE SE QUEDEN
                                 firetouchinterest(Character, v, 0)
                                 firetouchinterest(Character, v, 1)
                             end
