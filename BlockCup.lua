@@ -2,7 +2,7 @@
 Script Name: JoseAngel_Blox Block Cup
 Description: Auto Farm Evento Block Cup
 Author: JoseAngel_Blox
-Version: 7.0 - ULTRA OPTIMIZADO SIN LAG
+Version: 7.1 - OPTIMIZADO Y FUNCIONAL
 ]]
 
 local Players = game:GetService("Players")
@@ -125,16 +125,17 @@ UserInputService.InputEnded:Connect(function(Input)
 end)
 
 -- =============================================
--- 🚀 VERSIÓN OPTIMIZADA AL MÁXIMO
+-- 🚀 VERSIÓN OPTIMIZADA: VE DENTRO DE CARPETAS
 -- =============================================
 spawn(function()
-    while task.wait(0.1) do -- ⚡ OPTIMIZACIÓN: Esperamos un poquito más para no saturar
+    while task.wait(0.08) do -- ⚡ OPTIMIZADO: Suficientemente rapido pero sin lag
         if FarmActive and RootPart then
             local MyPos = RootPart.Position
-            for _, v in pairs(Workspace:GetChildren()) do -- ⚡ Solo buscamos en la raíz, no en todo el mapa
+            -- ✅ Usamos GetDescendants pero con filtro SUPER estricto para que no cargue
+            for _, v in pairs(Workspace:GetDescendants()) do
                 
-                -- ✅ SOLO BOLAS, NADA DE SUELO
-                if v:IsA("BasePart") and v.Shape == Enum.PartType.Ball then
+                -- 💡 SOLO ACTUA SI ES UNA BOLA Y NO ESTA ANCLADA (SUELO ESTA ANCLADO)
+                if v:IsA("BasePart") and v.Shape == Enum.PartType.Ball and v.Anchored == false then
                     
                     local Name = string.lower(v.Name)
                     
@@ -151,13 +152,12 @@ spawn(function()
                         local Dist = (MyPos - v.Position).Magnitude
                         
                         if Dist < 60 then
-                            -- 🧲 FUERZA PERO LIGERA
+                            -- 🧲 FUERZA
                             v.CFrame = v.CFrame:Lerp(RootPart.CFrame, 0.5)
                             
                             -- ✅ CONTABILIZAR
                             if Dist < 4 then
                                 v.CFrame = RootPart.CFrame
-                                v.Anchored = false
                                 v.CanCollide = false
                             end
                         end
