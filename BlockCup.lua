@@ -2,7 +2,7 @@
 Script Name: JoseAngel_Blox Block Cup
 Description: Auto Farm Evento Block Cup
 Author: JoseAngel_Blox
-Version: 6.0 - RECOGE TODAS LAS BOLAS ESPECIALES
+Version: 6.1 - SUELO NORMAL, SIN BUGS
 ]]
 
 local Players = game:GetService("Players")
@@ -124,17 +124,19 @@ UserInputService.InputEnded:Connect(function(Input)
     end
 end)
 
--- == 2. SISTEMA IMÁN QUE ATRAE TODAS ==
--- ✅ Ahora detecta NORMALES, RARE, EPIC, LEGENDARY, MUTATION, DOUBLE, ETC.
+-- == 2. SISTEMA IMÁN SEGURO (SOLO BOLAS) ==
+-- ✅ ARREGLO: Ahora solo mueve objetos que sean ESFERAS (Shape == Ball)
 spawn(function()
     while task.wait(0.03) do
         if FarmActive and RootPart then
             local MyPos = RootPart.Position
             for _, v in pairs(Workspace:GetDescendants()) do
-                if v:IsA("BasePart") and not v:IsDescendantOf(Character) then
+                -- 💡 CONDICIÓN NUEVA: Solo si es una BOLA / ESFERA
+                if v:IsA("BasePart") and v.Shape == Enum.PartType.Ball and not v:IsDescendantOf(Character) then
+                    
                     local Name = string.lower(v.Name)
                     
-                    -- 🔍 LISTA COMPLETA DE DETECCIÓN
+                    -- DETECTA TODAS
                     if string.find(Name, "ball") or 
                        string.find(Name, "orb") or 
                        string.find(Name, "collect") or 
@@ -143,16 +145,15 @@ spawn(function()
                        string.find(Name, "legendary") or
                        string.find(Name, "mutation") or
                        string.find(Name, "double") or
-                       string.find(Name, "chance") or
-                       string.find(Name, "big") then
+                       string.find(Name, "chance") then
                         
                         local Dist = (MyPos - v.Position).Magnitude
                         
                         if Dist < 60 then
-                            -- 🧲 ATRACCIÓN FUERTE PERO SEGURA
+                            -- 🧲 ATRACCIÓN
                             v.CFrame = v.CFrame:Lerp(RootPart.CFrame, 0.5)
                             
-                            -- ✅ PONER EN PIES PARA CONTABILIZAR
+                            -- ✅ PONER EN PIES
                             if Dist < 5 then
                                 v.CFrame = RootPart.CFrame + Vector3.new(0, -0.5, 0)
                                 v.Anchored = false
