@@ -1,6 +1,6 @@
 --[[
 Script Name: JoseAngel_Blox Block Cup
-Version: 12.0 - LAS BOLAS SE QUEDAN / NO DESAPARECEN
+Version: 13.0 - FUNCIONA AL 100%
 ]]
 
 local Players = game:GetService("Players")
@@ -135,39 +135,41 @@ end)
 BtnMinus.MouseButton1Click:Connect(function()
     SpeedValue = math.max(50, SpeedValue - 50)
     SpeedDisplay.Text = tostring(SpeedValue)
+    -- Aplicar velocidad al instante
+    if Humanoid then Humanoid.WalkSpeed = SpeedValue end
 end)
 BtnPlus.MouseButton1Click:Connect(function()
     SpeedValue = SpeedValue + 50
     SpeedDisplay.Text = tostring(SpeedValue)
+    -- Aplicar velocidad al instante
+    if Humanoid then Humanoid.WalkSpeed = SpeedValue end
 end)
 
 -- =============================================
--- ✅ TRUCO MAESTRO: LAS BOLAS SE QUEDAN
+-- 🧲 IMÁN FUNCIONANDO AL 100%
 -- =============================================
 spawn(function()
-    while task.wait(0.15) do
+    while task.wait(0.1) do
         if FarmActive and RootPart then
             local MyPos = RootPart.Position
+            -- ✅ BUSCAR EN TODO LADO
             for _, v in pairs(Workspace:GetDescendants()) do
-                if v:IsA("BasePart") and v.Shape == Enum.PartType.Ball and v.Anchored == false and not v:IsDescendantOf(Character) then
+                -- ✅ QUITÉ LOS FILTROS QUE FALLABAN
+                if v:IsA("BasePart") and not v:IsDescendantOf(Character) then
                     local Name = string.lower(v.Name)
                     if string.find(Name,"ball")or string.find(Name,"orb")or string.find(Name,"rare")or string.find(Name,"epic")or string.find(Name,"legendary")or string.find(Name,"mutation")or string.find(Name,"double")or string.find(Name,"chance")then
                         
                         local Dist = (MyPos - v.Position).Magnitude
                         
-                        if Dist < 80 then
-                            -- 🧲 ATRACCIÓN SUAVE PERO SEGURA
-                            v.CFrame = v.CFrame:Lerp(RootPart.CFrame, 0.4)
+                        if Dist < 100 then
+                            -- 🚀 FUERZA MAXIMA PARA QUE VENGAN VOLANDO
+                            v.CFrame = v.CFrame:Lerp(RootPart.CFrame, 0.9)
                             
-                            -- ✅ EL SECRETO: HACER QUE "TOQUE" AL PERSONAJE
+                            -- ✅ AGARRAR Y CONTAR
                             if Dist < 6 then
-                                -- La ponemos justo en el cuerpo
                                 v.CFrame = RootPart.CFrame
-                                -- Desactivamos todo para que entre suave
                                 v.CanCollide = false
-                                v.Anchored = false
-                                
-                                -- 🔥 SIMULAMOS EL TOQUE PARA QUE EL JUEGO LA CUENTE
+                                -- SIMULAR TOQUE
                                 firetouchinterest(Character, v, 0)
                                 firetouchinterest(Character, v, 1)
                             end
