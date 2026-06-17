@@ -1,6 +1,6 @@
 --[[
 Script Name: JoseAngel_Blox Block Cup
-Version: 17.0 - 100% FUNCIONAL Y LIGERO
+Version: FINAL - ORGANIZADO Y FUNCIONAL
 ]]
 
 local Players = game:GetService("Players")
@@ -12,42 +12,36 @@ local Player = Players.LocalPlayer
 local FarmActive = false
 local SpeedActive = false
 local Loop = nil
+local Dragging, DragStart, StartPos = nil, nil, nil
 local Character, Humanoid, RootPart
 local SpeedValue = 500
 
 -- == ACTUALIZAR PERSONAJE ==
 local function UpdateCharacter()
     Character = Player.Character or Player.CharacterAdded:Wait()
-    Humanoid = Character:FindFirstChild("Humanoid") or Character:WaitForChild("Humanoid")
-    RootPart = Character:FindFirstChild("HumanoidRootPart") or Character:WaitForChild("HumanoidRootPart")
+    Humanoid = Character:WaitForChild("Humanoid")
+    RootPart = Character:WaitForChild("HumanoidRootPart")
 end
 Player.CharacterAdded:Connect(UpdateCharacter)
 UpdateCharacter()
 
--- =============================================
--- 💠 BURBUJA FLOTANTE
--- =============================================
-local Bubble = Instance.new("TextButton")
-Bubble.Name = "Bubble"
-Bubble.Parent = game:GetService("CoreGui")
-Bubble.BackgroundColor3 = Color3.new(1, 0, 0)
-Bubble.Size = UDim2.new(0, 60, 0, 60)
-Bubble.Position = UDim2.new(0.02, 0, 0.4, 0)
-Bubble.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-Bubble.Text = "JB"
-Bubble.TextColor3 = Color3.new(1,1,1)
-Bubble.Font = Enum.Font.GothamBold
-Bubble.TextSize = 20
-Bubble.Active = true
-
--- =============================================
--- 📦 MENU PRINCIPAL
--- =============================================
+-- == GUI ==
 local ScreenGui = Instance.new("ScreenGui")
 local Main = Instance.new("Frame")
 local Title = Instance.new("TextLabel")
 
-ScreenGui.Name = "MainUI"
+-- 1. SECCION VELOCIDAD
+local SpeedLabel = Instance.new("TextLabel")
+local BtnMinus = Instance.new("TextButton")
+local SpeedDisplay = Instance.new("TextLabel")
+local BtnPlus = Instance.new("TextButton")
+local ToggleSpeedBtn = Instance.new("TextButton")
+
+-- 2. SECCION FARM
+local FarmLabel = Instance.new("TextLabel")
+local ToggleFarmBtn = Instance.new("TextButton")
+
+ScreenGui.Name = "UI"
 ScreenGui.Parent = game:GetService("CoreGui")
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
@@ -57,9 +51,8 @@ Main.BackgroundColor3 = Color3.new(0.05, 0.05, 0.05)
 Main.BorderColor3 = Color3.new(1, 0, 0)
 Main.BorderSizePixel = 2
 Main.Position = UDim2.new(0.05, 0, 0.2, 0)
-Main.Size = UDim2.new(0, 220, 0, 280)
+Main.Size = UDim2.new(0, 240, 0, 280)
 Main.Active = true
-Main.Visible = false
 
 -- TITULO
 Title.Name = "Title"
@@ -72,23 +65,21 @@ Title.Text = "JoseAngel_Blox"
 Title.TextColor3 = Color3.new(1,1,1)
 Title.TextSize = 20
 
--- =============================================
--- 1️⃣ OPCION VELOCIDAD
--- =============================================
-local SpeedLabel = Instance.new("TextLabel")
+-- ==================================
+--      OPCIÓN 1: VELOCIDAD
+-- ==================================
 SpeedLabel.Parent = Main
 SpeedLabel.BackgroundTransparency = 1
 SpeedLabel.Position = UDim2.new(0.05, 0, 0.15, 0)
 SpeedLabel.Size = UDim2.new(0.9, 0, 0, 20)
-SpeedLabel.Text = "⚡ Velocidad Infinita"
+SpeedLabel.Text = "⚡ Velocidad"
 SpeedLabel.TextColor3 = Color3.new(1, 1, 1)
 SpeedLabel.TextSize = 14
 
-local BtnMinus = Instance.new("TextButton")
 BtnMinus.Name = "Minus"
 BtnMinus.Parent = Main
 BtnMinus.Position = UDim2.new(0.05, 0, 0.25, 0)
-BtnMinus.Size = UDim2.new(0.25, 0, 0, 30)
+BtnMinus.Size = UDim2.new(0.20, 0, 0, 30)
 BtnMinus.BackgroundColor3 = Color3.new(0.2,0.2,0.2)
 BtnMinus.BorderColor3 = Color3.new(1,1,1)
 BtnMinus.Text = "-"
@@ -96,22 +87,20 @@ BtnMinus.TextColor3 = Color3.new(1,1,1)
 BtnMinus.Font = Enum.Font.GothamBold
 BtnMinus.TextSize = 20
 
-local SpeedDisplay = Instance.new("TextLabel")
 SpeedDisplay.Name = "SpeedDisplay"
 SpeedDisplay.Parent = Main
 SpeedDisplay.BackgroundTransparency = 1
-SpeedDisplay.Position = UDim2.new(0.35, 0, 0.25, 0)
-SpeedDisplay.Size = UDim2.new(0.3, 0, 0, 30)
+SpeedDisplay.Position = UDim2.new(0.30, 0, 0.25, 0)
+SpeedDisplay.Size = UDim2.new(0.40, 0, 0, 30)
 SpeedDisplay.Text = tostring(SpeedValue)
 SpeedDisplay.TextColor3 = Color3.new(1,1,1)
 SpeedDisplay.Font = Enum.Font.GothamBold
 SpeedDisplay.TextSize = 16
 
-local BtnPlus = Instance.new("TextButton")
 BtnPlus.Name = "Plus"
 BtnPlus.Parent = Main
-BtnPlus.Position = UDim2.new(0.70, 0, 0.25, 0)
-BtnPlus.Size = UDim2.new(0.25, 0, 0, 30)
+BtnPlus.Position = UDim2.new(0.75, 0, 0.25, 0)
+BtnPlus.Size = UDim2.new(0.20, 0, 0, 30)
 BtnPlus.BackgroundColor3 = Color3.new(0.2,0.2,0.2)
 BtnPlus.BorderColor3 = Color3.new(1,1,1)
 BtnPlus.Text = "+"
@@ -119,97 +108,60 @@ BtnPlus.TextColor3 = Color3.new(1,1,1)
 BtnPlus.Font = Enum.Font.GothamBold
 BtnPlus.TextSize = 20
 
-local BtnSpeed = Instance.new("TextButton")
-BtnSpeed.Name = "BtnSpeed"
-BtnSpeed.Parent = Main
-BtnSpeed.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2)
-BtnSpeed.BorderColor3 = Color3.new(1, 1, 1)
-BtnSpeed.Position = UDim2.new(0.05, 0, 0.40, 0)
-BtnSpeed.Size = UDim2.new(0.9, 0, 0, 35)
-BtnSpeed.Text = "Activar Velocidad"
-BtnSpeed.TextColor3 = Color3.new(1,1,1)
-BtnSpeed.Font = Enum.Font.GothamBold
-BtnSpeed.TextSize = 14
+ToggleSpeedBtn.Name = "ToggleSpeed"
+ToggleSpeedBtn.Parent = Main
+ToggleSpeedBtn.BackgroundColor3 = Color3.new(0.2, 0, 0)
+ToggleSpeedBtn.BorderColor3 = Color3.new(1, 1, 1)
+ToggleSpeedBtn.Position = UDim2.new(0.05, 0, 0.38, 0)
+ToggleSpeedBtn.Size = UDim2.new(0.9, 0, 0, 35)
+ToggleSpeedBtn.Text = "ACTIVAR VELOCIDAD"
+ToggleSpeedBtn.TextColor3 = Color3.new(1,1,1)
+ToggleSpeedBtn.Font = Enum.Font.GothamBold
+ToggleSpeedBtn.TextSize = 14
 
--- =============================================
--- 2️⃣ OPCION AUTO FARM
--- =============================================
-local FarmLabel = Instance.new("TextLabel")
+-- ==================================
+--      OPCIÓN 2: AUTO FARM
+-- ==================================
 FarmLabel.Parent = Main
 FarmLabel.BackgroundTransparency = 1
 FarmLabel.Position = UDim2.new(0.05, 0, 0.55, 0)
 FarmLabel.Size = UDim2.new(0.9, 0, 0, 20)
-FarmLabel.Text = "🔵 Auto Farm Pelotas"
+FarmLabel.Text = "Auto farm pelotas"
 FarmLabel.TextColor3 = Color3.new(1, 1, 1)
 FarmLabel.TextSize = 14
 
-local BtnFarm = Instance.new("TextButton")
-BtnFarm.Name = "BtnFarm"
-BtnFarm.Parent = Main
-BtnFarm.BackgroundColor3 = Color3.new(0.2, 0, 0)
-BtnFarm.BorderColor3 = Color3.new(1, 1, 1)
-BtnFarm.Position = UDim2.new(0.05, 0, 0.65, 0)
-BtnFarm.Size = UDim2.new(0.9, 0, 0, 40)
-BtnFarm.Text = "Activar Auto Farmeo"
-BtnFarm.TextColor3 = Color3.new(1,1,1)
-BtnFarm.Font = Enum.Font.GothamBold
-BtnFarm.TextSize = 16
+ToggleFarmBtn.Name = "ToggleFarm"
+ToggleFarmBtn.Parent = Main
+ToggleFarmBtn.BackgroundColor3 = Color3.new(0.2, 0, 0)
+ToggleFarmBtn.BorderColor3 = Color3.new(1, 1, 1)
+ToggleFarmBtn.Position = UDim2.new(0.05, 0, 0.65, 0)
+ToggleFarmBtn.Size = UDim2.new(0.9, 0, 0, 40)
+ToggleFarmBtn.Text = "ACTIVAR AUTO FARMELO DE PELOTAS"
+ToggleFarmBtn.TextColor3 = Color3.new(1,1,1)
+ToggleFarmBtn.Font = Enum.Font.GothamBold
+ToggleFarmBtn.TextSize = 13
 
--- =============================================
--- ✨ FUNCIONES DRAG
--- =============================================
--- Drag Burbuja
-local DBubble, DragStartB, StartPosB = false, nil, nil
-Bubble.InputBegan:Connect(function(I)
-    if I.UserInputType == Enum.UserInputType.MouseButton1 then
-        DBubble = true
-        DragStartB = I.Position
-        StartPosB = Bubble.Position
-    end
-end)
-UserInputService.InputChanged:Connect(function(I)
-    if DBubble then
-        local Delta = I.Position - DragStartB
-        Bubble.Position = UDim2.new(StartPosB.X.Scale, StartPosB.X.Offset + Delta.X, StartPosB.Y.Scale, StartPosB.Y.Offset + Delta.Y)
-    end
-end)
-UserInputService.InputEnded:Connect(function(I)
-    if I.UserInputType == Enum.UserInputType.MouseButton1 then
-        DBubble = false
-    end
-end)
-
--- Drag Menu
-local DMenu, DragStartM, StartPosM = false, nil, nil
+-- == DESLIZAR ==
 Main.InputBegan:Connect(function(I)
     if I.UserInputType == Enum.UserInputType.MouseButton1 then
-        DMenu = true
-        DragStartM = I.Position
-        StartPosM = Main.Position
+        Dragging = true
+        DragStart = I.Position
+        StartPos = Main.Position
     end
 end)
 UserInputService.InputChanged:Connect(function(I)
-    if DMenu then
-        local Delta = I.Position - DragStartM
-        Main.Position = UDim2.new(StartPosM.X.Scale, StartPosM.X.Offset + Delta.X, StartPosM.Y.Scale, StartPosM.Y.Offset + Delta.Y)
+    if Dragging then
+        local Delta = I.Position - DragStart
+        Main.Position = UDim2.new(StartPos.X.Scale, StartPos.X.Offset + Delta.X, StartPos.Y.Scale, StartPos.Y.Offset + Delta.Y)
     end
 end)
 UserInputService.InputEnded:Connect(function(I)
     if I.UserInputType == Enum.UserInputType.MouseButton1 then
-        DMenu = false
+        Dragging = false
     end
 end)
 
--- =============================================
--- 🔘 BOTON BURBUJA
--- =============================================
-Bubble.MouseButton1Click:Connect(function()
-    Main.Visible = not Main.Visible
-end)
-
--- =============================================
--- ⚡ FUNCIONES VELOCIDAD
--- =============================================
+-- == CONTROL VELOCIDAD ==
 BtnMinus.MouseButton1Click:Connect(function()
     SpeedValue = math.max(50, SpeedValue - 50)
     SpeedDisplay.Text = tostring(SpeedValue)
@@ -221,21 +173,21 @@ BtnPlus.MouseButton1Click:Connect(function()
     if SpeedActive and Humanoid then Humanoid.WalkSpeed = SpeedValue end
 end)
 
-BtnSpeed.MouseButton1Click:Connect(function()
+ToggleSpeedBtn.MouseButton1Click:Connect(function()
     SpeedActive = not SpeedActive
     if SpeedActive then
-        BtnSpeed.Text = "Desactivar Velocidad"
-        BtnSpeed.BackgroundColor3 = Color3.new(0, 0.4, 0)
+        ToggleSpeedBtn.Text = "DESACTIVAR VELOCIDAD"
+        ToggleSpeedBtn.BackgroundColor3 = Color3.new(0, 0.4, 0)
         if Humanoid then Humanoid.WalkSpeed = SpeedValue end
     else
-        BtnSpeed.Text = "Activar Velocidad"
-        BtnSpeed.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2)
+        ToggleSpeedBtn.Text = "ACTIVAR VELOCIDAD"
+        ToggleSpeedBtn.BackgroundColor3 = Color3.new(0.2, 0, 0)
         if Humanoid then Humanoid.WalkSpeed = 16 end
     end
 end)
 
 -- =============================================
--- 🧲 FUNCIONES AUTO FARM
+-- 🧲 IMÁN Y AUTO FARM
 -- =============================================
 spawn(function()
     while task.wait(0.1) do
@@ -245,9 +197,12 @@ spawn(function()
                 if v:IsA("BasePart") and not v:IsDescendantOf(Character) and v.Size.X < 50 then
                     local Name = string.lower(v.Name)
                     if string.find(Name,"ball")or string.find(Name,"orb")or string.find(Name,"rare")or string.find(Name,"epic")or string.find(Name,"legendary")or string.find(Name,"mutation")or string.find(Name,"double")or string.find(Name,"chance")then
+                        
                         local Dist = (MyPos - v.Position).Magnitude
+                        
                         if Dist < 100 then
                             v.CFrame = v.CFrame:Lerp(RootPart.CFrame, 0.8)
+                            
                             if Dist < 6 then
                                 v.CFrame = RootPart.CFrame
                                 v.CanCollide = false
@@ -262,14 +217,24 @@ spawn(function()
     end
 end)
 
+-- == FUNCION AUTO FARM ==
 local function StartFarm()
     if Loop then return end
+    FarmActive = true
+    ToggleFarmBtn.Text = "DESACTIVAR AUTO FARMELO"
+    ToggleFarmBtn.BackgroundColor3 = Color3.new(0, 0.4, 0)
+    
     Loop = spawn(function()
         while FarmActive do
             if not Humanoid then UpdateCharacter() end
             VirtualUser:Click()
             task.wait(2.0)
             if Humanoid then
+                if SpeedActive then
+                    Humanoid.WalkSpeed = SpeedValue
+                else
+                    Humanoid.WalkSpeed = 16
+                end
                 Humanoid:MoveTo(Vector3.new(-45, 0, 0))
             end
             task.wait(3.0)
@@ -280,17 +245,10 @@ end
 local function StopFarm()
     FarmActive = false
     Loop = nil
+    ToggleFarmBtn.Text = "ACTIVAR AUTO FARMELO DE PELOTAS"
+    ToggleFarmBtn.BackgroundColor3 = Color3.new(0.2, 0, 0)
 end
 
-BtnFarm.MouseButton1Click:Connect(function()
-    FarmActive = not FarmActive
-    if FarmActive then
-        BtnFarm.Text = "Desactivar Auto Farmeo"
-        BtnFarm.BackgroundColor3 = Color3.new(0, 0.4, 0)
-        StartFarm()
-    else
-        BtnFarm.Text = "Activar Auto Farmeo"
-        BtnFarm.BackgroundColor3 = Color3.new(0.2, 0, 0)
-        StopFarm()
-    end
+ToggleFarmBtn.MouseButton1Click:Connect(function()
+    if not FarmActive then StartFarm() else StopFarm() end
 end)
