@@ -1,13 +1,12 @@
 --[[
 Script Name: JoseAngel_Blox Block Cup
-Version: BOTONES FUNCIONANDO - SIN LAG
+Version: VELOCIDAD TOTALMENTE SEPARADA
 ]]
 
 local Players = game:GetService("Players")
 local VirtualUser = game:GetService("VirtualUser")
 local UserInputService = game:GetService("UserInputService")
 local Workspace = game:GetService("Workspace")
-local RunService = game:GetService("RunService")
 
 local Player = Players.LocalPlayer
 local FarmActive = false
@@ -163,8 +162,17 @@ UserInputService.InputEnded:Connect(function(I)
 end)
 
 -- ==================================
--- ✅ BOTONES FUNCIONANDO AL 100%
+-- ✅ VELOCIDAD FUNCIONANDO SOLA
 -- ==================================
+-- ESTE SISTEMA NO SE TOCA CON EL FARM
+spawn(function()
+    while task.wait(0.1) do
+        if SpeedActive and Humanoid then
+            Humanoid.WalkSpeed = SpeedValue
+        end
+    end
+end)
+
 BtnMinus.MouseButton1Click:Connect(function()
     SpeedValue = math.max(50, SpeedValue - 50)
     SpeedDisplay.Text = tostring(SpeedValue)
@@ -190,15 +198,6 @@ ToggleSpeedBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- == MANTENER VELOCIDAD ==
-spawn(function()
-    while task.wait(0.1) do
-        if SpeedActive and Humanoid then
-            Humanoid.WalkSpeed = SpeedValue
-        end
-    end
-end)
-
 -- =============================================
 -- 🧲 IMÁN Y AUTO FARM
 -- =============================================
@@ -212,7 +211,6 @@ spawn(function()
                     if string.find(Name,"ball")or string.find(Name,"orb")or string.find(Name,"rare")or string.find(Name,"epic")or string.find(Name,"legendary")or string.find(Name,"mutation")or string.find(Name,"double")or string.find(Name,"chance")then
                         
                         local Dist = (MyPos - v.Position).Magnitude
-                        
                         if Dist < 100 then
                             v.CFrame = v.CFrame:Lerp(RootPart.CFrame, 0.8)
                             
@@ -243,6 +241,7 @@ local function StartFarm()
             VirtualUser:Click()
             task.wait(2.0)
             if Humanoid then
+                -- El farm se mueve normal, NO TOCA LA VELOCIDAD QUE TU PUSISTE
                 Humanoid:MoveTo(Vector3.new(-45, 0, 0))
             end
             task.wait(3.0)
