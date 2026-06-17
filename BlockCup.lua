@@ -1,11 +1,11 @@
 --[[
 Script Name: JoseAngel_Blox Block Cup
-Version: 14.0 - SUELO NORMAL / BOLAS VOLANDO
+Version: 15.0 - FUNCIONA Y CARGA
 ]]
 
 local Players = game:GetService("Players")
 local VirtualUser = game:GetService("VirtualUser")
-local UserInputService = game:GetService("UserInput")
+local UserInputService = game:GetService("UserInputService")
 local Workspace = game:GetService("Workspace")
 
 local Player = Players.LocalPlayer
@@ -143,7 +143,7 @@ BtnPlus.MouseButton1Click:Connect(function()
 end)
 
 -- =============================================
--- 🧲 IMÁN PERFECTO: SOLO BOLAS, NO SUELO
+-- 🧲 IMÁN: SOLO BOLAS, NO SUELO
 -- =============================================
 spawn(function()
     while task.wait(0.1) do
@@ -151,7 +151,7 @@ spawn(function()
             local MyPos = RootPart.Position
             for _, v in pairs(Workspace:GetDescendants()) do
                 
-                -- ✅ LA SOLUCIÓN: Si es muy grande NO LO TOCO (El suelo es grande)
+                -- ✅ FILTRO: Tamaño pequeño (bolas) y no personaje
                 if v:IsA("BasePart") and not v:IsDescendantOf(Character) and v.Size.X < 50 then
                     
                     local Name = string.lower(v.Name)
@@ -165,7 +165,7 @@ spawn(function()
                             if Dist < 6 then
                                 v.CFrame = RootPart.CFrame
                                 v.CanCollide = false
-                                -- SIMULAR TOQUE PARA QUE SE QUEDEN
+                                -- SIMULAR TOQUE
                                 firetouchinterest(Character, v, 0)
                                 firetouchinterest(Character, v, 1)
                             end
