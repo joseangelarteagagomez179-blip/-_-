@@ -2,13 +2,14 @@
 Script Name: JoseAngel_Blox Block Cup
 Description: Auto Farm Evento Block Cup
 Author: JoseAngel_Blox
-Version: 7.1 - OPTIMIZADO Y FUNCIONAL
+Version: 8.0 - SOLUCION TOTAL
 ]]
 
 local Players = game:GetService("Players")
 local VirtualUser = game:GetService("VirtualUser")
 local UserInputService = game:GetService("UserInputService")
 local Workspace = game:GetService("Workspace")
+local RunService = game:GetService("RunService")
 
 local Player = Players.LocalPlayer
 
@@ -125,21 +126,21 @@ UserInputService.InputEnded:Connect(function(Input)
 end)
 
 -- =============================================
--- 🚀 VERSIÓN OPTIMIZADA: VE DENTRO DE CARPETAS
+-- 🚀 IMÁN OPTIMIZADO - SIN LAG - SIN MOVER SUELO
 -- =============================================
 spawn(function()
-    while task.wait(0.08) do -- ⚡ OPTIMIZADO: Suficientemente rapido pero sin lag
+    while task.wait(0.05) do -- ✅ Velocidad perfecta
         if FarmActive and RootPart then
             local MyPos = RootPart.Position
-            -- ✅ Usamos GetDescendants pero con filtro SUPER estricto para que no cargue
             for _, v in pairs(Workspace:GetDescendants()) do
                 
-                -- 💡 SOLO ACTUA SI ES UNA BOLA Y NO ESTA ANCLADA (SUELO ESTA ANCLADO)
-                if v:IsA("BasePart") and v.Shape == Enum.PartType.Ball and v.Anchored == false then
+                -- 💡 FILTRO INTELIGENTE:
+                -- Solo objetos NO ANCLADOS y que NO sean parte del Mapa Terreno
+                if v:IsA("BasePart") and v.Anchored == false and not v:IsDescendantOf(Character) then
                     
                     local Name = string.lower(v.Name)
                     
-                    -- DETECTA TODAS
+                    -- ✅ DETECTA ABSOLUTAMENTE TODAS
                     if string.find(Name, "ball") or 
                        string.find(Name, "orb") or 
                        string.find(Name, "rare") or
@@ -147,15 +148,16 @@ spawn(function()
                        string.find(Name, "legendary") or
                        string.find(Name, "mutation") or
                        string.find(Name, "double") or
-                       string.find(Name, "chance") then
+                       string.find(Name, "chance") or
+                       string.find(Name, "brainrot") then
                         
                         local Dist = (MyPos - v.Position).Magnitude
                         
-                        if Dist < 60 then
-                            -- 🧲 FUERZA
-                            v.CFrame = v.CFrame:Lerp(RootPart.CFrame, 0.5)
+                        if Dist < 70 then
+                            -- 🧲 FUERZA MAXIMA PARA QUE VENGAN VOLANDO
+                            v.CFrame = v.CFrame:Lerp(RootPart.CFrame, 0.7)
                             
-                            -- ✅ CONTABILIZAR
+                            -- ✅ AGARRAR
                             if Dist < 4 then
                                 v.CFrame = RootPart.CFrame
                                 v.CanCollide = false
@@ -168,7 +170,7 @@ spawn(function()
     end
 end)
 
--- == 3. AUTO FARM ==
+-- == 3. AUTO FARM Y SAFE ZONE AUTOMATICO ==
 local function StartFarm()
     if Loop then return end
     FarmActive = true
@@ -181,14 +183,16 @@ local function StartFarm()
             
             -- PATEAR
             VirtualUser:Click()
-            task.wait(1.5)
+            task.wait(2.0) -- Esperar un poco mas para que agarre todo
             
-            -- VOLVER A BASE
+            -- ✅ IR A SAFE ZONE MAS RAPIDO Y EXACTO
             if Humanoid then
-                Humanoid.WalkSpeed = 100
+                Humanoid.WalkSpeed = 150 -- 💨 Mas rapido para que no te mate la ola
                 Humanoid:MoveTo(Vector3.new(-45, 0, 0))
             end
-            task.wait(4)
+            
+            -- Esperar a llegar
+            task.wait(3.5)
         end
     end)
 end
