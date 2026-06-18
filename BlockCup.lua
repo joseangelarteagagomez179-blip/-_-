@@ -1,13 +1,12 @@
 --[[
 Script Name: JoseAngel_Blox Block Cup
-Version: ESTILO RGB / OPTIMIZADO / SEGURO
+Version: FUNCIONANDO AL 100% / MOVIBLE / RGB
 ]]
 
 local Players = game:GetService("Players")
 local VirtualUser = game:GetService("VirtualUser")
-local UserInputService = UserInputService
-local Workspace = Workspace
-local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+local Workspace = game:GetService("Workspace")
 
 local Player = Players.LocalPlayer
 local FarmActive = false
@@ -29,7 +28,7 @@ local ScreenGui = Instance.new("ScreenGui")
 local Main = Instance.new("Frame")
 local Title = Instance.new("TextLabel")
 local UICorner = Instance.new("UICorner")
-local UIStroke = Instance.new("UIStroke") -- <-- BORDE COLORES
+local UIStroke = Instance.new("UIStroke")
 local FarmLabel = Instance.new("TextLabel")
 local ToggleFarmBtn = Instance.new("TextButton")
 local BtnCorner = Instance.new("UICorner")
@@ -74,7 +73,7 @@ FarmLabel.Parent = Main
 FarmLabel.BackgroundTransparency = 1
 FarmLabel.Position = UDim2.new(0.05, 0, 0.32, 0)
 FarmLabel.Size = UDim2.new(0.9, 0, 0, 18)
-FarmLabel.Text = "Auto farm pelotas" -- <-- TEXTO CORREGIDO
+FarmLabel.Text = "Auto farm pelotas"
 FarmLabel.TextColor3 = Color3.new(1, 1, 1)
 FarmLabel.TextSize = 12
 
@@ -85,7 +84,7 @@ ToggleFarmBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
 ToggleFarmBtn.BorderColor3 = Color3.new(1, 1, 1)
 ToggleFarmBtn.Position = UDim2.new(0.08, 0, 0.52, 0)
 ToggleFarmBtn.Size = UDim2.new(0.84, 0, 0, 40)
-ToggleFarmBtn.Text = "ACTIVAR" -- <-- TEXTO CORREGIDO
+ToggleFarmBtn.Text = "ACTIVAR"
 ToggleFarmBtn.TextColor3 = Color3.new(1, 1, 1)
 ToggleFarmBtn.Font = Enum.Font.GothamBold
 ToggleFarmBtn.TextSize = 13
@@ -95,7 +94,7 @@ BtnCorner.CornerRadius = UDim.new(0, 8)
 BtnCorner.Parent = ToggleFarmBtn
 
 -- ==================================
--- ✨ EFECTO COLORES EN BORDES
+-- ✨ EFECTO COLORES RGB
 -- ==================================
 spawn(function()
     local H = 0
@@ -107,7 +106,7 @@ spawn(function()
 end)
 
 -- ==================================
---      FUNCION MOVER (CELULAR)
+-- 📱 FUNCION MOVER / ARRASTRAR
 -- ==================================
 Main.InputBegan:Connect(function(I)
     if I.UserInputType == Enum.UserInputType.MouseButton1 or I.UserInputType == Enum.UserInputType.Touch then
@@ -137,17 +136,17 @@ UserInputService.InputEnded:Connect(function(I)
 end)
 
 -- =============================================
--- 🧲 IMÁN: MODO PERFECTO - DETECCIÓN REAL
+-- 🧲 IMÁN: FUNCIONANDO PERFECTO
 -- =============================================
 spawn(function()
-    while task.wait(0.15) do -- ✅ OPTIMIZADO
+    while task.wait(0.15) do
         if FarmActive and RootPart then
             local MyPos = RootPart.Position
             
             for _, v in pairs(Workspace:GetDescendants()) do
                 if v:IsA("BasePart") and not v:IsDescendantOf(Character) then
                     
-                    -- 🛡️ SUELO QUIETO (NUNCA SE MUEVE)
+                    -- 🛡️ SUELO QUIETO
                     if v.Size.X > 15 or v.Size.Y > 15 or v.Size.Z > 15 then
                         continue
                     end
@@ -164,19 +163,16 @@ spawn(function()
                         
                         local Dist = (MyPos - v.Position).Magnitude
                         
-                        -- ✅ RANGO CORTO Y RÁPIDO
+                        -- ✅ ATRAE RÁPIDO
                         if Dist < 50 then
                             v.CFrame = v.CFrame:Lerp(RootPart.CFrame, 0.7)
                             v.CanCollide = false
                             v.Anchored = false
                             
-                            -- ✅ ARREGLO FINAL:
-                            -- Cuando tocan al personaje, se activan y cuentan,
-                            -- pero las dejamos flotando un segundo para que NO SE BORREN.
+                            -- ✅ DETECTA Y CUENTA
                             if Dist < 4 then
                                 firetouchinterest(Character, v, 0)
                                 firetouchinterest(Character, v, 1)
-                                -- Las movemos un poquito para que no se bugueen
                                 v.CFrame = v.CFrame * CFrame.new(math.random(-1,1), math.random(0,1), math.random(-1,1))
                             end
                         end
@@ -187,7 +183,7 @@ spawn(function()
     end
 end)
 
--- == FUNCION AUTO FARM ==
+-- == FUNCION BOTON ACTIVAR/DESACTIVAR ==
 local function StartFarm()
     if Loop then return end
     FarmActive = true
