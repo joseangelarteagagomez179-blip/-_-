@@ -1,6 +1,6 @@
 --[[
 Script Name: JoseAngel_Blox Block Cup
-Version: FUNCIONANDO AL 100% / MOVIBLE / NO BORRA
+Version: SIN LAG / ULTRA RÁPIDO / NO BORRA
 ]]
 
 local Players = game:GetService("Players")
@@ -135,10 +135,11 @@ UserInputService.InputEnded:Connect(function(I)
 end)
 
 -- =============================================
--- 🧲 IMÁN: VELOCIDAD MAXIMA + NO BORRA
+-- 🧲 IMÁN: MODO SIN LAG Y SEGURO
 -- =============================================
+-- ✅ CAMBIO: task.wait(0.2) para que NO DE LAG
 spawn(function()
-    while task.wait(0.1) do
+    while task.wait(0.2) do
         if FarmActive and RootPart then
             local MyPos = RootPart.Position
             
@@ -169,12 +170,16 @@ spawn(function()
                             v.CanCollide = false
                             v.Anchored = false
                             
-                            -- ✅ EL TRUCO: TE TOCAN Y SE VAN ATRAS
-                            if Dist < 3.5 then
+                            -- ✅ EL TRUCO DEFINITIVO:
+                            -- Cuando estan cerca, las activamos y las mandamos LEJOS de tu cuerpo
+                            -- Asi cuentan el dinero PERO NO SE BORRAN
+                            if Dist < 4 then
                                 firetouchinterest(Character, v, 0)
                                 firetouchinterest(Character, v, 1)
-                                -- Las mandamos detrás tuyo para que cuenten pero no se borren
-                                v.CFrame = RootPart.CFrame + Vector3.new(0, 2, -4)
+                                
+                                -- 🛑 IMPORTANTE: Las mandamos bien lejos de ti
+                                -- Las ponemos a los lados y arriba para que se acumulen
+                                v.CFrame = RootPart.CFrame + Vector3.new(math.random(-5,5), math.random(2,4), math.random(-5,-2))
                             end
                         end
                     end
