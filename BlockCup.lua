@@ -1,18 +1,17 @@
 --[[
 Script Name: JoseAngel_Blox Block Cup
-Version: BOTON SIEMPRE VISIBLE / VELOCIDAD AJUSTADA
+Version: DISEÑO NUEVO / PEQUEÑO / BONITO / MOVIBLE
 ]]
 
 local Players = game:GetService("Players")
 local VirtualUser = game:GetService("VirtualUser")
 local UserInputService = game:GetService("UserInputService")
-local Workspace = Workspace
+local Workspace = game:GetService("Workspace")
 
-local Player = game.Players.LocalPlayer
+local Player = Players.LocalPlayer
 local FarmActive = false
 local Loop = nil
 local Dragging, DragStart, StartPos = nil, nil, nil
-local MenuVisible = true
 local Character, Humanoid, RootPart
 
 -- == ACTUALIZAR PERSONAJE ==
@@ -28,89 +27,71 @@ UpdateCharacter()
 local ScreenGui = Instance.new("ScreenGui")
 local Main = Instance.new("Frame")
 local Title = Instance.new("TextLabel")
-local BtnMinimize = Instance.new("TextButton") -- BOTON FLOTANTE
+local UICorner = Instance.new("UICorner") -- <-- ESQUINAS REDONDEADAS
 local FarmLabel = Instance.new("TextLabel")
 local ToggleFarmBtn = Instance.new("TextButton")
+local BtnCorner = Instance.new("UICorner") -- <-- ESQUINAS DEL BOTON
 
 ScreenGui.Name = "UI"
 ScreenGui.Parent = game:GetService("CoreGui")
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
--- MARCO PRINCIPAL
+-- MARCO PRINCIPAL (MÁS PEQUEÑO Y BONITO)
 Main.Name = "Main"
 Main.Parent = ScreenGui
-Main.BackgroundColor3 = Color3.new(0.05, 0.05, 0.05)
+Main.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1) -- Color oscuro elegante
 Main.BorderColor3 = Color3.new(1, 0, 0)
-Main.BorderSizePixel = 2
+Main.BorderSizePixel = 1
 Main.Position = UDim2.new(0.05, 0, 0.2, 0)
-Main.Size = UDim2.new(0, 240, 0, 180)
+Main.Size = UDim2.new(0, 180, 0, 140) -- <-- TAMAÑO MÁS PEQUEÑO
 Main.Active = true
+
+-- ESQUINAS REDONDEADAS
+UICorner.CornerRadius = UDim.new(0, 10) -- <-- LO MAS REDONDEADO POSIBLE
+UICorner.Parent = Main
 
 -- TITULO
 Title.Name = "Title"
 Title.Parent = Main
 Title.BackgroundTransparency = 1
-Title.Position = UDim2.new(0.05, 0, 0.05, 0)
-Title.Size = UDim2.new(0.7, 0, 0, 30)
+Title.Position = UDim2.new(0.05, 0, 0.08, 0)
+Title.Size = UDim2.new(0.9, 0, 0, 25)
 Title.Font = Enum.Font.GothamBold
 Title.Text = "JoseAngel_Blox"
 Title.TextColor3 = Color3.new(1, 1, 1)
-Title.TextSize = 20
+Title.TextSize = 17
 
--- ==================================
---      BOTON [-] SIEMPRE VISIBLE
--- ==================================
--- 🔴 IMPORTANTE: El botón va fuera del cuadro principal para que NUNCA DESAPAREZCA
-BtnMinimize.Name = "Minimize"
-BtnMinimize.Parent = ScreenGui
-BtnMinimize.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2)
-BtnMinimize.BorderColor3 = Color3.new(1, 1, 1)
-BtnMinimize.Position = UDim2.new(0.05, 0, 0.2, 0) -- Misma posición que el menú
-BtnMinimize.Size = UDim2.new(0, 30, 0, 30)
-BtnMinimize.Font = Enum.Font.GothamBold
-BtnMinimize.Text = "-"
-BtnMinimize.TextColor3 = Color3.new(1, 1, 1)
-BtnMinimize.TextSize = 20
-BtnMinimize.ZIndexBehavior = Enum.ZIndexBehavior.Global
-
--- ==================================
---      OPCIÓN: AUTO FARM
--- ==================================
+-- TEXTO AUTO FARM
 FarmLabel.Parent = Main
 FarmLabel.BackgroundTransparency = 1
-FarmLabel.Position = UDim2.new(0.05, 0, 0.35, 0)
-FarmLabel.Size = UDim2.new(0.9, 0, 0, 20)
+FarmLabel.Position = UDim2.new(0.05, 0, 0.32, 0)
+FarmLabel.Size = UDim2.new(0.9, 0, 0, 18)
 FarmLabel.Text = "Auto farm pelotas"
-FarmLabel.TextColor3 = Color3.new(1, 1, 1)
-FarmLabel.TextSize = 14
+FarmLabel.TextColor3 = Color3.new(0.9, 0.9, 0.9)
+FarmLabel.TextSize = 12
 
+-- BOTON PRINCIPAL
 ToggleFarmBtn.Name = "ToggleFarm"
 ToggleFarmBtn.Parent = Main
 ToggleFarmBtn.BackgroundColor3 = Color3.new(0.2, 0, 0)
-ToggleFarmBtn.BorderColor3 = Color3.new(1, 1, 1)
-ToggleFarmBtn.Position = UDim2.new(0.05, 0, 0.55, 0)
-ToggleFarmBtn.Size = UDim2.new(0.9, 0, 0, 45)
-ToggleFarmBtn.Text = "ACTIVAR AUTO FARMELO DE PELOTAS"
+ToggleFarmBtn.BorderColor3 = Color3.new(1, 0.3, 0.3)
+ToggleFarmBtn.Position = UDim2.new(0.08, 0, 0.52, 0)
+ToggleFarmBtn.Size = UDim2.new(0.84, 0, 0, 40)
+ToggleFarmBtn.Text = "ACTIVAR AUTO FARMELO"
 ToggleFarmBtn.TextColor3 = Color3.new(1, 1, 1)
 ToggleFarmBtn.Font = Enum.Font.GothamBold
-ToggleFarmBtn.TextSize = 13
+ToggleFarmBtn.TextSize = 12
+
+-- ESQUINAS REDONDEADAS AL BOTON TAMBIEN
+BtnCorner.CornerRadius = UDim.new(0, 8)
+BtnCorner.Parent = ToggleFarmBtn
 
 -- ==================================
---      FUNCIONES: MOVER Y MINIMIZAR
+--      FUNCION MOVER (DESLIZAR)
 -- ==================================
-
--- MOVER MENU Y BOTON JUNTOS
+-- FUNCIONA PERFECTO EN CELULAR: MANTIENES Y ARRASTRAS
 Main.InputBegan:Connect(function(I)
-    if I.UserInputType == Enum.UserInputType.MouseButton1 then
-        Dragging = true
-        DragStart = I.Position
-        StartPos = Main.Position
-    end
-end)
-
--- También puedes agarrar desde el botón para mover
-BtnMinimize.InputBegan:Connect(function(I)
-    if I.UserInputType == Enum.UserInputType.MouseButton1 then
+    if I.UserInputType == Enum.UserInputType.MouseButton1 or I.UserInputType == Enum.UserInputType.Touch then
         Dragging = true
         DragStart = I.Position
         StartPos = Main.Position
@@ -120,37 +101,34 @@ end)
 UserInputService.InputChanged:Connect(function(I)
     if Dragging then
         local Delta = I.Position - DragStart
-        local NewPos = UDim2.new(StartPos.X.Scale, StartPos.X.Offset + Delta.X, StartPos.Y.Scale, StartPos.Y.Offset + Delta.Y)
+        local NewPos = UDim2.new(
+            StartPos.X.Scale, 
+            StartPos.X.Offset + Delta.X, 
+            StartPos.Y.Scale, 
+            StartPos.Y.Offset + Delta.Y
+        )
         Main.Position = NewPos
-        BtnMinimize.Position = NewPos -- El botón se mueve con el menú
     end
 end)
 
 UserInputService.InputEnded:Connect(function(I)
-    if I.UserInputType == Enum.UserInputType.MouseButton1 then
+    if I.UserInputType == Enum.UserInputType.MouseButton1 or I.UserInputType == Enum.UserInputType.Touch then
         Dragging = false
     end
 end)
 
--- FUNCION ESCONDER / MOSTRAR
-BtnMinimize.MouseButton1Click:Connect(function()
-    MenuVisible = not MenuVisible
-    Main.Visible = MenuVisible
-    -- El botón [-] NUNCA se esconde, siempre está ahí para ti
-end)
-
 -- =============================================
--- 🧲 IMÁN: VELOCIDAD PERFECTA
+-- 🧲 IMÁN: RANGO CORTO / VELOCIDAD BUENA
 -- =============================================
 spawn(function()
-    while task.wait(0.25) do -- ✅ Rápido pero sin lag
+    while task.wait(0.3) do -- ✅ OPTIMIZADO SIN LAG
         if FarmActive and RootPart then
             local MyPos = RootPart.Position
             
             for _, v in pairs(Workspace:GetDescendants()) do
                 if v:IsA("BasePart") and not v:IsDescendantOf(Character) then
                     
-                    -- 🛡️ PROTECCIÓN SUELO
+                    -- 🛡️ SUELO QUIETO
                     if v.Size.X > 15 or v.Size.Y > 15 or v.Size.Z > 15 then
                         continue
                     end
@@ -167,10 +145,9 @@ spawn(function()
                         
                         local Dist = (MyPos - v.Position).Magnitude
                         
-                        -- ✅ RANGO CORTO
+                        -- ✅ RANGO CORTO Y VELOCIDAD JUSTA
                         if Dist < 50 then
-                            -- ✅ VELOCIDAD AUMENTADA: 0.4 (Vienen rápido pero suave)
-                            v.CFrame = v.CFrame:Lerp(RootPart.CFrame, 0.4)
+                            v.CFrame = v.CFrame:Lerp(RootPart.CFrame, 0.4) -- Rápido pero bien
                             v.CanCollide = false
                             v.Anchored = false
                             
@@ -191,7 +168,7 @@ end)
 local function StartFarm()
     if Loop then return end
     FarmActive = true
-    ToggleFarmBtn.Text = "DESACTIVAR AUTO FARMELO"
+    ToggleFarmBtn.Text = "DESACTIVAR"
     ToggleFarmBtn.BackgroundColor3 = Color3.new(0, 0.4, 0)
     
     Loop = spawn(function()
@@ -210,7 +187,7 @@ end
 local function StopFarm()
     FarmActive = false
     Loop = nil
-    ToggleFarmBtn.Text = "ACTIVAR AUTO FARMELO DE PELOTAS"
+    ToggleFarmBtn.Text = "ACTIVAR"
     ToggleFarmBtn.BackgroundColor3 = Color3.new(0.2, 0, 0)
 end
 
