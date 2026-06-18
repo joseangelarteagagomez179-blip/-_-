@@ -1,16 +1,17 @@
 --[[
 Script Name: JoseAngel_Blox Block Cup
-Version: TEXTO CORREGIDO / TELETRANSPORTE
+Version: ESTILO RGB / OPTIMIZADO / SEGURO
 ]]
 
 local Players = game:GetService("Players")
 local VirtualUser = game:GetService("VirtualUser")
-local UserInputService = game:GetService("UserInputService")
-local Workspace = game:GetService("Workspace")
+local UserInputService = UserInputService
+local Workspace = Workspace
+local TweenService = game:GetService("TweenService")
 
 local Player = Players.LocalPlayer
 local FarmActive = false
-local LoopTP = nil
+local Loop = nil
 local Dragging, DragStart, StartPos = nil, nil, nil
 local Character, Humanoid, RootPart
 
@@ -28,6 +29,7 @@ local ScreenGui = Instance.new("ScreenGui")
 local Main = Instance.new("Frame")
 local Title = Instance.new("TextLabel")
 local UICorner = Instance.new("UICorner")
+local UIStroke = Instance.new("UIStroke") -- <-- BORDE COLORES
 local FarmLabel = Instance.new("TextLabel")
 local ToggleFarmBtn = Instance.new("TextButton")
 local BtnCorner = Instance.new("UICorner")
@@ -39,16 +41,22 @@ ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 -- MARCO PRINCIPAL
 Main.Name = "Main"
 Main.Parent = ScreenGui
-Main.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1)
-Main.BorderColor3 = Color3.new(1, 0, 0)
-Main.BorderSizePixel = 1
+Main.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+Main.BorderSizePixel = 0
 Main.Position = UDim2.new(0.05, 0, 0.2, 0)
 Main.Size = UDim2.new(0, 180, 0, 140)
 Main.Active = true
 
 -- ESQUINAS REDONDEADAS
-UICorner.CornerRadius = UDim.new(0, 10)
+UICorner.CornerRadius = UDim.new(0, 12)
 UICorner.Parent = Main
+
+-- BORDE CON COLORES (EFECTO RGB)
+UIStroke.Name = "Border"
+UIStroke.Parent = Main
+UIStroke.Thickness = 2
+UIStroke.Color = Color3.new(1, 0, 0)
+UIStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 
 -- TITULO
 Title.Name = "Title"
@@ -59,34 +67,47 @@ Title.Size = UDim2.new(0.9, 0, 0, 25)
 Title.Font = Enum.Font.GothamBold
 Title.Text = "JoseAngel_Blox"
 Title.TextColor3 = Color3.new(1, 1, 1)
-Title.TextSize = 17
+Title.TextSize = 16
 
--- TEXTO (CORREGIDO)
+-- TEXTO AUTO FARM
 FarmLabel.Parent = Main
 FarmLabel.BackgroundTransparency = 1
 FarmLabel.Position = UDim2.new(0.05, 0, 0.32, 0)
 FarmLabel.Size = UDim2.new(0.9, 0, 0, 18)
-FarmLabel.Text = "Teletransportar a la pelota"
-FarmLabel.TextColor3 = Color3.new(0.9, 0.9, 0.9)
-FarmLabel.TextSize = 11
+FarmLabel.Text = "Auto farm pelotas" -- <-- TEXTO CORREGIDO
+FarmLabel.TextColor3 = Color3.new(1, 1, 1)
+FarmLabel.TextSize = 12
 
--- BOTON
+-- BOTON PRINCIPAL
 ToggleFarmBtn.Name = "ToggleFarm"
 ToggleFarmBtn.Parent = Main
-ToggleFarmBtn.BackgroundColor3 = Color3.new(0.2, 0, 0)
-ToggleFarmBtn.BorderColor3 = Color3.new(1, 0.3, 0.3)
+ToggleFarmBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+ToggleFarmBtn.BorderColor3 = Color3.new(1, 1, 1)
 ToggleFarmBtn.Position = UDim2.new(0.08, 0, 0.52, 0)
 ToggleFarmBtn.Size = UDim2.new(0.84, 0, 0, 40)
-ToggleFarmBtn.Text = "ACTIVAR"
+ToggleFarmBtn.Text = "ACTIVAR" -- <-- TEXTO CORREGIDO
 ToggleFarmBtn.TextColor3 = Color3.new(1, 1, 1)
 ToggleFarmBtn.Font = Enum.Font.GothamBold
-ToggleFarmBtn.TextSize = 12
+ToggleFarmBtn.TextSize = 13
 
+-- ESQUINAS REDONDEADAS AL BOTON
 BtnCorner.CornerRadius = UDim.new(0, 8)
 BtnCorner.Parent = ToggleFarmBtn
 
 -- ==================================
---      MOVER MENU
+-- ✨ EFECTO COLORES EN BORDES
+-- ==================================
+spawn(function()
+    local H = 0
+    while wait(0.05) do
+        H = H + 0.01
+        if H > 1 then H = 0 end
+        UIStroke.Color = Color3.fromHSV(H, 0.8, 1)
+    end
+end)
+
+-- ==================================
+--      FUNCION MOVER (CELULAR)
 -- ==================================
 Main.InputBegan:Connect(function(I)
     if I.UserInputType == Enum.UserInputType.MouseButton1 or I.UserInputType == Enum.UserInputType.Touch then
@@ -116,19 +137,17 @@ UserInputService.InputEnded:Connect(function(I)
 end)
 
 -- =============================================
--- ⚡️ TELETRANSPORTE
+-- 🧲 IMÁN: MODO PERFECTO - DETECCIÓN REAL
 -- =============================================
 spawn(function()
-    while task.wait(0.05) do
+    while task.wait(0.15) do -- ✅ OPTIMIZADO
         if FarmActive and RootPart then
-            
-            local ClosestBall = nil
-            local MinDistance = math.huge
+            local MyPos = RootPart.Position
             
             for _, v in pairs(Workspace:GetDescendants()) do
                 if v:IsA("BasePart") and not v:IsDescendantOf(Character) then
                     
-                    -- 🛡️ SUELO QUIETO
+                    -- 🛡️ SUELO QUIETO (NUNCA SE MUEVE)
                     if v.Size.X > 15 or v.Size.Y > 15 or v.Size.Z > 15 then
                         continue
                     end
@@ -143,33 +162,39 @@ spawn(function()
                     or string.find(Name,"epic")
                     then
                         
-                        local Dist = (RootPart.Position - v.Position).Magnitude
+                        local Dist = (MyPos - v.Position).Magnitude
                         
-                        if Dist < 50 and Dist < MinDistance then
-                            MinDistance = Dist
-                            ClosestBall = v
+                        -- ✅ RANGO CORTO Y RÁPIDO
+                        if Dist < 50 then
+                            v.CFrame = v.CFrame:Lerp(RootPart.CFrame, 0.7)
+                            v.CanCollide = false
+                            v.Anchored = false
+                            
+                            -- ✅ ARREGLO FINAL:
+                            -- Cuando tocan al personaje, se activan y cuentan,
+                            -- pero las dejamos flotando un segundo para que NO SE BORREN.
+                            if Dist < 4 then
+                                firetouchinterest(Character, v, 0)
+                                firetouchinterest(Character, v, 1)
+                                -- Las movemos un poquito para que no se bugueen
+                                v.CFrame = v.CFrame * CFrame.new(math.random(-1,1), math.random(0,1), math.random(-1,1))
+                            end
                         end
                     end
                 end
-            end
-            
-            if ClosestBall then
-                RootPart.CFrame = CFrame.new(ClosestBall.Position)
-                firetouchinterest(Character, ClosestBall, 0)
-                firetouchinterest(Character, ClosestBall, 1)
             end
         end
     end
 end)
 
--- == FUNCIONES ==
+-- == FUNCION AUTO FARM ==
 local function StartFarm()
-    if LoopTP then return end
+    if Loop then return end
     FarmActive = true
     ToggleFarmBtn.Text = "DESACTIVAR"
-    ToggleFarmBtn.BackgroundColor3 = Color3.new(0, 0.4, 0)
+    ToggleFarmBtn.BackgroundColor3 = Color3.fromRGB(0, 80, 0)
     
-    LoopTP = spawn(function()
+    Loop = spawn(function()
         while FarmActive do
             if not Humanoid then UpdateCharacter() end
             VirtualUser:Click()
@@ -184,18 +209,11 @@ end
 
 local function StopFarm()
     FarmActive = false
-    if LoopTP then
-        LoopTP:Disconnect()
-        LoopTP = nil
-    end
+    Loop = nil
     ToggleFarmBtn.Text = "ACTIVAR"
-    ToggleFarmBtn.BackgroundColor3 = Color3.new(0.2, 0, 0)
+    ToggleFarmBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
 end
 
 ToggleFarmBtn.MouseButton1Click:Connect(function()
-    if not FarmActive then 
-        StartFarm() 
-    else 
-        StopFarm() 
-    end
+    if not FarmActive then StartFarm() else StopFarm() end
 end)
