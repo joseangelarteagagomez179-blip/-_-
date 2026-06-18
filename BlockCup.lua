@@ -1,6 +1,6 @@
 --[[
 Script Name: JoseAngel_Blox Block Cup
-Version: CON BOTON MINIMIZAR / MOVER / RANGO CORTO
+Version: BOTON SIEMPRE VISIBLE / ULTRA OPTIMIZADO
 ]]
 
 local Players = game:GetService("Players")
@@ -12,7 +12,7 @@ local Player = Players.LocalPlayer
 local FarmActive = false
 local Loop = nil
 local Dragging, DragStart, StartPos = nil, nil, nil
-local Visible = true -- Estado del menu
+local MenuVisible = true
 local Character, Humanoid, RootPart
 
 -- == ACTUALIZAR PERSONAJE ==
@@ -28,7 +28,7 @@ UpdateCharacter()
 local ScreenGui = Instance.new("ScreenGui")
 local Main = Instance.new("Frame")
 local Title = Instance.new("TextLabel")
-local BtnMinimize = Instance.new("TextButton") -- BOTON NUEVO [-]
+local BtnMinimize = Instance.new("TextButton") -- BOTON QUE SIEMPRE SE VE
 local FarmLabel = Instance.new("TextLabel")
 local ToggleFarmBtn = Instance.new("TextButton")
 
@@ -36,6 +36,7 @@ ScreenGui.Name = "UI"
 ScreenGui.Parent = game:GetService("CoreGui")
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
+-- MARCO PRINCIPAL
 Main.Name = "Main"
 Main.Parent = ScreenGui
 Main.BackgroundColor3 = Color3.new(0.05, 0.05, 0.05)
@@ -57,18 +58,19 @@ Title.TextColor3 = Color3.new(1, 1, 1)
 Title.TextSize = 20
 
 -- ==================================
---      BOTON [-] MINIMIZAR
+--      BOTON [-] (SIEMPRE VISIBLE)
 -- ==================================
 BtnMinimize.Name = "Minimize"
-BtnMinimize.Parent = Main
+BtnMinimize.Parent = ScreenGui -- 🔴 IMPORTANTE: VA DIRECTO EN LA PANTALLA
 BtnMinimize.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2)
 BtnMinimize.BorderColor3 = Color3.new(1, 1, 1)
-BtnMinimize.Position = UDim2.new(0.78, 0, 0.05, 0)
+BtnMinimize.Position = UDim2.new(0.05, 0, 0.2, 0) -- MISMA POSICION QUE EL MENU
 BtnMinimize.Size = UDim2.new(0, 30, 0, 30)
 BtnMinimize.Font = Enum.Font.GothamBold
 BtnMinimize.Text = "-"
 BtnMinimize.TextColor3 = Color3.new(1, 1, 1)
 BtnMinimize.TextSize = 20
+BtnMinimize.ZIndexBehavior = Enum.ZIndexBehavior.Global -- SIEMPRE ENCIMA
 
 -- ==================================
 --      OPCIÓN: AUTO FARM
@@ -93,10 +95,10 @@ ToggleFarmBtn.Font = Enum.Font.GothamBold
 ToggleFarmBtn.TextSize = 13
 
 -- ==================================
---      FUNCION MOVER Y MINIMIZAR
+--      FUNCIONES: MOVER Y MINIMIZAR
 -- ==================================
 
--- MOVER POR PANTALLA
+-- MOVER MENU
 Main.InputBegan:Connect(function(I)
     if I.UserInputType == Enum.UserInputType.MouseButton1 then
         Dragging = true
@@ -104,35 +106,55 @@ Main.InputBegan:Connect(function(I)
         StartPos = Main.Position
     end
 end)
+
+-- MOVER BOTON TAMBIEN
+BtnMinimize.InputBegan:Connect(function(I)
+    if I.UserInputType == Enum.UserInputType.MouseButton1 then
+        Dragging = true
+        DragStart = I.Position
+        StartPos = Main.Position
+    end
+end)
+
 UserInputService.InputChanged:Connect(function(I)
     if Dragging then
         local Delta = I.Position - DragStart
-        Main.Position = UDim2.new(StartPos.X.Scale, StartPos.X.Offset + Delta.X, StartPos.Y.Scale, StartPos.Y.Offset + Delta.Y)
+        local NewPos = UDim2.new(StartPos.X.Scale, StartPos.X.Offset + Delta.X, StartPos.Y.Scale, StartPos.Y.Offset + Delta.Y)
+        Main.Position = NewPos
+        BtnMinimize.Position = NewPos -- EL BOTON SE MUEVE CON EL MENU
     end
 end)
+
 UserInputService.InputEnded:Connect(function(I)
     if I.UserInputType == Enum.UserInputType.MouseButton1 then
         Dragging = false
     end
 end)
 
--- BOTON [-] ESCONDER / MOSTRAR
+-- FUNCION ESCONDER / MOSTRAR
 BtnMinimize.MouseButton1Click:Connect(function()
-    Visible = not Visible
-    Main.Visible = Visible
+    MenuVisible = not MenuVisible
+    Main.Visible = MenuVisible
+    -- EL BOTON NUNCA SE ESCONDE, ASI SIEMPRE PUEDES DARLE CLICK
 end)
 
 -- =============================================
--- 🧲 IMÁN: RANGO CORTO Y SUAVE
+-- 🚀 IMÁN: ULTRA OPTIMIZADO - 0 LAG
 -- =============================================
 spawn(function()
-    while task.wait(0.15) do
+    while task.wait(0.3) do -- ✅ MAS LENTO = MAS FPS
         if FarmActive and RootPart then
             local MyPos = RootPart.Position
             
+            -- ✅ BUCLE OPTIMIZADO
             for _, v in pairs(Workspace:GetDescendants()) do
-                
+                -- ✅ PRIMERO REVISAMOS TAMAÑO PARA AHORRAR TIEMPO
                 if v:IsA("BasePart") and not v:IsDescendantOf(Character) then
+                    
+                    -- 🛡️ PROTECCIÓN SUELO
+                    if v.Size.X > 15 or v.Size.Y > 15 or v.Size.Z > 15 then
+                        continue
+                    end
                     
                     local Name = string.lower(v.Name)
                     
@@ -144,14 +166,9 @@ spawn(function()
                     or string.find(Name,"epic")
                     then
                         
-                        -- 🛡️ PROTECCIÓN SUELO
-                        if v.Size.X > 15 or v.Size.Y > 15 or v.Size.Z > 15 then
-                            continue
-                        end
-                        
                         local Dist = (MyPos - v.Position).Magnitude
                         
-                        -- ✅ RANGO CORTO Y VELOCIDAD SUAVE
+                        -- ✅ RANGO CORTO Y SUAVE
                         if Dist < 50 then
                             v.CFrame = v.CFrame:Lerp(RootPart.CFrame, 0.2)
                             v.CanCollide = false
