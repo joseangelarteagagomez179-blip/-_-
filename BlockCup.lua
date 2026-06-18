@@ -1,6 +1,6 @@
 --[[
 Script Name: JoseAngel_Blox Block Cup
-Version: DISEÑO NUEVO / PEQUEÑO / BONITO / MOVIBLE
+Version: VELOCIDAD MÁXIMA / BONITO / MOVIBLE
 ]]
 
 local Players = game:GetService("Players")
@@ -27,27 +27,27 @@ UpdateCharacter()
 local ScreenGui = Instance.new("ScreenGui")
 local Main = Instance.new("Frame")
 local Title = Instance.new("TextLabel")
-local UICorner = Instance.new("UICorner") -- <-- ESQUINAS REDONDEADAS
+local UICorner = Instance.new("UICorner")
 local FarmLabel = Instance.new("TextLabel")
 local ToggleFarmBtn = Instance.new("TextButton")
-local BtnCorner = Instance.new("UICorner") -- <-- ESQUINAS DEL BOTON
+local BtnCorner = Instance.new("UICorner")
 
 ScreenGui.Name = "UI"
 ScreenGui.Parent = game:GetService("CoreGui")
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
--- MARCO PRINCIPAL (MÁS PEQUEÑO Y BONITO)
+-- MARCO PRINCIPAL (PEQUEÑO Y BONITO)
 Main.Name = "Main"
 Main.Parent = ScreenGui
-Main.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1) -- Color oscuro elegante
+Main.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1)
 Main.BorderColor3 = Color3.new(1, 0, 0)
 Main.BorderSizePixel = 1
 Main.Position = UDim2.new(0.05, 0, 0.2, 0)
-Main.Size = UDim2.new(0, 180, 0, 140) -- <-- TAMAÑO MÁS PEQUEÑO
+Main.Size = UDim2.new(0, 180, 0, 140)
 Main.Active = true
 
 -- ESQUINAS REDONDEADAS
-UICorner.CornerRadius = UDim.new(0, 10) -- <-- LO MAS REDONDEADO POSIBLE
+UICorner.CornerRadius = UDim.new(0, 10)
 UICorner.Parent = Main
 
 -- TITULO
@@ -82,14 +82,13 @@ ToggleFarmBtn.TextColor3 = Color3.new(1, 1, 1)
 ToggleFarmBtn.Font = Enum.Font.GothamBold
 ToggleFarmBtn.TextSize = 12
 
--- ESQUINAS REDONDEADAS AL BOTON TAMBIEN
+-- ESQUINAS REDONDEADAS AL BOTON
 BtnCorner.CornerRadius = UDim.new(0, 8)
 BtnCorner.Parent = ToggleFarmBtn
 
 -- ==================================
---      FUNCION MOVER (DESLIZAR)
+--      FUNCION MOVER (CELULAR)
 -- ==================================
--- FUNCIONA PERFECTO EN CELULAR: MANTIENES Y ARRASTRAS
 Main.InputBegan:Connect(function(I)
     if I.UserInputType == Enum.UserInputType.MouseButton1 or I.UserInputType == Enum.UserInputType.Touch then
         Dragging = true
@@ -118,10 +117,10 @@ UserInputService.InputEnded:Connect(function(I)
 end)
 
 -- =============================================
--- 🧲 IMÁN: RANGO CORTO / VELOCIDAD BUENA
+-- 🚀 IMÁN: VELOCIDAD MÁXIMA
 -- =============================================
 spawn(function()
-    while task.wait(0.3) do -- ✅ OPTIMIZADO SIN LAG
+    while task.wait(0.2) do -- ✅ Mas rapido el ciclo
         if FarmActive and RootPart then
             local MyPos = RootPart.Position
             
@@ -145,9 +144,10 @@ spawn(function()
                         
                         local Dist = (MyPos - v.Position).Magnitude
                         
-                        -- ✅ RANGO CORTO Y VELOCIDAD JUSTA
+                        -- ✅ RANGO CORTO
                         if Dist < 50 then
-                            v.CFrame = v.CFrame:Lerp(RootPart.CFrame, 0.4) -- Rápido pero bien
+                            -- ⚡️ VELOCIDAD AL MÁXIMO: 0.9 (Vuelan instantaneo)
+                            v.CFrame = v.CFrame:Lerp(RootPart.CFrame, 0.9)
                             v.CanCollide = false
                             v.Anchored = false
                             
