@@ -1,6 +1,6 @@
 --[[
 Script Name: JoseAngel_Blox Block Cup
-Version: FUNCIONANDO AL 100% / BOTON ACTIVO / RECOLECTOR
+Version: MODO INFINITO / NO DESAPARECEN / SUBE SOLO
 ]]
 
 local Players = game:GetService("Players")
@@ -36,7 +36,7 @@ ScreenGui.Name = "UI"
 ScreenGui.Parent = game:GetService("CoreGui")
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
--- MARCO PRINCIPAL
+-- MARCO PRINCIPAL (PEQUEÑO Y BONITO)
 Main.Name = "Main"
 Main.Parent = ScreenGui
 Main.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1)
@@ -66,7 +66,7 @@ FarmLabel.Parent = Main
 FarmLabel.BackgroundTransparency = 1
 FarmLabel.Position = UDim2.new(0.05, 0, 0.32, 0)
 FarmLabel.Size = UDim2.new(0.9, 0, 0, 18)
-FarmLabel.Text = "Auto farm pelotas"
+FarmLabel.Text = "Modo Infinito"
 FarmLabel.TextColor3 = Color3.new(0.9, 0.9, 0.9)
 FarmLabel.TextSize = 12
 
@@ -117,12 +117,11 @@ UserInputService.InputEnded:Connect(function(I)
 end)
 
 -- =============================================
--- 💥 MODO RECOLECTOR INSTANTANEO
+-- ♾️ MODO INFINITO: LAS PELOTAS SIGUEN AHI
 -- =============================================
 spawn(function()
-    while task.wait(0.1) do
+    while task.wait(0.05) do -- ✅ MUY RAPIDO PARA QUE SUBA VELOZ
         if FarmActive and RootPart then
-            local MyPos = RootPart.Position
             
             for _, v in pairs(Workspace:GetDescendants()) do
                 if v:IsA("BasePart") and not v:IsDescendantOf(Character) then
@@ -142,22 +141,14 @@ spawn(function()
                     or string.find(Name,"epic")
                     then
                         
-                        local Dist = (MyPos - v.Position).Magnitude
+                        -- ✅ NO LAS MOVEMOS DE LUGAR
+                        -- ✅ SOLO LE DECIMOS AL JUEGO: "AGARRALA"
+                        -- ✅ LAS PELOTAS SE QUEDAN EN EL MAPA PERO TE DAN EL DINERO
+                        firetouchinterest(Character, v, 0)
+                        firetouchinterest(Character, v, 1)
                         
-                        -- ✅ RANGO CORTO
-                        if Dist < 50 then
-                            -- ⚡️ VIENEN VOLANDO RAPIDO
-                            v.CFrame = v.CFrame:Lerp(RootPart.CFrame, 0.8)
-                            v.CanCollide = false
-                            v.Anchored = false
-                            
-                            -- ✅ CUANDO ESTAN CERCA: LAS AGARRA Y DESAPARECEN
-                            if Dist < 8 then
-                                firetouchinterest(Character, v, 0)
-                                firetouchinterest(Character, v, 1)
-                                game.Debris:AddItem(v, 0.1)
-                            end
-                        end
+                        -- 🚫 IMPORTANTE: NO LAS BORRAMOS, NO LAS MOVEREMOS
+                        -- ASI EL MAPA SE LLENA Y SIGUES GANANDO MAS Y MAS
                     end
                 end
             end
@@ -192,11 +183,6 @@ local function StopFarm()
     ToggleFarmBtn.BackgroundColor3 = Color3.new(0.2, 0, 0)
 end
 
--- 🔴 CONEXIÓN DEL BOTÓN (ASEGURADA)
 ToggleFarmBtn.MouseButton1Click:Connect(function()
-    if not FarmActive then 
-        StartFarm() 
-    else 
-        StopFarm() 
-    end
+    if not FarmActive then StartFarm() else StopFarm() end
 end)
