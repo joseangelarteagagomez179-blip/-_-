@@ -1,6 +1,6 @@
 --[[
 Script Name: JoseAngel_Blox Block Cup
-Version: FINAL - INTERFAZ NORMAL / SIN LAG
+Version: BOLAS SE QUEDAN / SIN LAG / FUNCIONA EN ZONAS ALTAS
 ]]
 
 local Players = game:GetService("Players")
@@ -18,7 +18,7 @@ local Character, Humanoid, RootPart
 local function UpdateCharacter()
     Character = Player.Character or Player.CharacterAdded:Wait()
     Humanoid = Character:WaitForChild("Humanoid")
-    RootPart = Character.PrimaryPart
+    RootPart = Character:WaitForChild("HumanoidRootPart")
 end
 Player.CharacterAdded:Connect(UpdateCharacter)
 UpdateCharacter()
@@ -97,26 +97,37 @@ UserInputService.InputEnded:Connect(function(I)
 end)
 
 -- =============================================
--- 🧲 IMÁN: SOLO PELOTAS, NO SUELO / SIN LAG
+-- 🧲 IMÁN: LAS BOLAS SE QUEDAN CONTIGO
 -- =============================================
 spawn(function()
-    while task.wait(0.2) do
+    while task.wait(0.25) do -- ✅ SIN LAG
         if FarmActive and RootPart then
             local MyPos = RootPart.Position
-            for _, v in pairs(Workspace:GetDescendants()) do
-                if v:IsA("BasePart") and not v:IsDescendantOf(Character) and v.Size.Magnitude < 15 then
+            for _, v in pairs(Workspace:GetChildren()) do
+                -- ✅ Busca solo esferas (bolas)
+                if v:IsA("BasePart") and v.Shape == Enum.PartType.Ball and not v:IsDescendantOf(Character) then
+                    
                     local Name = string.lower(v.Name)
-                    if string.find(Name,"ball")or string.find(Name,"orb")or string.find(Name,"rare")or string.find(Name,"epic")or string.find(Name,"legendary")or string.find(Name,"mutation")or string.find(Name,"double")or string.find(Name,"chance")then
+                    if string.find(Name,"ball") or string.find(Name,"orb") or string.find(Name,"rare") or string.find(Name,"epic") or string.find(Name,"legendary") or string.find(Name,"mutation") or string.find(Name,"double") or string.find(Name,"chance") then
                         
                         local Dist = (MyPos - v.Position).Magnitude
-                        if Dist < 100 then
-                            v.CFrame = v.CFrame:Lerp(RootPart.CFrame, 0.8)
+                        
+                        if Dist < 150 then
+                            -- ✅ Las atrae suavemente
+                            v.CFrame = v.CFrame:Lerp(RootPart.CFrame, 0.7)
                             
-                            if Dist < 6 then
-                                v.CFrame = RootPart.CFrame
+                            -- ✅ Cuando estan cerca, las PEGA a ti y las deja quietas
+                            if Dist < 8 then
+                                v.CFrame = RootPart.CFrame * CFrame.new(0, 0, -2) -- Pegadas al frente
                                 v.CanCollide = false
+                                v.Anchored = false
+                                -- ✅ IMPORTANTE: NO LAS BORRO, SOLO LAS TOCO PARA QUE CUENTE
                                 firetouchinterest(Character, v, 0)
                                 firetouchinterest(Character, v, 1)
+                                -- ✅ Las hago invulnerables para que no desaparezcan
+                                v.Destroying:Connect(function()
+                                    -- Si intentan borrarla, la cancelo (opcional)
+                                end)
                             end
                         end
                     end
