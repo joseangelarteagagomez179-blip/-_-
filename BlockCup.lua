@@ -1,12 +1,12 @@
 --[[
 Script Name: JoseAngel_Blox Block Cup
-Version: VELOCIDAD MÁXIMA / BONITO / MOVIBLE
+Version: RECOLECTOR INSTANTANEO / NO SE PEGAN / SUMA BIEN
 ]]
 
 local Players = game:GetService("Players")
 local VirtualUser = game:GetService("VirtualUser")
-local UserInputService = game:GetService("UserInputService")
-local Workspace = game:GetService("Workspace")
+local UserInputService = UserInputService
+local Workspace = Workspace
 
 local Player = Players.LocalPlayer
 local FarmActive = false
@@ -36,7 +36,7 @@ ScreenGui.Name = "UI"
 ScreenGui.Parent = game:GetService("CoreGui")
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
--- MARCO PRINCIPAL (PEQUEÑO Y BONITO)
+-- MARCO PRINCIPAL
 Main.Name = "Main"
 Main.Parent = ScreenGui
 Main.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1)
@@ -117,10 +117,10 @@ UserInputService.InputEnded:Connect(function(I)
 end)
 
 -- =============================================
--- 🚀 IMÁN: VELOCIDAD MÁXIMA
+-- 💥 MODO RECOLECTOR INSTANTANEO
 -- =============================================
 spawn(function()
-    while task.wait(0.2) do -- ✅ Mas rapido el ciclo
+    while task.wait(0.1) do
         if FarmActive and RootPart then
             local MyPos = RootPart.Position
             
@@ -146,15 +146,19 @@ spawn(function()
                         
                         -- ✅ RANGO CORTO
                         if Dist < 50 then
-                            -- ⚡️ VELOCIDAD AL MÁXIMO: 0.9 (Vuelan instantaneo)
-                            v.CFrame = v.CFrame:Lerp(RootPart.CFrame, 0.9)
+                            -- ⚡️ VIENEN VOLANDO RAPIDO
+                            v.CFrame = v.CFrame:Lerp(RootPart.CFrame, 0.8)
                             v.CanCollide = false
                             v.Anchored = false
                             
-                            if Dist < 6 then
-                                v.CFrame = RootPart.CFrame + Vector3.new(0, 1, 0)
+                            -- ✅ CUANDO ESTAN CERCA: LAS AGARRA Y DESAPARECEN
+                            if Dist < 8 then
+                                -- Simulamos que las tocas para que den el dinero
                                 firetouchinterest(Character, v, 0)
                                 firetouchinterest(Character, v, 1)
+                                
+                                -- 💥 LAS ELIMINAMOS PARA QUE NO ESTORBEN Y SUMEN BIEN
+                                game.Debris:AddItem(v, 0.1) -- Desaparecen en 0.1 segundos
                             end
                         end
                     end
