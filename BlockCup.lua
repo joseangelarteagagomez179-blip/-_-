@@ -1,6 +1,6 @@
 --[[
 Script Name: JoseAngel_Blox Block Cup
-Version: MODO INFINITO / NO DESAPARECEN / SUBE SOLO
+Version: MODO TELETRANSPORTE / VELOCIDAD MAXIMA / NO BUGS
 ]]
 
 local Players = game:GetService("Players")
@@ -36,7 +36,7 @@ ScreenGui.Name = "UI"
 ScreenGui.Parent = game:GetService("CoreGui")
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
--- MARCO PRINCIPAL (PEQUEÑO Y BONITO)
+-- MARCO PRINCIPAL
 Main.Name = "Main"
 Main.Parent = ScreenGui
 Main.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1)
@@ -66,7 +66,7 @@ FarmLabel.Parent = Main
 FarmLabel.BackgroundTransparency = 1
 FarmLabel.Position = UDim2.new(0.05, 0, 0.32, 0)
 FarmLabel.Size = UDim2.new(0.9, 0, 0, 18)
-FarmLabel.Text = "Modo Infinito"
+FarmLabel.Text = "Modo Teletransporte"
 FarmLabel.TextColor3 = Color3.new(0.9, 0.9, 0.9)
 FarmLabel.TextSize = 12
 
@@ -117,12 +117,16 @@ UserInputService.InputEnded:Connect(function(I)
 end)
 
 -- =============================================
--- ♾️ MODO INFINITO: LAS PELOTAS SIGUEN AHI
+-- ⚡️ MODO TELETRANSPORTE A LAS PELOTAS
 -- =============================================
 spawn(function()
-    while task.wait(0.05) do -- ✅ MUY RAPIDO PARA QUE SUBA VELOZ
+    while task.wait(0.05) do -- ⚡️ SUPER RAPIDO
         if FarmActive and RootPart then
             
+            local ClosestBall = nil
+            local MinDistance = math.huge -- Infinito
+            
+            -- BUSCAMOS LA PELOTA MAS CERCANA
             for _, v in pairs(Workspace:GetDescendants()) do
                 if v:IsA("BasePart") and not v:IsDescendantOf(Character) then
                     
@@ -141,16 +145,24 @@ spawn(function()
                     or string.find(Name,"epic")
                     then
                         
-                        -- ✅ NO LAS MOVEMOS DE LUGAR
-                        -- ✅ SOLO LE DECIMOS AL JUEGO: "AGARRALA"
-                        -- ✅ LAS PELOTAS SE QUEDAN EN EL MAPA PERO TE DAN EL DINERO
-                        firetouchinterest(Character, v, 0)
-                        firetouchinterest(Character, v, 1)
+                        local Dist = (RootPart.Position - v.Position).Magnitude
                         
-                        -- 🚫 IMPORTANTE: NO LAS BORRAMOS, NO LAS MOVEREMOS
-                        -- ASI EL MAPA SE LLENA Y SIGUES GANANDO MAS Y MAS
+                        -- RANGO CORTO (SOLO DE 50 STUDIOS)
+                        if Dist < 50 and Dist < MinDistance then
+                            MinDistance = Dist
+                            ClosestBall = v
+                        end
                     end
                 end
+            end
+            
+            -- ✅ SI ENCONTRAMOS UNA PELOTA... TE TELETRANSPORTAS
+            if ClosestBall then
+                RootPart.CFrame = CFrame.new(ClosestBall.Position)
+                
+                -- AGARRAR AUTOMATICO
+                firetouchinterest(Character, ClosestBall, 0)
+                firetouchinterest(Character, ClosestBall, 1)
             end
         end
     end
@@ -184,5 +196,9 @@ local function StopFarm()
 end
 
 ToggleFarmBtn.MouseButton1Click:Connect(function()
-    if not FarmActive then StartFarm() else StopFarm() end
+    if not FarmActive then 
+        StartFarm() 
+    else 
+        StopFarm() 
+    end
 end)
