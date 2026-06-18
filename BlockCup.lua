@@ -1,14 +1,14 @@
 --[[
 Script Name: JoseAngel_Blox Block Cup
-Version: TODO FUNCIONANDO / BOTON VISIBLE / SIN LAG
+Version: BOTON SIEMPRE VISIBLE / VELOCIDAD AJUSTADA
 ]]
 
 local Players = game:GetService("Players")
 local VirtualUser = game:GetService("VirtualUser")
 local UserInputService = game:GetService("UserInputService")
-local Workspace = game:GetService("Workspace")
+local Workspace = Workspace
 
-local Player = Players.LocalPlayer
+local Player = game.Players.LocalPlayer
 local FarmActive = false
 local Loop = nil
 local Dragging, DragStart, StartPos = nil, nil, nil
@@ -28,7 +28,7 @@ UpdateCharacter()
 local ScreenGui = Instance.new("ScreenGui")
 local Main = Instance.new("Frame")
 local Title = Instance.new("TextLabel")
-local BtnMinimize = Instance.new("TextButton")
+local BtnMinimize = Instance.new("TextButton") -- BOTON FLOTANTE
 local FarmLabel = Instance.new("TextLabel")
 local ToggleFarmBtn = Instance.new("TextButton")
 
@@ -57,19 +57,25 @@ Title.Text = "JoseAngel_Blox"
 Title.TextColor3 = Color3.new(1, 1, 1)
 Title.TextSize = 20
 
--- BOTON [-]
+-- ==================================
+--      BOTON [-] SIEMPRE VISIBLE
+-- ==================================
+-- 🔴 IMPORTANTE: El botón va fuera del cuadro principal para que NUNCA DESAPAREZCA
 BtnMinimize.Name = "Minimize"
-BtnMinimize.Parent = Main
+BtnMinimize.Parent = ScreenGui
 BtnMinimize.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2)
 BtnMinimize.BorderColor3 = Color3.new(1, 1, 1)
-BtnMinimize.Position = UDim2.new(0.82, 0, 0.05, 0)
+BtnMinimize.Position = UDim2.new(0.05, 0, 0.2, 0) -- Misma posición que el menú
 BtnMinimize.Size = UDim2.new(0, 30, 0, 30)
 BtnMinimize.Font = Enum.Font.GothamBold
 BtnMinimize.Text = "-"
 BtnMinimize.TextColor3 = Color3.new(1, 1, 1)
 BtnMinimize.TextSize = 20
+BtnMinimize.ZIndexBehavior = Enum.ZIndexBehavior.Global
 
--- TEXTO AUTO FARM
+-- ==================================
+--      OPCIÓN: AUTO FARM
+-- ==================================
 FarmLabel.Parent = Main
 FarmLabel.BackgroundTransparency = 1
 FarmLabel.Position = UDim2.new(0.05, 0, 0.35, 0)
@@ -78,7 +84,6 @@ FarmLabel.Text = "Auto farm pelotas"
 FarmLabel.TextColor3 = Color3.new(1, 1, 1)
 FarmLabel.TextSize = 14
 
--- BOTON PRINCIPAL
 ToggleFarmBtn.Name = "ToggleFarm"
 ToggleFarmBtn.Parent = Main
 ToggleFarmBtn.BackgroundColor3 = Color3.new(0.2, 0, 0)
@@ -91,11 +96,20 @@ ToggleFarmBtn.Font = Enum.Font.GothamBold
 ToggleFarmBtn.TextSize = 13
 
 -- ==================================
---      FUNCIONES
+--      FUNCIONES: MOVER Y MINIMIZAR
 -- ==================================
 
--- MOVER MENU
+-- MOVER MENU Y BOTON JUNTOS
 Main.InputBegan:Connect(function(I)
+    if I.UserInputType == Enum.UserInputType.MouseButton1 then
+        Dragging = true
+        DragStart = I.Position
+        StartPos = Main.Position
+    end
+end)
+
+-- También puedes agarrar desde el botón para mover
+BtnMinimize.InputBegan:Connect(function(I)
     if I.UserInputType == Enum.UserInputType.MouseButton1 then
         Dragging = true
         DragStart = I.Position
@@ -106,7 +120,9 @@ end)
 UserInputService.InputChanged:Connect(function(I)
     if Dragging then
         local Delta = I.Position - DragStart
-        Main.Position = UDim2.new(StartPos.X.Scale, StartPos.X.Offset + Delta.X, StartPos.Y.Scale, StartPos.Y.Offset + Delta.Y)
+        local NewPos = UDim2.new(StartPos.X.Scale, StartPos.X.Offset + Delta.X, StartPos.Y.Scale, StartPos.Y.Offset + Delta.Y)
+        Main.Position = NewPos
+        BtnMinimize.Position = NewPos -- El botón se mueve con el menú
     end
 end)
 
@@ -116,17 +132,18 @@ UserInputService.InputEnded:Connect(function(I)
     end
 end)
 
--- BOTON MINIMIZAR
+-- FUNCION ESCONDER / MOSTRAR
 BtnMinimize.MouseButton1Click:Connect(function()
     MenuVisible = not MenuVisible
     Main.Visible = MenuVisible
+    -- El botón [-] NUNCA se esconde, siempre está ahí para ti
 end)
 
 -- =============================================
--- 🚀 IMÁN: OPTIMIZADO
+-- 🧲 IMÁN: VELOCIDAD PERFECTA
 -- =============================================
 spawn(function()
-    while task.wait(0.3) do
+    while task.wait(0.25) do -- ✅ Rápido pero sin lag
         if FarmActive and RootPart then
             local MyPos = RootPart.Position
             
@@ -150,9 +167,10 @@ spawn(function()
                         
                         local Dist = (MyPos - v.Position).Magnitude
                         
-                        -- ✅ RANGO CORTO Y SUAVE
+                        -- ✅ RANGO CORTO
                         if Dist < 50 then
-                            v.CFrame = v.CFrame:Lerp(RootPart.CFrame, 0.2)
+                            -- ✅ VELOCIDAD AUMENTADA: 0.4 (Vienen rápido pero suave)
+                            v.CFrame = v.CFrame:Lerp(RootPart.CFrame, 0.4)
                             v.CanCollide = false
                             v.Anchored = false
                             
