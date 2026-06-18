@@ -1,6 +1,6 @@
 --[[
 Script Name: JoseAngel_Blox Block Cup
-Version: BOLAS SE QUEDAN / SIN LAG / FUNCIONA EN ZONAS ALTAS
+Version: IMÁN FUNCIONANDO / BOLAS SE QUEDAN / SIN LAG
 ]]
 
 local Players = game:GetService("Players")
@@ -97,15 +97,17 @@ UserInputService.InputEnded:Connect(function(I)
 end)
 
 -- =============================================
--- 🧲 IMÁN: LAS BOLAS SE QUEDAN CONTIGO
+-- 🧲 IMÁN PERFECTO: ENCUENTRA TODAS, SE QUEDAN
 -- =============================================
 spawn(function()
-    while task.wait(0.25) do -- ✅ SIN LAG
+    while task.wait(0.25) do -- ✅ SIN LAG INCLUSO EN ZONAS ALTAS
         if FarmActive and RootPart then
             local MyPos = RootPart.Position
-            for _, v in pairs(Workspace:GetChildren()) do
-                -- ✅ Busca solo esferas (bolas)
-                if v:IsA("BasePart") and v.Shape == Enum.PartType.Ball and not v:IsDescendantOf(Character) then
+            -- ✅ AHORA SÍ BUSCA EN TODOS LADOS (dentro de carpetas también)
+            for _, v in pairs(Workspace:GetDescendants()) do
+                
+                -- ✅ FILTRO SEGURO: Solo esferas y tamaño pequeño
+                if v:IsA("BasePart") and v.Shape == Enum.PartType.Ball and not v:IsDescendantOf(Character) and v.Size.Magnitude < 20 then
                     
                     local Name = string.lower(v.Name)
                     if string.find(Name,"ball") or string.find(Name,"orb") or string.find(Name,"rare") or string.find(Name,"epic") or string.find(Name,"legendary") or string.find(Name,"mutation") or string.find(Name,"double") or string.find(Name,"chance") then
@@ -113,21 +115,17 @@ spawn(function()
                         local Dist = (MyPos - v.Position).Magnitude
                         
                         if Dist < 150 then
-                            -- ✅ Las atrae suavemente
+                            -- ✅ ATRACCIÓN FUERTE PERO SUAVE
                             v.CFrame = v.CFrame:Lerp(RootPart.CFrame, 0.7)
                             
-                            -- ✅ Cuando estan cerca, las PEGA a ti y las deja quietas
+                            -- ✅ CUANDO LLEGAN, SE QUEDAN PEGADAS Y NO SE VAN
                             if Dist < 8 then
-                                v.CFrame = RootPart.CFrame * CFrame.new(0, 0, -2) -- Pegadas al frente
+                                v.CFrame = RootPart.CFrame * CFrame.new(0, 0, -2)
                                 v.CanCollide = false
                                 v.Anchored = false
-                                -- ✅ IMPORTANTE: NO LAS BORRO, SOLO LAS TOCO PARA QUE CUENTE
+                                -- ✅ SIMULA TOQUE PARA QUE TE DEN EL RECOMPENSA
                                 firetouchinterest(Character, v, 0)
                                 firetouchinterest(Character, v, 1)
-                                -- ✅ Las hago invulnerables para que no desaparezcan
-                                v.Destroying:Connect(function()
-                                    -- Si intentan borrarla, la cancelo (opcional)
-                                end)
                             end
                         end
                     end
