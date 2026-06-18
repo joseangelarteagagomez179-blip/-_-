@@ -1,6 +1,6 @@
 --[[
 Script Name: JoseAngel_Blox Block Cup
-Version: SOLO BOLAS - SUELO SE QUEDA QUITO
+Version: CON BOTON MINIMIZAR / MOVER / RANGO CORTO
 ]]
 
 local Players = game:GetService("Players")
@@ -12,6 +12,7 @@ local Player = Players.LocalPlayer
 local FarmActive = false
 local Loop = nil
 local Dragging, DragStart, StartPos = nil, nil, nil
+local Visible = true -- Estado del menu
 local Character, Humanoid, RootPart
 
 -- == ACTUALIZAR PERSONAJE ==
@@ -27,6 +28,7 @@ UpdateCharacter()
 local ScreenGui = Instance.new("ScreenGui")
 local Main = Instance.new("Frame")
 local Title = Instance.new("TextLabel")
+local BtnMinimize = Instance.new("TextButton") -- BOTON NUEVO [-]
 local FarmLabel = Instance.new("TextLabel")
 local ToggleFarmBtn = Instance.new("TextButton")
 
@@ -48,11 +50,25 @@ Title.Name = "Title"
 Title.Parent = Main
 Title.BackgroundTransparency = 1
 Title.Position = UDim2.new(0.05, 0, 0.05, 0)
-Title.Size = UDim2.new(0.9, 0, 0, 30)
+Title.Size = UDim2.new(0.7, 0, 0, 30)
 Title.Font = Enum.Font.GothamBold
 Title.Text = "JoseAngel_Blox"
 Title.TextColor3 = Color3.new(1, 1, 1)
 Title.TextSize = 20
+
+-- ==================================
+--      BOTON [-] MINIMIZAR
+-- ==================================
+BtnMinimize.Name = "Minimize"
+BtnMinimize.Parent = Main
+BtnMinimize.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2)
+BtnMinimize.BorderColor3 = Color3.new(1, 1, 1)
+BtnMinimize.Position = UDim2.new(0.78, 0, 0.05, 0)
+BtnMinimize.Size = UDim2.new(0, 30, 0, 30)
+BtnMinimize.Font = Enum.Font.GothamBold
+BtnMinimize.Text = "-"
+BtnMinimize.TextColor3 = Color3.new(1, 1, 1)
+BtnMinimize.TextSize = 20
 
 -- ==================================
 --      OPCIÓN: AUTO FARM
@@ -76,7 +92,11 @@ ToggleFarmBtn.TextColor3 = Color3.new(1, 1, 1)
 ToggleFarmBtn.Font = Enum.Font.GothamBold
 ToggleFarmBtn.TextSize = 13
 
--- == DESLIZAR ==
+-- ==================================
+--      FUNCION MOVER Y MINIMIZAR
+-- ==================================
+
+-- MOVER POR PANTALLA
 Main.InputBegan:Connect(function(I)
     if I.UserInputType == Enum.UserInputType.MouseButton1 then
         Dragging = true
@@ -96,11 +116,17 @@ UserInputService.InputEnded:Connect(function(I)
     end
 end)
 
+-- BOTON [-] ESCONDER / MOSTRAR
+BtnMinimize.MouseButton1Click:Connect(function()
+    Visible = not Visible
+    Main.Visible = Visible
+end)
+
 -- =============================================
--- 🧲 IMÁN INTELIGENTE: SOLO BOLAS, NO MAPA
+-- 🧲 IMÁN: RANGO CORTO Y SUAVE
 -- =============================================
 spawn(function()
-    while task.wait(0.2) do -- ✅ SIN LAG
+    while task.wait(0.15) do
         if FarmActive and RootPart then
             local MyPos = RootPart.Position
             
@@ -110,7 +136,6 @@ spawn(function()
                     
                     local Name = string.lower(v.Name)
                     
-                    -- ✅ BUSCA EXACTAMENTE LAS QUE DIJISTE
                     if string.find(Name,"ball")
                     or string.find(Name,"legendary")
                     or string.find(Name,"mutat")
@@ -119,21 +144,21 @@ spawn(function()
                     or string.find(Name,"epic")
                     then
                         
-                        -- ✅ PROTECCIÓN CONTRA EL SUELO:
-                        -- Si la parte es MUY GRANDE (como el piso), LA IGNORAMOS
-                        if v.Size.X > 50 or v.Size.Y > 50 or v.Size.Z > 50 then
-                            continue -- SE SALTA ESTE OBJETO
+                        -- 🛡️ PROTECCIÓN SUELO
+                        if v.Size.X > 15 or v.Size.Y > 15 or v.Size.Z > 15 then
+                            continue
                         end
                         
                         local Dist = (MyPos - v.Position).Magnitude
                         
-                        if Dist < 250 then
-                            v.CFrame = v.CFrame:Lerp(RootPart.CFrame, 0.9)
+                        -- ✅ RANGO CORTO Y VELOCIDAD SUAVE
+                        if Dist < 50 then
+                            v.CFrame = v.CFrame:Lerp(RootPart.CFrame, 0.2)
                             v.CanCollide = false
                             v.Anchored = false
                             
-                            if Dist < 10 then
-                                v.CFrame = RootPart.CFrame + Vector3.new(0, 2, 0)
+                            if Dist < 6 then
+                                v.CFrame = RootPart.CFrame + Vector3.new(0, 1, 0)
                                 firetouchinterest(Character, v, 0)
                                 firetouchinterest(Character, v, 1)
                             end
