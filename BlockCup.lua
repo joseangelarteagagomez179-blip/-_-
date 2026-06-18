@@ -1,12 +1,12 @@
 --[[
 Script Name: JoseAngel_Blox Block Cup
-Version: FUNCIONANDO AL 100% / MOVIBLE / RGB
+Version: MODO INFINITO - NO BORRA NADA / SEGURO
 ]]
 
 local Players = game:GetService("Players")
 local VirtualUser = game:GetService("VirtualUser")
-local UserInputService = game:GetService("UserInputService")
-local Workspace = game:GetService("Workspace")
+local UserInputService = UserInputService
+local Workspace = Workspace
 
 local Player = Players.LocalPlayer
 local FarmActive = false
@@ -98,7 +98,7 @@ BtnCorner.Parent = ToggleFarmBtn
 -- ==================================
 spawn(function()
     local H = 0
-    while wait(0.05) do
+    while task.wait(0.05) do
         H = H + 0.01
         if H > 1 then H = 0 end
         UIStroke.Color = Color3.fromHSV(H, 0.8, 1)
@@ -136,10 +136,10 @@ UserInputService.InputEnded:Connect(function(I)
 end)
 
 -- =============================================
--- 🧲 IMÁN: FUNCIONANDO PERFECTO
+-- 🧲 IMÁN: MODO INFINITO - EL TRUCO
 -- =============================================
 spawn(function()
-    while task.wait(0.15) do
+    while task.wait(0.1) do
         if FarmActive and RootPart then
             local MyPos = RootPart.Position
             
@@ -163,17 +163,23 @@ spawn(function()
                         
                         local Dist = (MyPos - v.Position).Magnitude
                         
-                        -- ✅ ATRAE RÁPIDO
-                        if Dist < 50 then
-                            v.CFrame = v.CFrame:Lerp(RootPart.CFrame, 0.7)
+                        -- ✅ MAS ALCANCE
+                        if Dist < 80 then
+                            -- ✅ VELOCIDAD MAXIMA
+                            v.CFrame = v.CFrame:Lerp(RootPart.CFrame, 0.95)
                             v.CanCollide = false
                             v.Anchored = false
                             
-                            -- ✅ DETECTA Y CUENTA
-                            if Dist < 4 then
+                            -- ✅ EL SECRETO PARA QUE NO LAS BORRE:
+                            -- Cuando están muy pegadas, las "soltamos" un poquito hacia atrás
+                            -- Así cuentan el dinero pero el juego no las elimina
+                            if Dist < 3 then
                                 firetouchinterest(Character, v, 0)
                                 firetouchinterest(Character, v, 1)
-                                v.CFrame = v.CFrame * CFrame.new(math.random(-1,1), math.random(0,1), math.random(-1,1))
+                                
+                                -- Las movemos hacia atrás y arriba para que se queden visibles
+                                v.CFrame = RootPart.CFrame * CFrame.new(0, 2, -3) 
+                                -- El -3 es clave: las pone detrás de ti, así no se borran
                             end
                         end
                     end
