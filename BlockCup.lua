@@ -1,6 +1,6 @@
 --[[
 Script Name: JoseAngel_Blox Block Cup
-Version: IMÁN FUNCIONANDO / BOLAS SE QUEDAN / SIN LAG
+Version: AGARRA TODAS LAS BOLAS GRANDES Y EVENTO
 ]]
 
 local Players = game:GetService("Players")
@@ -97,33 +97,40 @@ UserInputService.InputEnded:Connect(function(I)
 end)
 
 -- =============================================
--- 🧲 IMÁN PERFECTO: ENCUENTRA TODAS, SE QUEDAN
+-- 🧲 IMÁN PERFECTO: TODAS LAS BOLAS QUE DIJISTE
 -- =============================================
 spawn(function()
-    while task.wait(0.25) do -- ✅ SIN LAG INCLUSO EN ZONAS ALTAS
+    while task.wait(0.2) do -- ✅ SIN LAG
         if FarmActive and RootPart then
             local MyPos = RootPart.Position
-            -- ✅ AHORA SÍ BUSCA EN TODOS LADOS (dentro de carpetas también)
+            
+            -- ✅ BUSCA EN TODO LADO
             for _, v in pairs(Workspace:GetDescendants()) do
                 
-                -- ✅ FILTRO SEGURO: Solo esferas y tamaño pequeño
-                if v:IsA("BasePart") and v.Shape == Enum.PartType.Ball and not v:IsDescendantOf(Character) and v.Size.Magnitude < 20 then
+                if v:IsA("BasePart") and not v:IsDescendantOf(Character) then
                     
                     local Name = string.lower(v.Name)
-                    if string.find(Name,"ball") or string.find(Name,"orb") or string.find(Name,"rare") or string.find(Name,"epic") or string.find(Name,"legendary") or string.find(Name,"mutation") or string.find(Name,"double") or string.find(Name,"chance") then
+                    
+                    -- ✅ LISTA EXACTA DE LAS BOLAS:
+                    if string.find(Name,"ball") -- Bolas normales y grandes
+                    or string.find(Name,"legendary") -- Legendary balls
+                    or string.find(Name,"mutat") -- probabilidad de mutación
+                    or string.find(Name,"doub") -- Bolas dobles
+                    or string.find(Name,"rare") -- Rare ball chance
+                    or string.find(Name,"epic") -- Epic ball chance
+                    then
                         
                         local Dist = (MyPos - v.Position).Magnitude
                         
-                        if Dist < 150 then
-                            -- ✅ ATRACCIÓN FUERTE PERO SUAVE
-                            v.CFrame = v.CFrame:Lerp(RootPart.CFrame, 0.7)
+                        -- ✅ RANGO GRANDE Y FUERZA MAXIMA
+                        if Dist < 250 then
+                            v.CFrame = v.CFrame:Lerp(RootPart.CFrame, 0.9) -- Vuelan rapido
+                            v.CanCollide = false
+                            v.Anchored = false
                             
-                            -- ✅ CUANDO LLEGAN, SE QUEDAN PEGADAS Y NO SE VAN
-                            if Dist < 8 then
-                                v.CFrame = RootPart.CFrame * CFrame.new(0, 0, -2)
-                                v.CanCollide = false
-                                v.Anchored = false
-                                -- ✅ SIMULA TOQUE PARA QUE TE DEN EL RECOMPENSA
+                            -- ✅ SE QUEDAN PEGADAS Y NO SE VAN
+                            if Dist < 10 then
+                                v.CFrame = RootPart.CFrame + Vector3.new(0, 2, 0)
                                 firetouchinterest(Character, v, 0)
                                 firetouchinterest(Character, v, 1)
                             end
