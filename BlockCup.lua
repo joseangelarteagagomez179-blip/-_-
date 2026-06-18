@@ -1,12 +1,12 @@
 --[[
 Script Name: JoseAngel_Blox Block Cup
-Version: MODO INFINITO - NO BORRA NADA / SEGURO
+Version: FUNCIONANDO AL 100% / MOVIBLE / NO BORRA
 ]]
 
 local Players = game:GetService("Players")
 local VirtualUser = game:GetService("VirtualUser")
-local UserInputService = UserInputService
-local Workspace = Workspace
+local UserInputService = game:GetService("UserInputService")
+local Workspace = game:GetService("Workspace")
 
 local Player = Players.LocalPlayer
 local FarmActive = false
@@ -119,13 +119,12 @@ end)
 UserInputService.InputChanged:Connect(function(I)
     if Dragging then
         local Delta = I.Position - DragStart
-        local NewPos = UDim2.new(
+        Main.Position = UDim2.new(
             StartPos.X.Scale, 
             StartPos.X.Offset + Delta.X, 
             StartPos.Y.Scale, 
             StartPos.Y.Offset + Delta.Y
         )
-        Main.Position = NewPos
     end
 end)
 
@@ -136,7 +135,7 @@ UserInputService.InputEnded:Connect(function(I)
 end)
 
 -- =============================================
--- 🧲 IMÁN: MODO INFINITO - EL TRUCO
+-- 🧲 IMÁN: VELOCIDAD MAXIMA + NO BORRA
 -- =============================================
 spawn(function()
     while task.wait(0.1) do
@@ -170,16 +169,12 @@ spawn(function()
                             v.CanCollide = false
                             v.Anchored = false
                             
-                            -- ✅ EL SECRETO PARA QUE NO LAS BORRE:
-                            -- Cuando están muy pegadas, las "soltamos" un poquito hacia atrás
-                            -- Así cuentan el dinero pero el juego no las elimina
-                            if Dist < 3 then
+                            -- ✅ EL TRUCO: TE TOCAN Y SE VAN ATRAS
+                            if Dist < 3.5 then
                                 firetouchinterest(Character, v, 0)
                                 firetouchinterest(Character, v, 1)
-                                
-                                -- Las movemos hacia atrás y arriba para que se queden visibles
-                                v.CFrame = RootPart.CFrame * CFrame.new(0, 2, -3) 
-                                -- El -3 es clave: las pone detrás de ti, así no se borran
+                                -- Las mandamos detrás tuyo para que cuenten pero no se borren
+                                v.CFrame = RootPart.CFrame + Vector3.new(0, 2, -4)
                             end
                         end
                     end
