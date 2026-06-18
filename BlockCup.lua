@@ -1,12 +1,12 @@
 --[[
 Script Name: JoseAngel_Blox Block Cup
-Version: RECOLECTOR INSTANTANEO / NO SE PEGAN / SUMA BIEN
+Version: FUNCIONANDO AL 100% / BOTON ACTIVO / RECOLECTOR
 ]]
 
 local Players = game:GetService("Players")
 local VirtualUser = game:GetService("VirtualUser")
-local UserInputService = UserInputService
-local Workspace = Workspace
+local UserInputService = game:GetService("UserInputService")
+local Workspace = game:GetService("Workspace")
 
 local Player = Players.LocalPlayer
 local FarmActive = false
@@ -77,7 +77,7 @@ ToggleFarmBtn.BackgroundColor3 = Color3.new(0.2, 0, 0)
 ToggleFarmBtn.BorderColor3 = Color3.new(1, 0.3, 0.3)
 ToggleFarmBtn.Position = UDim2.new(0.08, 0, 0.52, 0)
 ToggleFarmBtn.Size = UDim2.new(0.84, 0, 0, 40)
-ToggleFarmBtn.Text = "ACTIVAR AUTO FARMELO"
+ToggleFarmBtn.Text = "ACTIVAR"
 ToggleFarmBtn.TextColor3 = Color3.new(1, 1, 1)
 ToggleFarmBtn.Font = Enum.Font.GothamBold
 ToggleFarmBtn.TextSize = 12
@@ -153,12 +153,9 @@ spawn(function()
                             
                             -- ✅ CUANDO ESTAN CERCA: LAS AGARRA Y DESAPARECEN
                             if Dist < 8 then
-                                -- Simulamos que las tocas para que den el dinero
                                 firetouchinterest(Character, v, 0)
                                 firetouchinterest(Character, v, 1)
-                                
-                                -- 💥 LAS ELIMINAMOS PARA QUE NO ESTORBEN Y SUMEN BIEN
-                                game.Debris:AddItem(v, 0.1) -- Desaparecen en 0.1 segundos
+                                game.Debris:AddItem(v, 0.1)
                             end
                         end
                     end
@@ -195,6 +192,11 @@ local function StopFarm()
     ToggleFarmBtn.BackgroundColor3 = Color3.new(0.2, 0, 0)
 end
 
+-- 🔴 CONEXIÓN DEL BOTÓN (ASEGURADA)
 ToggleFarmBtn.MouseButton1Click:Connect(function()
-    if not FarmActive then StartFarm() else StopFarm() end
+    if not FarmActive then 
+        StartFarm() 
+    else 
+        StopFarm() 
+    end
 end)
