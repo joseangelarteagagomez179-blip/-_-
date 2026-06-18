@@ -1,6 +1,6 @@
 --[[
 Script Name: JoseAngel_Blox Block Cup
-Version: MODO TELETRANSPORTE / VELOCIDAD MAXIMA / NO BUGS
+Version: TEXTO CORREGIDO / TELETRANSPORTE
 ]]
 
 local Players = game:GetService("Players")
@@ -10,7 +10,7 @@ local Workspace = game:GetService("Workspace")
 
 local Player = Players.LocalPlayer
 local FarmActive = false
-local Loop = nil
+local LoopTP = nil
 local Dragging, DragStart, StartPos = nil, nil, nil
 local Character, Humanoid, RootPart
 
@@ -61,16 +61,16 @@ Title.Text = "JoseAngel_Blox"
 Title.TextColor3 = Color3.new(1, 1, 1)
 Title.TextSize = 17
 
--- TEXTO AUTO FARM
+-- TEXTO (CORREGIDO)
 FarmLabel.Parent = Main
 FarmLabel.BackgroundTransparency = 1
 FarmLabel.Position = UDim2.new(0.05, 0, 0.32, 0)
 FarmLabel.Size = UDim2.new(0.9, 0, 0, 18)
-FarmLabel.Text = "Modo Teletransporte"
+FarmLabel.Text = "Teletransportar a la pelota"
 FarmLabel.TextColor3 = Color3.new(0.9, 0.9, 0.9)
-FarmLabel.TextSize = 12
+FarmLabel.TextSize = 11
 
--- BOTON PRINCIPAL
+-- BOTON
 ToggleFarmBtn.Name = "ToggleFarm"
 ToggleFarmBtn.Parent = Main
 ToggleFarmBtn.BackgroundColor3 = Color3.new(0.2, 0, 0)
@@ -82,12 +82,11 @@ ToggleFarmBtn.TextColor3 = Color3.new(1, 1, 1)
 ToggleFarmBtn.Font = Enum.Font.GothamBold
 ToggleFarmBtn.TextSize = 12
 
--- ESQUINAS REDONDEADAS AL BOTON
 BtnCorner.CornerRadius = UDim.new(0, 8)
 BtnCorner.Parent = ToggleFarmBtn
 
 -- ==================================
---      FUNCION MOVER (CELULAR)
+--      MOVER MENU
 -- ==================================
 Main.InputBegan:Connect(function(I)
     if I.UserInputType == Enum.UserInputType.MouseButton1 or I.UserInputType == Enum.UserInputType.Touch then
@@ -117,16 +116,15 @@ UserInputService.InputEnded:Connect(function(I)
 end)
 
 -- =============================================
--- ⚡️ MODO TELETRANSPORTE A LAS PELOTAS
+-- ⚡️ TELETRANSPORTE
 -- =============================================
 spawn(function()
-    while task.wait(0.05) do -- ⚡️ SUPER RAPIDO
+    while task.wait(0.05) do
         if FarmActive and RootPart then
             
             local ClosestBall = nil
-            local MinDistance = math.huge -- Infinito
+            local MinDistance = math.huge
             
-            -- BUSCAMOS LA PELOTA MAS CERCANA
             for _, v in pairs(Workspace:GetDescendants()) do
                 if v:IsA("BasePart") and not v:IsDescendantOf(Character) then
                     
@@ -147,7 +145,6 @@ spawn(function()
                         
                         local Dist = (RootPart.Position - v.Position).Magnitude
                         
-                        -- RANGO CORTO (SOLO DE 50 STUDIOS)
                         if Dist < 50 and Dist < MinDistance then
                             MinDistance = Dist
                             ClosestBall = v
@@ -156,11 +153,8 @@ spawn(function()
                 end
             end
             
-            -- ✅ SI ENCONTRAMOS UNA PELOTA... TE TELETRANSPORTAS
             if ClosestBall then
                 RootPart.CFrame = CFrame.new(ClosestBall.Position)
-                
-                -- AGARRAR AUTOMATICO
                 firetouchinterest(Character, ClosestBall, 0)
                 firetouchinterest(Character, ClosestBall, 1)
             end
@@ -168,14 +162,14 @@ spawn(function()
     end
 end)
 
--- == FUNCION AUTO FARM ==
+-- == FUNCIONES ==
 local function StartFarm()
-    if Loop then return end
+    if LoopTP then return end
     FarmActive = true
     ToggleFarmBtn.Text = "DESACTIVAR"
     ToggleFarmBtn.BackgroundColor3 = Color3.new(0, 0.4, 0)
     
-    Loop = spawn(function()
+    LoopTP = spawn(function()
         while FarmActive do
             if not Humanoid then UpdateCharacter() end
             VirtualUser:Click()
@@ -190,7 +184,10 @@ end
 
 local function StopFarm()
     FarmActive = false
-    Loop = nil
+    if LoopTP then
+        LoopTP:Disconnect()
+        LoopTP = nil
+    end
     ToggleFarmBtn.Text = "ACTIVAR"
     ToggleFarmBtn.BackgroundColor3 = Color3.new(0.2, 0, 0)
 end
