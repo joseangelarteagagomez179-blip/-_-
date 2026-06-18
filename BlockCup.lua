@@ -1,6 +1,6 @@
 --[[
 Script Name: JoseAngel_Blox Block Cup
-Version: BOTON SIEMPRE VISIBLE / ULTRA OPTIMIZADO
+Version: TODO FUNCIONANDO / BOTON VISIBLE / SIN LAG
 ]]
 
 local Players = game:GetService("Players")
@@ -28,7 +28,7 @@ UpdateCharacter()
 local ScreenGui = Instance.new("ScreenGui")
 local Main = Instance.new("Frame")
 local Title = Instance.new("TextLabel")
-local BtnMinimize = Instance.new("TextButton") -- BOTON QUE SIEMPRE SE VE
+local BtnMinimize = Instance.new("TextButton")
 local FarmLabel = Instance.new("TextLabel")
 local ToggleFarmBtn = Instance.new("TextButton")
 
@@ -57,24 +57,19 @@ Title.Text = "JoseAngel_Blox"
 Title.TextColor3 = Color3.new(1, 1, 1)
 Title.TextSize = 20
 
--- ==================================
---      BOTON [-] (SIEMPRE VISIBLE)
--- ==================================
+-- BOTON [-]
 BtnMinimize.Name = "Minimize"
-BtnMinimize.Parent = ScreenGui -- 🔴 IMPORTANTE: VA DIRECTO EN LA PANTALLA
+BtnMinimize.Parent = Main
 BtnMinimize.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2)
 BtnMinimize.BorderColor3 = Color3.new(1, 1, 1)
-BtnMinimize.Position = UDim2.new(0.05, 0, 0.2, 0) -- MISMA POSICION QUE EL MENU
+BtnMinimize.Position = UDim2.new(0.82, 0, 0.05, 0)
 BtnMinimize.Size = UDim2.new(0, 30, 0, 30)
 BtnMinimize.Font = Enum.Font.GothamBold
 BtnMinimize.Text = "-"
 BtnMinimize.TextColor3 = Color3.new(1, 1, 1)
 BtnMinimize.TextSize = 20
-BtnMinimize.ZIndexBehavior = Enum.ZIndexBehavior.Global -- SIEMPRE ENCIMA
 
--- ==================================
---      OPCIÓN: AUTO FARM
--- ==================================
+-- TEXTO AUTO FARM
 FarmLabel.Parent = Main
 FarmLabel.BackgroundTransparency = 1
 FarmLabel.Position = UDim2.new(0.05, 0, 0.35, 0)
@@ -83,6 +78,7 @@ FarmLabel.Text = "Auto farm pelotas"
 FarmLabel.TextColor3 = Color3.new(1, 1, 1)
 FarmLabel.TextSize = 14
 
+-- BOTON PRINCIPAL
 ToggleFarmBtn.Name = "ToggleFarm"
 ToggleFarmBtn.Parent = Main
 ToggleFarmBtn.BackgroundColor3 = Color3.new(0.2, 0, 0)
@@ -95,7 +91,7 @@ ToggleFarmBtn.Font = Enum.Font.GothamBold
 ToggleFarmBtn.TextSize = 13
 
 -- ==================================
---      FUNCIONES: MOVER Y MINIMIZAR
+--      FUNCIONES
 -- ==================================
 
 -- MOVER MENU
@@ -107,21 +103,10 @@ Main.InputBegan:Connect(function(I)
     end
 end)
 
--- MOVER BOTON TAMBIEN
-BtnMinimize.InputBegan:Connect(function(I)
-    if I.UserInputType == Enum.UserInputType.MouseButton1 then
-        Dragging = true
-        DragStart = I.Position
-        StartPos = Main.Position
-    end
-end)
-
 UserInputService.InputChanged:Connect(function(I)
     if Dragging then
         local Delta = I.Position - DragStart
-        local NewPos = UDim2.new(StartPos.X.Scale, StartPos.X.Offset + Delta.X, StartPos.Y.Scale, StartPos.Y.Offset + Delta.Y)
-        Main.Position = NewPos
-        BtnMinimize.Position = NewPos -- EL BOTON SE MUEVE CON EL MENU
+        Main.Position = UDim2.new(StartPos.X.Scale, StartPos.X.Offset + Delta.X, StartPos.Y.Scale, StartPos.Y.Offset + Delta.Y)
     end
 end)
 
@@ -131,24 +116,21 @@ UserInputService.InputEnded:Connect(function(I)
     end
 end)
 
--- FUNCION ESCONDER / MOSTRAR
+-- BOTON MINIMIZAR
 BtnMinimize.MouseButton1Click:Connect(function()
     MenuVisible = not MenuVisible
     Main.Visible = MenuVisible
-    -- EL BOTON NUNCA SE ESCONDE, ASI SIEMPRE PUEDES DARLE CLICK
 end)
 
 -- =============================================
--- 🚀 IMÁN: ULTRA OPTIMIZADO - 0 LAG
+-- 🚀 IMÁN: OPTIMIZADO
 -- =============================================
 spawn(function()
-    while task.wait(0.3) do -- ✅ MAS LENTO = MAS FPS
+    while task.wait(0.3) do
         if FarmActive and RootPart then
             local MyPos = RootPart.Position
             
-            -- ✅ BUCLE OPTIMIZADO
             for _, v in pairs(Workspace:GetDescendants()) do
-                -- ✅ PRIMERO REVISAMOS TAMAÑO PARA AHORRAR TIEMPO
                 if v:IsA("BasePart") and not v:IsDescendantOf(Character) then
                     
                     -- 🛡️ PROTECCIÓN SUELO
