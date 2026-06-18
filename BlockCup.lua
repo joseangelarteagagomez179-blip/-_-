@@ -1,6 +1,6 @@
 --[[
 Script Name: JoseAngel_Blox Block Cup
-Version: AGARRA TODAS LAS BOLAS GRANDES Y EVENTO
+Version: SOLO BOLAS - SUELO SE QUEDA QUITO
 ]]
 
 local Players = game:GetService("Players")
@@ -97,38 +97,41 @@ UserInputService.InputEnded:Connect(function(I)
 end)
 
 -- =============================================
--- 🧲 IMÁN PERFECTO: TODAS LAS BOLAS QUE DIJISTE
+-- 🧲 IMÁN INTELIGENTE: SOLO BOLAS, NO MAPA
 -- =============================================
 spawn(function()
     while task.wait(0.2) do -- ✅ SIN LAG
         if FarmActive and RootPart then
             local MyPos = RootPart.Position
             
-            -- ✅ BUSCA EN TODO LADO
             for _, v in pairs(Workspace:GetDescendants()) do
                 
                 if v:IsA("BasePart") and not v:IsDescendantOf(Character) then
                     
                     local Name = string.lower(v.Name)
                     
-                    -- ✅ LISTA EXACTA DE LAS BOLAS:
-                    if string.find(Name,"ball") -- Bolas normales y grandes
-                    or string.find(Name,"legendary") -- Legendary balls
-                    or string.find(Name,"mutat") -- probabilidad de mutación
-                    or string.find(Name,"doub") -- Bolas dobles
-                    or string.find(Name,"rare") -- Rare ball chance
-                    or string.find(Name,"epic") -- Epic ball chance
+                    -- ✅ BUSCA EXACTAMENTE LAS QUE DIJISTE
+                    if string.find(Name,"ball")
+                    or string.find(Name,"legendary")
+                    or string.find(Name,"mutat")
+                    or string.find(Name,"doub")
+                    or string.find(Name,"rare")
+                    or string.find(Name,"epic")
                     then
+                        
+                        -- ✅ PROTECCIÓN CONTRA EL SUELO:
+                        -- Si la parte es MUY GRANDE (como el piso), LA IGNORAMOS
+                        if v.Size.X > 50 or v.Size.Y > 50 or v.Size.Z > 50 then
+                            continue -- SE SALTA ESTE OBJETO
+                        end
                         
                         local Dist = (MyPos - v.Position).Magnitude
                         
-                        -- ✅ RANGO GRANDE Y FUERZA MAXIMA
                         if Dist < 250 then
-                            v.CFrame = v.CFrame:Lerp(RootPart.CFrame, 0.9) -- Vuelan rapido
+                            v.CFrame = v.CFrame:Lerp(RootPart.CFrame, 0.9)
                             v.CanCollide = false
                             v.Anchored = false
                             
-                            -- ✅ SE QUEDAN PEGADAS Y NO SE VAN
                             if Dist < 10 then
                                 v.CFrame = RootPart.CFrame + Vector3.new(0, 2, 0)
                                 firetouchinterest(Character, v, 0)
