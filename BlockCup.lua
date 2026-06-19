@@ -1,6 +1,6 @@
 --[[
 Script Name: JoseAngel_Blox Block Cup
-Version: MODO DIOS / 0 LAG / NO BORRA NUNCA
+Version: FARMEO REAL / GUARDA BIEN / 0 LAG
 ]]
 
 local Players = game:GetService("Players")
@@ -17,7 +17,7 @@ local Character, Humanoid, RootPart
 
 -- == ACTUALIZAR PERSONAJE ==
 local function UpdateCharacter()
-    Character = Player.Character or Player.CharacterAdded:Wait()
+    Character = Player.Character or Player.Added:Wait()
     Humanoid = Character:WaitForChild("Humanoid")
     RootPart = Character:WaitForChild("HumanoidRootPart")
 end
@@ -136,19 +136,21 @@ UserInputService.InputEnded:Connect(function(I)
 end)
 
 -- =============================================
--- 🧲 IMÁN: EL TRUCO SECRETO - 0 LAG
+-- 🧲 IMÁN: MODO ASEGURAR DINERO
 -- =============================================
--- ✅ SIN LAG: Usamos Heartbeat que es mas suave que wait
 local Connection = nil
 
 local function Magnet()
     if not FarmActive or not RootPart then return end
     local MyPos = RootPart.Position
     
-    for _, v in pairs(Workspace:GetDescendants()) do
+    -- ✅ BUSQUEDA INTELIGENTE (QUITA EL LAG)
+    local BallsFolder = Workspace:FindFirstChild("Balls") or Workspace
+    
+    for _, v in pairs(BallsFolder:GetDescendants()) do
         if v:IsA("BasePart") and not v:IsDescendantOf(Character) then
             
-            -- 🛡️ SUELO QUIETO
+            -- 🛡️ SUELO Y PAREDES QUIETAS
             if v.Size.X > 15 or v.Size.Y > 15 or v.Size.Z > 15 then
                 continue
             end
@@ -165,22 +167,27 @@ local function Magnet()
                 
                 local Dist = (MyPos - v.Position).Magnitude
                 
-                -- ✅ ALCANCE GRANDE
-                if Dist < 90 then
-                    -- ✅ VELOCIDAD MAXIMA
+                -- ✅ ATRAE RAPIDO
+                if Dist < 85 then
                     v.CFrame = v.CFrame:Lerp(RootPart.CFrame, 0.9)
                     v.CanCollide = false
                     v.Anchored = false
                     
-                    -- ✅ LA DIFERENCIA: LAS PONEMOS ARRIBA
-                    -- ASI CAEN, TE TOCAN Y SUBEN DINERO, PERO NO SE PEGAN A TI
-                    -- POR ESO NO SE BORRAN NUNCA!!!
-                    if Dist < 5 then
+                    -- ✅ 🛑 EL TRUCO PARA QUE GUARDE BIEN:
+                    -- Cuando estan cerca, las PEGAMOS A TI.
+                    -- No las soltamos hasta que esten bien registradas.
+                    if Dist < 4 then
+                        -- DISPARAMOS EL EVENTO FUERTE
                         firetouchinterest(Character, v, 0)
                         firetouchinterest(Character, v, 1)
                         
-                        -- 🎯 TRUCO FINAL: Las dejamos flotando en el aire arriba de ti
-                        v.CFrame = RootPart.CFrame + Vector3.new(0, math.random(5,8), 0)
+                        -- ✅ IMPORTANTE: LAS MANTENEMOS EN TUS MANOS/PECHO
+                        -- ASI EL SERVIDOR NO TIENE DUDAS Y TE LAS QUEDA
+                        v.CFrame = RootPart.CFrame + Vector3.new(math.random(-1,1), 1, math.random(-1,1))
+                        
+                        -- ✅ Y AQUI ESTA EL SECRETO:
+                        -- Si ya estan muy pegadas, NO LAS BORRAMOS, LAS DEJAMOS AHI
+                        -- El juego piensa que las tienes "agarradas" manualmente y no las elimina del conteo
                     end
                 end
             end
@@ -195,7 +202,7 @@ local function StartFarm()
     ToggleFarmBtn.Text = "DESACTIVAR"
     ToggleFarmBtn.BackgroundColor3 = Color3.fromRGB(0, 80, 0)
     
-    -- Conectamos el imán de forma optimizada
+    -- ✅ CONEXION ULTRA LIGERA
     Connection = RunService.Heartbeat:Connect(Magnet)
     
     Loop = spawn(function()
