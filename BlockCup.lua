@@ -1,6 +1,6 @@
 --[[
 Script Name: JoseAngel_Blox Block Cup
-Version: 0 LAG ABSOLUTO / ULTRA OPTIMIZADO
+Version: 0 LAG / ATRAE FUERTE / FUNCIONANDO
 ]]
 
 local Players = game:GetService("Players")
@@ -33,7 +33,7 @@ UpdateCharacter()
 
 -- == MANTENER VIDA INFINITA ==
 spawn(function()
-    while task.wait(1) do -- ✅ ESPERA 1 SEGUNDO (MUCHO MENOS CONSUMO)
+    while task.wait(1) do
         if Humanoid then
             Humanoid.Health = math.huge
             Humanoid.MaxHealth = math.huge
@@ -116,7 +116,7 @@ BtnCorner.Parent = ToggleFarmBtn
 -- ==================================
 spawn(function()
     local H = 0
-    while task.wait(0.1) do -- ✅ MAS LENTO EL COLOR = MENOS LAG
+    while task.wait(0.1) do
         H = H + 0.01
         if H > 1 then H = 0 end
         UIStroke.Color = Color3.fromHSV(H, 0.8, 1)
@@ -153,7 +153,7 @@ UserInputService.InputEnded:Connect(function(I)
 end)
 
 -- =============================================
--- 🧲 IMÁN: MODO 0 LAG (EL SECRETO)
+-- 🧲 IMÁN: MODO 0 LAG PERO ATRAE FUERTE
 -- =============================================
 local Connection = nil
 
@@ -161,52 +161,43 @@ local function Magnet()
     if not FarmActive or not RootPart then return end
     local MyPos = RootPart.Position
 
-    -- ✅ 🚀 OPTIMIZACION NIVEL DIOS:
-    -- En vez de buscar en TODO, buscamos solo en los hijos directos primero
-    -- Esto quita el 99% del lag
-    for _, v in pairs(Workspace:GetChildren()) do
-        
-        -- Si es una carpeta, buscamos dentro rapido
-        local parts = {}
-        if v:IsA("Folder") or v:IsA("Model") then
-            parts = v:GetChildren() -- ✅ SOLO HIJOS, NO NIETOS (MAS RAPIDO)
-        else
-            parts = {v}
-        end
+    -- ✅ ARREGLADO: Buscamos en la carpeta Balls o en todo el mapa
+    -- Pero de forma RAPIDA
+    local BallsFolder = Workspace:FindFirstChild("Balls") or Workspace
 
-        for _, part in pairs(parts) do
-            if part:IsA("BasePart") and not part:IsDescendantOf(Character) then
+    for _, v in pairs(BallsFolder:GetDescendants()) do
+        if v:IsA("BasePart") and not v:IsDescendantOf(Character) then
+            
+            -- 🛡️ SUELO QUIETO
+            if v.Size.X > 15 or v.Size.Y > 15 or v.Size.Z > 15 then
+                continue
+            end
+            
+            local Name = string.lower(v.Name)
+            
+            if string.find(Name,"ball")
+            or string.find(Name,"legendary")
+            or string.find(Name,"mutat")
+            or string.find(Name,"doub")
+            or string.find(Name,"rare")
+            or string.find(Name,"epic")
+            then
                 
-                -- 🛡️ SUELO QUIETO
-                if part.Size.X > 15 or part.Size.Y > 15 or part.Size.Z > 15 then
-                    continue
-                end
+                local Dist = (MyPos - v.Position).Magnitude
                 
-                local Name = string.lower(part.Name)
-                
-                if string.find(Name,"ball")
-                or string.find(Name,"legendary")
-                or string.find(Name,"mutat")
-                or string.find(Name,"doub")
-                or string.find(Name,"rare")
-                or string.find(Name,"epic")
-                then
+                -- ✅ ATRAE RAPIDO Y FUERTE
+                if Dist < 80 then
+                    v.CanCollide = false
+                    v.Anchored = false
+                    v.CFrame = v.CFrame:Lerp(RootPart.CFrame, 0.9)
                     
-                    local Dist = (MyPos - part.Position).Magnitude
-                    
-                    if Dist < 80 then
-                        part.CanCollide = false
-                        part.Anchored = false
-                        part.CFrame = part.CFrame:Lerp(RootPart.CFrame, 0.9)
+                    -- ✅ SISTEMA PARA QUE NO TE LAS QUITE
+                    if Dist < 3.5 then
+                        firetouchinterest(Character, v, 0)
+                        firetouchinterest(Character, v, 1)
                         
-                        -- ✅ SISTEMA PARA QUE NO TE LAS QUITE
-                        if Dist < 3.5 then
-                            firetouchinterest(Character, part, 0)
-                            firetouchinterest(Character, part, 1)
-                            
-                            if Dist < 2 then
-                                part.CFrame = RootPart.CFrame + Vector3.new(0, 1, 0.5)
-                            end
+                        if Dist < 2 then
+                            v.CFrame = RootPart.CFrame + Vector3.new(0, 1, 0.5)
                         end
                     end
                 end
@@ -222,7 +213,6 @@ local function StartFarm()
     ToggleFarmBtn.Text = "DESACTIVAR"
     ToggleFarmBtn.BackgroundColor3 = Color3.fromRGB(0, 80, 0)
     
-    -- ✅ USAMOS HEARTBEAT QUE ES EL MAS LIGERO
     Connection = RunService.Heartbeat:Connect(Magnet)
     
     Loop = spawn(function()
