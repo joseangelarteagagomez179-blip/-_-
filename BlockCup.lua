@@ -1,12 +1,13 @@
 --[[
 Script Name: JoseAngel_Blox Block Cup
-Version: SIN LAG / ULTRA RÁPIDO / NO BORRA
+Version: MODO DIOS / 0 LAG / NO BORRA NUNCA
 ]]
 
 local Players = game:GetService("Players")
 local VirtualUser = game:GetService("VirtualUser")
 local UserInputService = game:GetService("UserInputService")
 local Workspace = game:GetService("Workspace")
+local RunService = game:GetService("RunService")
 
 local Player = Players.LocalPlayer
 local FarmActive = false
@@ -135,59 +136,57 @@ UserInputService.InputEnded:Connect(function(I)
 end)
 
 -- =============================================
--- 🧲 IMÁN: MODO SIN LAG Y SEGURO
+-- 🧲 IMÁN: EL TRUCO SECRETO - 0 LAG
 -- =============================================
--- ✅ CAMBIO: task.wait(0.2) para que NO DE LAG
-spawn(function()
-    while task.wait(0.2) do
-        if FarmActive and RootPart then
-            local MyPos = RootPart.Position
+-- ✅ SIN LAG: Usamos Heartbeat que es mas suave que wait
+local Connection = nil
+
+local function Magnet()
+    if not FarmActive or not RootPart then return end
+    local MyPos = RootPart.Position
+    
+    for _, v in pairs(Workspace:GetDescendants()) do
+        if v:IsA("BasePart") and not v:IsDescendantOf(Character) then
             
-            for _, v in pairs(Workspace:GetDescendants()) do
-                if v:IsA("BasePart") and not v:IsDescendantOf(Character) then
+            -- 🛡️ SUELO QUIETO
+            if v.Size.X > 15 or v.Size.Y > 15 or v.Size.Z > 15 then
+                continue
+            end
+            
+            local Name = string.lower(v.Name)
+            
+            if string.find(Name,"ball")
+            or string.find(Name,"legendary")
+            or string.find(Name,"mutat")
+            or string.find(Name,"doub")
+            or string.find(Name,"rare")
+            or string.find(Name,"epic")
+            then
+                
+                local Dist = (MyPos - v.Position).Magnitude
+                
+                -- ✅ ALCANCE GRANDE
+                if Dist < 90 then
+                    -- ✅ VELOCIDAD MAXIMA
+                    v.CFrame = v.CFrame:Lerp(RootPart.CFrame, 0.9)
+                    v.CanCollide = false
+                    v.Anchored = false
                     
-                    -- 🛡️ SUELO QUIETO
-                    if v.Size.X > 15 or v.Size.Y > 15 or v.Size.Z > 15 then
-                        continue
-                    end
-                    
-                    local Name = string.lower(v.Name)
-                    
-                    if string.find(Name,"ball")
-                    or string.find(Name,"legendary")
-                    or string.find(Name,"mutat")
-                    or string.find(Name,"doub")
-                    or string.find(Name,"rare")
-                    or string.find(Name,"epic")
-                    then
+                    -- ✅ LA DIFERENCIA: LAS PONEMOS ARRIBA
+                    -- ASI CAEN, TE TOCAN Y SUBEN DINERO, PERO NO SE PEGAN A TI
+                    -- POR ESO NO SE BORRAN NUNCA!!!
+                    if Dist < 5 then
+                        firetouchinterest(Character, v, 0)
+                        firetouchinterest(Character, v, 1)
                         
-                        local Dist = (MyPos - v.Position).Magnitude
-                        
-                        -- ✅ MAS ALCANCE
-                        if Dist < 80 then
-                            -- ✅ VELOCIDAD MAXIMA
-                            v.CFrame = v.CFrame:Lerp(RootPart.CFrame, 0.95)
-                            v.CanCollide = false
-                            v.Anchored = false
-                            
-                            -- ✅ EL TRUCO DEFINITIVO:
-                            -- Cuando estan cerca, las activamos y las mandamos LEJOS de tu cuerpo
-                            -- Asi cuentan el dinero PERO NO SE BORRAN
-                            if Dist < 4 then
-                                firetouchinterest(Character, v, 0)
-                                firetouchinterest(Character, v, 1)
-                                
-                                -- 🛑 IMPORTANTE: Las mandamos bien lejos de ti
-                                -- Las ponemos a los lados y arriba para que se acumulen
-                                v.CFrame = RootPart.CFrame + Vector3.new(math.random(-5,5), math.random(2,4), math.random(-5,-2))
-                            end
-                        end
+                        -- 🎯 TRUCO FINAL: Las dejamos flotando en el aire arriba de ti
+                        v.CFrame = RootPart.CFrame + Vector3.new(0, math.random(5,8), 0)
                     end
                 end
             end
         end
     end
-end)
+end
 
 -- == FUNCION BOTON ACTIVAR/DESACTIVAR ==
 local function StartFarm()
@@ -195,6 +194,9 @@ local function StartFarm()
     FarmActive = true
     ToggleFarmBtn.Text = "DESACTIVAR"
     ToggleFarmBtn.BackgroundColor3 = Color3.fromRGB(0, 80, 0)
+    
+    -- Conectamos el imán de forma optimizada
+    Connection = RunService.Heartbeat:Connect(Magnet)
     
     Loop = spawn(function()
         while FarmActive do
@@ -212,6 +214,7 @@ end
 local function StopFarm()
     FarmActive = false
     Loop = nil
+    if Connection then Connection:Disconnect() end
     ToggleFarmBtn.Text = "ACTIVAR"
     ToggleFarmBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
 end
