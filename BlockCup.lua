@@ -1,6 +1,6 @@
 --[[
 Script Name: JoseAngel_Blox Block Cup
-Version: ULTRA OPTIMIZADO / ANTI-LAG / FARMEO REAL
+Version: VELOCIDAD MAX / ANTI LAG / ANTI TSUNAMI / INVENCIBLE
 ]]
 
 local Players = game:GetService("Players")
@@ -20,14 +20,31 @@ local function UpdateCharacter()
     Character = Player.Character or Player.CharacterAdded:Wait()
     Humanoid = Character:WaitForChild("Humanoid")
     RootPart = Character:WaitForChild("HumanoidRootPart")
+    
+    -- ⚡️ VELOCIDAD MAXIMA
+    Humanoid.WalkSpeed = 1000
+    
+    -- 🛡️ ANTI TSUNAMI / MODO DIOS
+    Humanoid.MaxHealth = math.huge -- Vida infinita
+    Humanoid.Health = math.huge   -- Siempre lleno
 end
 Player.CharacterAdded:Connect(UpdateCharacter)
 UpdateCharacter()
 
+-- == MANTENER VIDA SIEMPRE LLENA (POR SI ACASO) ==
+spawn(function()
+    while task.wait(0.1) do
+        if Humanoid then
+            Humanoid.Health = math.huge
+            Humanoid.MaxHealth = math.huge
+        end
+    end
+end)
+
 -- == GUI ==
 local ScreenGui = Instance.new("ScreenGui")
 local Main = Instance.new("Frame")
-local Title = Instance.new("TextLabel")
+local Title = Instance.new("Instance.new")
 local UICorner = Instance.new("UICorner")
 local UIStroke = Instance.new("UIStroke")
 local FarmLabel = Instance.new("TextLabel")
@@ -136,75 +153,52 @@ UserInputService.InputEnded:Connect(function(I)
 end)
 
 -- =============================================
--- 🧲 IMÁN: MODO ULTRA OPTIMIZADO + SEGURO
+-- 🧲 IMÁN: MODO ULTRA LIGERO (SIN LAG)
 -- =============================================
 local Connection = nil
-local Processed = {} -- ✅ LISTA PARA NO PROCESAR LO MISMO 1000 VECES
 
 local function Magnet()
     if not FarmActive or not RootPart then return end
     local MyPos = RootPart.Position
 
-    -- ✅ ANTI-LAG: Solo buscamos en la carpeta de pelotas (si existe)
-    -- Esto quita el 99% del consumo de memoria
-    local Targets = Workspace:GetChildren()
-    
-    for _, v in pairs(Targets) do
-        -- ✅ ANTI-LAG: Evitamos revisar modelos o cosas grandes rapido
-        if v:IsA("Model") or v:IsA("Folder") then
-            for _, part in pairs(v:GetDescendants()) do
-                if part:IsA("BasePart") then
-                    ProcessPart(part, MyPos)
-                end
+    -- ✅ ANTI-LAG: Solo buscamos en la carpeta Balls
+    local BallsFolder = Workspace:FindFirstChild("Balls") or Workspace
+
+    for _, v in pairs(BallsFolder:GetDescendants()) do
+        if v:IsA("BasePart") and not v:IsDescendantOf(Character) then
+            
+            -- 🛡️ SUELO QUIETO
+            if v.Size.X > 15 or v.Size.Y > 15 or v.Size.Z > 15 then
+                continue
             end
-        elseif v:IsA("BasePart") then
-            ProcessPart(v, MyPos)
-        end
-    end
-end
-
--- ✅ FUNCION SEPARADA PARA OPTIMIZAR
-function ProcessPart(v, MyPos)
-    if not v or not v:IsA("BasePart") or not v.Parent then return end
-    if v:IsDescendantOf(Character) then return end
-    
-    -- 🛡️ SUELO QUIETO
-    if v.Size.X > 15 or v.Size.Y > 15 or v.Size.Z > 15 then
-        return
-    end
-
-    local Name = string.lower(v.Name)
-    
-    if string.find(Name,"ball")
-    or string.find(Name,"legendary")
-    or string.find(Name,"mutat")
-    or string.find(Name,"doub")
-    or string.find(Name,"rare")
-    or string.find(Name,"epic")
-    then
-        
-        local Dist = (MyPos - v.Position).Magnitude
-        
-        -- ✅ ATRAE RAPIDO PERO SEGURO
-        if Dist < 80 then
-            v.CanCollide = false
-            v.Anchored = false
             
-            -- ✅ VELOCIDAD PERO SUAVE
-            v.CFrame = v.CFrame:Lerp(RootPart.CFrame, 0.85)
+            local Name = string.lower(v.Name)
             
-            -- ✅ SISTEMA PARA QUE NO TE LAS QUITE:
-            -- Las mantenemos pegadas PERO NO LAS BORRAMOS
-            -- Asi el servidor dice "OK, tomada" y no revierte
-            if Dist < 3.5 then
-                firetouchinterest(Character, v, 0)
-                firetouchinterest(Character, v, 1)
+            if string.find(Name,"ball")
+            or string.find(Name,"legendary")
+            or string.find(Name,"mutat")
+            or string.find(Name,"doub")
+            or string.find(Name,"rare")
+            or string.find(Name,"epic")
+            then
                 
-                -- ✅ EL TRUCO FINAL:
-                -- Las dejamos pegadas a ti pero un poquito separadas
-                -- Asi cuentan, suman y NO SE VAN NUNCA
-                if Dist < 2 then
-                    v.CFrame = RootPart.CFrame + Vector3.new(0, 1, 0.5)
+                local Dist = (MyPos - v.Position).Magnitude
+                
+                -- ✅ ATRAE RAPIDO
+                if Dist < 80 then
+                    v.CanCollide = false
+                    v.Anchored = false
+                    v.CFrame = v.CFrame:Lerp(RootPart.CFrame, 0.9)
+                    
+                    -- ✅ SISTEMA PARA QUE NO TE LAS QUITE
+                    if Dist < 3.5 then
+                        firetouchinterest(Character, v, 0)
+                        firetouchinterest(Character, v, 1)
+                        
+                        if Dist < 2 then
+                            v.CFrame = RootPart.CFrame + Vector3.new(0, 1, 0.5)
+                        end
+                    end
                 end
             end
         end
@@ -218,8 +212,8 @@ local function StartFarm()
     ToggleFarmBtn.Text = "DESACTIVAR"
     ToggleFarmBtn.BackgroundColor3 = Color3.fromRGB(0, 80, 0)
     
-    -- ✅ CONEXION MAS LIGERA POSIBLE
-    Connection = RunService.RenderStepped:Connect(Magnet)
+    -- ✅ CONEXION OPTIMIZADA
+    Connection = RunService.Heartbeat:Connect(Magnet)
     
     Loop = spawn(function()
         while FarmActive do
