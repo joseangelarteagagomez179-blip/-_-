@@ -1,13 +1,13 @@
 --[[
 Script Name: JoseAngel_Blox Block Cup
-Version: 0 LAG TOTAL / ULTRA LIGHT
+Version: BOTON FUNCIONAL / 0 LAG / ATRAE TODO
 ]]
 
 local Players = game:GetService("Players")
 local VirtualUser = game:GetService("VirtualUser")
-local UserInputService = UserInputService
-local Workspace = Workspace
-local RunService = RunService
+local UserInputService = game:GetService("UserInputService")
+local Workspace = game:GetService("Workspace")
+local RunService = game:GetService("RunService")
 
 local Player = Players.LocalPlayer
 local FarmActive = false
@@ -116,7 +116,7 @@ BtnCorner.Parent = ToggleFarmBtn
 -- ==================================
 spawn(function()
     local H = 0
-    while task.wait(0.15) do -- ✅ MAS LENTO = MENOS CONSUMO
+    while task.wait(0.15) do
         H = H + 0.01
         if H > 1 then H = 0 end
         UIStroke.Color = Color3.fromHSV(H, 0.8, 1)
@@ -153,7 +153,7 @@ UserInputService.InputEnded:Connect(function(I)
 end)
 
 -- =============================================
--- 🧲 IMÁN: EL MÁS RÁPIDO DEL MUNDO
+-- 🧲 IMÁN: MODO ULTRA RAPIDO Y LIGERO
 -- =============================================
 local Connection = nil
 
@@ -161,8 +161,6 @@ local function Magnet()
     if not FarmActive or not RootPart then return end
     local MyPos = RootPart.Position
 
-    -- ✅ 🚀 TRUCO ANTI-LAG:
-    -- Usamos ipairs que es mas rapido y limitamos un poco
     for _, v in next, Workspace:GetDescendants() do
         if v:IsA("BasePart") and not v:IsDescendantOf(Character) then
             
@@ -188,7 +186,6 @@ local function Magnet()
                     v.Anchored = false
                     v.CFrame = v.CFrame:Lerp(RootPart.CFrame, 0.9)
                     
-                    -- ✅ SISTEMA PARA QUE NO TE LAS QUITE
                     if Dist < 3.5 then
                         firetouchinterest(Character, v, 0)
                         firetouchinterest(Character, v, 1)
@@ -208,9 +205,8 @@ local function StartFarm()
     if Loop then return end
     FarmActive = true
     ToggleFarmBtn.Text = "DESACTIVAR"
-    ToggleFarmBtn.BackgroundColor3 = Color3.fromRGB(0, 80, 0)
+    ToggleFarmBtn.BackgroundColor3 = Color3.new(0, 80, 0)
     
-    -- ✅ USAMOS HEARTBEAT PERO OPTIMIZADO
     Connection = RunService.Heartbeat:Connect(Magnet)
     
     Loop = spawn(function()
@@ -234,6 +230,7 @@ local function StopFarm()
     ToggleFarmBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
 end
 
+-- ✅ CONEXION DEL BOTON ARREGLADA
 ToggleFarmBtn.MouseButton1Click:Connect(function()
     if not FarmActive then StartFarm() else StopFarm() end
 end)
