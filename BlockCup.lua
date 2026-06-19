@@ -1,6 +1,6 @@
 --[[
 Script Name: JoseAngel_Blox Block Cup
-Version: BOTON FUNCIONAL / 0 LAG / ATRAE TODO - OPTIMIZADO
+Version: SOLO CERCA / 0 LAG / CUENTA PERFECTO
 ]]
 
 local Players = game:GetService("Players")
@@ -116,7 +116,7 @@ end)
 -- 📱 FUNCION MOVER / ARRASTRAR
 -- ==================================
 Main.InputBegan:Connect(function(I)
-    if I.UserInputType == Enum.UserInputType.MouseButton1 or I.UserInputType == Enum.UserInputType.Touch then
+    if I.UserInputType == Enum.UserInputType.MouseButton1 or I.UserInputType.Touch then
         Dragging = true
         DragStart = I.Position
         StartPos = Main.Position
@@ -136,13 +136,13 @@ UserInputService.InputChanged:Connect(function(I)
 end)
 
 UserInputService.InputEnded:Connect(function(I)
-    if I.UserInputType == Enum.UserInputType.MouseButton1 or I.UserInputType == Enum.UserInputType.Touch then
+    if I.UserInputType == Enum.UserInputType.MouseButton1 or I.UserInputType.Touch then
         Dragging = false
     end
 end)
 
 -- =============================================
--- 🧲 IMÁN: MODO ULTRA RAPIDO Y LIGERO
+-- 🧲 IMÁN: SOLO LO QUE ESTA CERCA (MAXIMO RANGO 20)
 -- =============================================
 local Keywords = {"ball", "legendary", "mutat", "doub", "rare", "epic"}
 
@@ -153,7 +153,7 @@ local function Magnet()
     for _, v in next, Workspace:GetDescendants() do
         if v:IsA("BasePart") and not v:IsDescendantOf(Character) then
             
-            -- Evitar mover suelos o partes grandes
+            -- FILTRO PARA NO MOVER EL SUELO
             if v.Size.X > 15 or v.Size.Y > 15 or v.Size.Z > 15 then
                 continue
             end
@@ -161,7 +161,6 @@ local function Magnet()
             local Name = string.lower(v.Name)
             local IsTarget = false
             
-            -- Busqueda rápida por palabras clave
             for _, word in ipairs(Keywords) do
                 if string.find(Name, word) then
                     IsTarget = true
@@ -172,19 +171,21 @@ local function Magnet()
             if IsTarget then
                 local Dist = (MyPos - v.Position).Magnitude
                 
-                if Dist < 100 then
+                -- 🔽 RANGO MUY CORTO: SOLO HASTA 20 DE DISTANCIA 🔽
+                if Dist < 20 then
                     v.CanCollide = false
                     v.Anchored = false
-                    -- Velocidad maxima de atracción
-                    v.CFrame = v.CFrame:Lerp(RootPart.CFrame, 0.99)
                     
-                    if Dist < 4 then
-                        -- Activar colisión para recoger
+                    -- VELOCIDAD SUAVE PARA QUE CUENTE BIEN
+                    v.CFrame = v.CFrame:Lerp(RootPart.CFrame, 0.3)
+                    
+                    -- ACTIVAR RECOLECCION
+                    if Dist < 5 then
                         firetouchinterest(Character, v, 0)
                         firetouchinterest(Character, v, 1)
                         
                         if Dist < 2 then
-                            v.CFrame = RootPart.CFrame + Vector3.new(0, 1, 0.5)
+                            v.CFrame = RootPart.CFrame + Vector3.new(0, 0.5, 0)
                         end
                     end
                 end
@@ -200,18 +201,17 @@ local function StartFarm()
     ToggleFarmBtn.Text = "DESACTIVAR"
     ToggleFarmBtn.BackgroundColor3 = Color3.new(0, 80, 0)
     
-    -- Usar Heartbeat para maxima velocidad
     Connection = RunService.Heartbeat:Connect(Magnet)
     
     task.spawn(function()
         while FarmActive do
             if not Humanoid then UpdateCharacter() end
             VirtualUser:Click()
-            task.wait(2)
+            task.wait(2.5)
             if Humanoid then
                 Humanoid:MoveTo(Vector3.new(-45, 0, 0))
             end
-            task.wait(3)
+            task.wait(3.5)
         end
     end)
 end
