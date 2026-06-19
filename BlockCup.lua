@@ -1,6 +1,6 @@
 --[[
 Script Name: JoseAngel_Blox Block Cup
-Version: BOTON FUNCIONAL / 0 LAG / ATRAE TODO
+Version: BOTON FUNCIONAL / 0 LAG / ATRAE TODO - OPTIMIZADO
 ]]
 
 local Players = game:GetService("Players")
@@ -11,7 +11,7 @@ local RunService = game:GetService("RunService")
 
 local Player = Players.LocalPlayer
 local FarmActive = false
-local Loop = nil
+local Connection = nil
 local Dragging, DragStart, StartPos = nil, nil, nil
 local Character, Humanoid, RootPart
 
@@ -21,10 +21,7 @@ local function UpdateCharacter()
     Humanoid = Character:WaitForChild("Humanoid")
     RootPart = Character:WaitForChild("HumanoidRootPart")
     
-    -- ⚡️ VELOCIDAD MAXIMA
     Humanoid.WalkSpeed = 1000
-    
-    -- 🛡️ ANTI TSUNAMI / MODO DIOS
     Humanoid.MaxHealth = math.huge
     Humanoid.Health = math.huge
 end
@@ -32,11 +29,10 @@ Player.CharacterAdded:Connect(UpdateCharacter)
 UpdateCharacter()
 
 -- == MANTENER VIDA INFINITA ==
-spawn(function()
+task.spawn(function()
     while task.wait(1) do
         if Humanoid then
             Humanoid.Health = math.huge
-            Humanoid.MaxHealth = math.huge
         end
     end
 end)
@@ -55,7 +51,6 @@ ScreenGui.Name = "UI"
 ScreenGui.Parent = game:GetService("CoreGui")
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
--- MARCO PRINCIPAL
 Main.Name = "Main"
 Main.Parent = ScreenGui
 Main.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
@@ -64,18 +59,15 @@ Main.Position = UDim2.new(0.05, 0, 0.2, 0)
 Main.Size = UDim2.new(0, 180, 0, 140)
 Main.Active = true
 
--- ESQUINAS REDONDEADAS
 UICorner.CornerRadius = UDim.new(0, 12)
 UICorner.Parent = Main
 
--- BORDE CON COLORES (EFECTO RGB)
 UIStroke.Name = "Border"
 UIStroke.Parent = Main
 UIStroke.Thickness = 2
 UIStroke.Color = Color3.new(1, 0, 0)
 UIStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 
--- TITULO
 Title.Name = "Title"
 Title.Parent = Main
 Title.BackgroundTransparency = 1
@@ -86,7 +78,6 @@ Title.Text = "JoseAngel_Blox"
 Title.TextColor3 = Color3.new(1, 1, 1)
 Title.TextSize = 16
 
--- TEXTO AUTO FARM
 FarmLabel.Parent = Main
 FarmLabel.BackgroundTransparency = 1
 FarmLabel.Position = UDim2.new(0.05, 0, 0.32, 0)
@@ -95,7 +86,6 @@ FarmLabel.Text = "Auto farm pelotas"
 FarmLabel.TextColor3 = Color3.new(1, 1, 1)
 FarmLabel.TextSize = 12
 
--- BOTON PRINCIPAL
 ToggleFarmBtn.Name = "ToggleFarm"
 ToggleFarmBtn.Parent = Main
 ToggleFarmBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
@@ -107,14 +97,13 @@ ToggleFarmBtn.TextColor3 = Color3.new(1, 1, 1)
 ToggleFarmBtn.Font = Enum.Font.GothamBold
 ToggleFarmBtn.TextSize = 13
 
--- ESQUINAS REDONDEADAS AL BOTON
 BtnCorner.CornerRadius = UDim.new(0, 8)
 BtnCorner.Parent = ToggleFarmBtn
 
 -- ==================================
 -- ✨ EFECTO COLORES RGB
 -- ==================================
-spawn(function()
+task.spawn(function()
     local H = 0
     while task.wait(0.15) do
         H = H + 0.01
@@ -155,7 +144,7 @@ end)
 -- =============================================
 -- 🧲 IMÁN: MODO ULTRA RAPIDO Y LIGERO
 -- =============================================
-local Connection = nil
+local Keywords = {"ball", "legendary", "mutat", "doub", "rare", "epic"}
 
 local function Magnet()
     if not FarmActive or not RootPart then return end
@@ -164,29 +153,33 @@ local function Magnet()
     for _, v in next, Workspace:GetDescendants() do
         if v:IsA("BasePart") and not v:IsDescendantOf(Character) then
             
-            -- 🛡️ SUELO QUIETO
+            -- Evitar mover suelos o partes grandes
             if v.Size.X > 15 or v.Size.Y > 15 or v.Size.Z > 15 then
                 continue
             end
             
             local Name = string.lower(v.Name)
+            local IsTarget = false
             
-            if string.find(Name,"ball")
-            or string.find(Name,"legendary")
-            or string.find(Name,"mutat")
-            or string.find(Name,"doub")
-            or string.find(Name,"rare")
-            or string.find(Name,"epic")
-            then
-                
+            -- Busqueda rápida por palabras clave
+            for _, word in ipairs(Keywords) do
+                if string.find(Name, word) then
+                    IsTarget = true
+                    break
+                end
+            end
+
+            if IsTarget then
                 local Dist = (MyPos - v.Position).Magnitude
                 
-                if Dist < 80 then
+                if Dist < 100 then
                     v.CanCollide = false
                     v.Anchored = false
-                    v.CFrame = v.CFrame:Lerp(RootPart.CFrame, 0.9)
+                    -- Velocidad maxima de atracción
+                    v.CFrame = v.CFrame:Lerp(RootPart.CFrame, 0.99)
                     
-                    if Dist < 3.5 then
+                    if Dist < 4 then
+                        -- Activar colisión para recoger
                         firetouchinterest(Character, v, 0)
                         firetouchinterest(Character, v, 1)
                         
@@ -202,35 +195,37 @@ end
 
 -- == FUNCION BOTON ACTIVAR/DESACTIVAR ==
 local function StartFarm()
-    if Loop then return end
+    if Connection then return end
     FarmActive = true
     ToggleFarmBtn.Text = "DESACTIVAR"
     ToggleFarmBtn.BackgroundColor3 = Color3.new(0, 80, 0)
     
+    -- Usar Heartbeat para maxima velocidad
     Connection = RunService.Heartbeat:Connect(Magnet)
     
-    Loop = spawn(function()
+    task.spawn(function()
         while FarmActive do
             if not Humanoid then UpdateCharacter() end
             VirtualUser:Click()
-            task.wait(2.0)
+            task.wait(2)
             if Humanoid then
                 Humanoid:MoveTo(Vector3.new(-45, 0, 0))
             end
-            task.wait(3.0)
+            task.wait(3)
         end
     end)
 end
 
 local function StopFarm()
     FarmActive = false
-    Loop = nil
-    if Connection then Connection:Disconnect() end
+    if Connection then
+        Connection:Disconnect()
+        Connection = nil
+    end
     ToggleFarmBtn.Text = "ACTIVAR"
     ToggleFarmBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
 end
 
--- ✅ CONEXION DEL BOTON ARREGLADA
 ToggleFarmBtn.MouseButton1Click:Connect(function()
     if not FarmActive then StartFarm() else StopFarm() end
 end)
