@@ -1,6 +1,6 @@
 --[[
 Script Name: JoseAngel_Blox Block Cup
-Version: VELOCIDAD MAX / ANTI LAG / ANTI TSUNAMI / INVENCIBLE
+Version: CARGA INSTANTANEO / ANTI TSUNAMI / VELOCIDAD MAX / SIN LAG
 ]]
 
 local Players = game:GetService("Players")
@@ -25,13 +25,13 @@ local function UpdateCharacter()
     Humanoid.WalkSpeed = 1000
     
     -- 🛡️ ANTI TSUNAMI / MODO DIOS
-    Humanoid.MaxHealth = math.huge -- Vida infinita
-    Humanoid.Health = math.huge   -- Siempre lleno
+    Humanoid.MaxHealth = math.huge
+    Humanoid.Health = math.huge
 end
 Player.CharacterAdded:Connect(UpdateCharacter)
 UpdateCharacter()
 
--- == MANTENER VIDA SIEMPRE LLENA (POR SI ACASO) ==
+-- == MANTENER VIDA INFINITA ==
 spawn(function()
     while task.wait(0.1) do
         if Humanoid then
@@ -44,7 +44,7 @@ end)
 -- == GUI ==
 local ScreenGui = Instance.new("ScreenGui")
 local Main = Instance.new("Frame")
-local Title = Instance.new("Instance.new")
+local Title = Instance.new("TextLabel")
 local UICorner = Instance.new("UICorner")
 local UIStroke = Instance.new("UIStroke")
 local FarmLabel = Instance.new("TextLabel")
@@ -161,10 +161,10 @@ local function Magnet()
     if not FarmActive or not RootPart then return end
     local MyPos = RootPart.Position
 
-    -- ✅ ANTI-LAG: Solo buscamos en la carpeta Balls
-    local BallsFolder = Workspace:FindFirstChild("Balls") or Workspace
-
-    for _, v in pairs(BallsFolder:GetDescendants()) do
+    -- ✅ ANTI-LAG: Busqueda inteligente
+    local Targets = Workspace:GetDescendants()
+    
+    for _, v in pairs(Targets) do
         if v:IsA("BasePart") and not v:IsDescendantOf(Character) then
             
             -- 🛡️ SUELO QUIETO
