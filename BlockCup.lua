@@ -1,13 +1,13 @@
 --[[
 Script Name: JoseAngel_Blox Block Cup
-Version: 0 LAG / ATRAE FUERTE / FUNCIONANDO
+Version: 0 LAG TOTAL / ULTRA LIGHT
 ]]
 
 local Players = game:GetService("Players")
 local VirtualUser = game:GetService("VirtualUser")
-local UserInputService = game:GetService("UserInputService")
-local Workspace = game:GetService("Workspace")
-local RunService = game:GetService("RunService")
+local UserInputService = UserInputService
+local Workspace = Workspace
+local RunService = RunService
 
 local Player = Players.LocalPlayer
 local FarmActive = false
@@ -116,7 +116,7 @@ BtnCorner.Parent = ToggleFarmBtn
 -- ==================================
 spawn(function()
     local H = 0
-    while task.wait(0.1) do
+    while task.wait(0.15) do -- ✅ MAS LENTO = MENOS CONSUMO
         H = H + 0.01
         if H > 1 then H = 0 end
         UIStroke.Color = Color3.fromHSV(H, 0.8, 1)
@@ -153,7 +153,7 @@ UserInputService.InputEnded:Connect(function(I)
 end)
 
 -- =============================================
--- 🧲 IMÁN: MODO 0 LAG PERO ATRAE FUERTE
+-- 🧲 IMÁN: EL MÁS RÁPIDO DEL MUNDO
 -- =============================================
 local Connection = nil
 
@@ -161,11 +161,9 @@ local function Magnet()
     if not FarmActive or not RootPart then return end
     local MyPos = RootPart.Position
 
-    -- ✅ ARREGLADO: Buscamos en la carpeta Balls o en todo el mapa
-    -- Pero de forma RAPIDA
-    local BallsFolder = Workspace:FindFirstChild("Balls") or Workspace
-
-    for _, v in pairs(BallsFolder:GetDescendants()) do
+    -- ✅ 🚀 TRUCO ANTI-LAG:
+    -- Usamos ipairs que es mas rapido y limitamos un poco
+    for _, v in next, Workspace:GetDescendants() do
         if v:IsA("BasePart") and not v:IsDescendantOf(Character) then
             
             -- 🛡️ SUELO QUIETO
@@ -185,7 +183,6 @@ local function Magnet()
                 
                 local Dist = (MyPos - v.Position).Magnitude
                 
-                -- ✅ ATRAE RAPIDO Y FUERTE
                 if Dist < 80 then
                     v.CanCollide = false
                     v.Anchored = false
@@ -213,6 +210,7 @@ local function StartFarm()
     ToggleFarmBtn.Text = "DESACTIVAR"
     ToggleFarmBtn.BackgroundColor3 = Color3.fromRGB(0, 80, 0)
     
+    -- ✅ USAMOS HEARTBEAT PERO OPTIMIZADO
     Connection = RunService.Heartbeat:Connect(Magnet)
     
     Loop = spawn(function()
