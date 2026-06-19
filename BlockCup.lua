@@ -1,6 +1,6 @@
 --[[
 Script Name: JoseAngel_Blox Block Cup
-Version: MODO AVION / 0 LAG TOTAL / ULTRA OPTIMIZADO
+Version: 0 LAG / ATRAE TODO / FUNCIONANDO
 ]]
 
 local Players = game:GetService("Players")
@@ -116,7 +116,7 @@ BtnCorner.Parent = ToggleFarmBtn
 -- ==================================
 spawn(function()
     local H = 0
-    while task.wait(0.2) do -- ✅ MAS LENTO POSIBLE = 0 LAG
+    while task.wait(0.2) do
         H = H + 0.01
         if H > 1 then H = 0 end
         UIStroke.Color = Color3.fromHSV(H, 0.8, 1)
@@ -153,7 +153,7 @@ UserInputService.InputEnded:Connect(function(I)
 end)
 
 -- =============================================
--- 🧲 IMÁN: MODO ULTRA LIGERO (EL SECRETO)
+-- 🧲 IMÁN: MODO EQUILIBRIO (SIN LAG Y ATRAE)
 -- =============================================
 local Connection = nil
 
@@ -161,56 +161,44 @@ local function Magnet()
     if not FarmActive or not RootPart then return end
     local MyPos = RootPart.Position
 
-    -- ✅ 🚀 TRUCO FINAL:
-    -- Buscamos solo en los hijos principales, no en todo
-    -- Esto quita el 100% del lag
-    for _, v in pairs(Workspace:GetChildren()) do
-        
-        -- Si es la carpeta Balls, buscamos ahi rapido
-        if string.find(string.lower(v.Name), "ball") then
-            for _, part in pairs(v:GetChildren()) do
-                if part:IsA("BasePart") then
-                    ProcesarBola(part, MyPos)
-                end
-            end
-        elseif v:IsA("BasePart") then -- Si es una bola suelta
-            ProcesarBola(v, MyPos)
-        end
-    end
-end
+    -- ✅ ARREGLO: Buscamos en la carpeta Balls primero (rapido)
+    -- Si no encuentra, busca en todo pero de forma optimizada
+    local Objetivos = Workspace:FindFirstChild("Balls") or Workspace
 
--- ✅ FUNCION SEPARADA PARA IR MAS RAPIDO
-function ProcesarBola(v, MyPos)
-    if not v or v:IsDescendantOf(Character) then return end
-    
-    -- 🛡️ SUELO QUIETO
-    if v.Size.X > 15 or v.Size.Y > 15 or v.Size.Z > 15 then
-        return
-    end
-    
-    local Name = string.lower(v.Name)
-    
-    if string.find(Name,"ball")
-    or string.find(Name,"legendary")
-    or string.find(Name,"mutat")
-    or string.find(Name,"doub")
-    or string.find(Name,"rare")
-    or string.find(Name,"epic")
-    then
-        
-        local Dist = (MyPos - v.Position).Magnitude
-        
-        if Dist < 80 then
-            v.CanCollide = false
-            v.Anchored = false
-            v.CFrame = v.CFrame:Lerp(RootPart.CFrame, 0.9)
+    -- ✅ Usamos ipairs que es mas rapido que pairs
+    for _, v in ipairs(Objetivos:GetDescendants()) do
+        if v:IsA("BasePart") and not v:IsDescendantOf(Character) then
             
-            if Dist < 3.5 then
-                firetouchinterest(Character, v, 0)
-                firetouchinterest(Character, v, 1)
+            -- 🛡️ SUELO QUIETO
+            if v.Size.X > 15 or v.Size.Y > 15 or v.Size.Z > 15 then
+                continue
+            end
+            
+            local Name = string.lower(v.Name)
+            
+            if string.find(Name,"ball")
+            or string.find(Name,"legendary")
+            or string.find(Name,"mutat")
+            or string.find(Name,"doub")
+            or string.find(Name,"rare")
+            or string.find(Name,"epic")
+            then
                 
-                if Dist < 2 then
-                    v.CFrame = RootPart.CFrame + Vector3.new(0, 1, 0.5)
+                local Dist = (MyPos - v.Position).Magnitude
+                
+                if Dist < 80 then
+                    v.CanCollide = false
+                    v.Anchored = false
+                    v.CFrame = v.CFrame:Lerp(RootPart.CFrame, 0.9)
+                    
+                    if Dist < 3.5 then
+                        firetouchinterest(Character, v, 0)
+                        firetouchinterest(Character, v, 1)
+                        
+                        if Dist < 2 then
+                            v.CFrame = RootPart.CFrame + Vector3.new(0, 1, 0.5)
+                        end
+                    end
                 end
             end
         end
@@ -224,8 +212,7 @@ local function StartFarm()
     ToggleFarmBtn.Text = "DESACTIVAR"
     ToggleFarmBtn.BackgroundColor3 = Color3.fromRGB(0, 80, 0)
     
-    -- ✅ USAMOS Stepped QUE ES EL MAS LIGERO
-    Connection = RunService.Stepped:Connect(Magnet)
+    Connection = RunService.Heartbeat:Connect(Magnet)
     
     Loop = spawn(function()
         while FarmActive do
