@@ -1,6 +1,6 @@
 --[[
 Script Name: JoseAngel_Blox Block Cup
-Version: 0 LAG / ATRAE TODO / FUNCIONANDO
+Version: OPTIMIZADO | SIN LAG | LOW END & MEDIA DEVICES
 ]]
 
 local Players = game:GetService("Players")
@@ -12,6 +12,7 @@ local RunService = game:GetService("RunService")
 local Player = Players.LocalPlayer
 local FarmActive = false
 local Loop = nil
+local Connection = nil
 local Dragging, DragStart, StartPos = nil, nil, nil
 local Character, Humanoid, RootPart
 
@@ -21,10 +22,7 @@ local function UpdateCharacter()
     Humanoid = Character:WaitForChild("Humanoid")
     RootPart = Character:WaitForChild("HumanoidRootPart")
     
-    -- ⚡️ VELOCIDAD MAXIMA
     Humanoid.WalkSpeed = 1000
-    
-    -- 🛡️ ANTI TSUNAMI / MODO DIOS
     Humanoid.MaxHealth = math.huge
     Humanoid.Health = math.huge
 end
@@ -33,7 +31,7 @@ UpdateCharacter()
 
 -- == MANTENER VIDA INFINITA ==
 spawn(function()
-    while task.wait(1) do
+    while task.wait(3) do -- ⚡ OPTIMIZADO: Espera 3 segundos en vez de 1
         if Humanoid then
             Humanoid.Health = math.huge
             Humanoid.MaxHealth = math.huge
@@ -55,7 +53,6 @@ ScreenGui.Name = "UI"
 ScreenGui.Parent = game:GetService("CoreGui")
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
--- MARCO PRINCIPAL
 Main.Name = "Main"
 Main.Parent = ScreenGui
 Main.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
@@ -64,18 +61,15 @@ Main.Position = UDim2.new(0.05, 0, 0.2, 0)
 Main.Size = UDim2.new(0, 180, 0, 140)
 Main.Active = true
 
--- ESQUINAS REDONDEADAS
 UICorner.CornerRadius = UDim.new(0, 12)
 UICorner.Parent = Main
 
--- BORDE CON COLORES (EFECTO RGB)
 UIStroke.Name = "Border"
 UIStroke.Parent = Main
 UIStroke.Thickness = 2
 UIStroke.Color = Color3.new(1, 0, 0)
 UIStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 
--- TITULO
 Title.Name = "Title"
 Title.Parent = Main
 Title.BackgroundTransparency = 1
@@ -86,7 +80,6 @@ Title.Text = "JoseAngel_Blox"
 Title.TextColor3 = Color3.new(1, 1, 1)
 Title.TextSize = 16
 
--- TEXTO AUTO FARM
 FarmLabel.Parent = Main
 FarmLabel.BackgroundTransparency = 1
 FarmLabel.Position = UDim2.new(0.05, 0, 0.32, 0)
@@ -95,7 +88,6 @@ FarmLabel.Text = "Auto farm pelotas"
 FarmLabel.TextColor3 = Color3.new(1, 1, 1)
 FarmLabel.TextSize = 12
 
--- BOTON PRINCIPAL
 ToggleFarmBtn.Name = "ToggleFarm"
 ToggleFarmBtn.Parent = Main
 ToggleFarmBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
@@ -107,16 +99,15 @@ ToggleFarmBtn.TextColor3 = Color3.new(1, 1, 1)
 ToggleFarmBtn.Font = Enum.Font.GothamBold
 ToggleFarmBtn.TextSize = 13
 
--- ESQUINAS REDONDEADAS AL BOTON
 BtnCorner.CornerRadius = UDim.new(0, 8)
 BtnCorner.Parent = ToggleFarmBtn
 
 -- ==================================
--- ✨ EFECTO COLORES RGB (LIGERO)
+-- ✨ EFECTO RGB LIGERO
 -- ==================================
 spawn(function()
     local H = 0
-    while task.wait(0.2) do
+    while task.wait(0.3) do -- ⚡ OPTIMIZADO: Mas lento = menos uso de GPU
         H = H + 0.01
         if H > 1 then H = 0 end
         UIStroke.Color = Color3.fromHSV(H, 0.8, 1)
@@ -124,7 +115,7 @@ spawn(function()
 end)
 
 -- ==================================
--- 📱 FUNCION MOVER / ARRASTRAR
+-- 📱 MOVER / ARRASTRAR
 -- ==================================
 Main.InputBegan:Connect(function(I)
     if I.UserInputType == Enum.UserInputType.MouseButton1 or I.UserInputType == Enum.UserInputType.Touch then
@@ -153,23 +144,24 @@ UserInputService.InputEnded:Connect(function(I)
 end)
 
 -- =============================================
--- 🧲 IMÁN: MODO EQUILIBRIO (SIN LAG Y ATRAE)
+-- 🧲 IMÁN ULTRA OPTIMIZADO (MODO AHORRO)
 -- =============================================
-local Connection = nil
+local BallsFolder = nil -- Guardamos la carpeta para no buscarla siempre
 
 local function Magnet()
     if not FarmActive or not RootPart then return end
     local MyPos = RootPart.Position
 
-    -- ✅ ARREGLO: Buscamos en la carpeta Balls primero (rapido)
-    -- Si no encuentra, busca en todo pero de forma optimizada
-    local Objetivos = Workspace:FindFirstChild("Balls") or Workspace
+    -- ✅ BUSCAR CARPETA SOLO 1 VEZ
+    if not BallsFolder then
+        BallsFolder = Workspace:FindFirstChild("Balls") or Workspace
+    end
 
-    -- ✅ Usamos ipairs que es mas rapido que pairs
-    for _, v in ipairs(Objetivos:GetDescendants()) do
+    -- ✅ RANGO REDUCIDO PARA NO CARGAR TANTO
+    for _, v in pairs(BallsFolder:GetChildren()) do -- ⚡ Usamos GetChildren en vez de GetDescendants si es posible
         if v:IsA("BasePart") and not v:IsDescendantOf(Character) then
             
-            -- 🛡️ SUELO QUIETO
+            -- Ignorar paredes
             if v.Size.X > 15 or v.Size.Y > 15 or v.Size.Z > 15 then
                 continue
             end
@@ -186,10 +178,11 @@ local function Magnet()
                 
                 local Dist = (MyPos - v.Position).Magnitude
                 
-                if Dist < 80 then
+                -- ✅ RANGO MAXIMO 60 (antes 80) para aliviar
+                if Dist < 60 then
                     v.CanCollide = false
                     v.Anchored = false
-                    v.CFrame = v.CFrame:Lerp(RootPart.CFrame, 0.9)
+                    v.CFrame = v.CFrame:Lerp(RootPart.CFrame, 0.7) -- Un poco mas suave
                     
                     if Dist < 3.5 then
                         firetouchinterest(Character, v, 0)
@@ -207,12 +200,20 @@ end
 
 -- == FUNCION BOTON ACTIVAR/DESACTIVAR ==
 local function StartFarm()
-    if Loop then return end
+    if Connection then return end
     FarmActive = true
     ToggleFarmBtn.Text = "DESACTIVAR"
     ToggleFarmBtn.BackgroundColor3 = Color3.fromRGB(0, 80, 0)
     
-    Connection = RunService.Heartbeat:Connect(Magnet)
+    -- ⚡ OPTIMIZACION TOTAL: Usamos un spawn con wait en vez de Heartbeat
+    -- Asi controlamos exactamente cada cuanto revisa
+    Connection = spawn(function()
+        while FarmActive do
+            Magnet()
+            task.wait(0.1) -- ⚡ CLAVE: Revisa cada 0.1 segundos (10 veces por seg)
+            -- Si aun tienes lag, cambia 0.1 por 0.2 o 0.3
+        end
+    end)
     
     Loop = spawn(function()
         while FarmActive do
@@ -230,7 +231,7 @@ end
 local function StopFarm()
     FarmActive = false
     Loop = nil
-    if Connection then Connection:Disconnect() end
+    Connection = nil
     ToggleFarmBtn.Text = "ACTIVAR"
     ToggleFarmBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
 end
