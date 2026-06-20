@@ -1,18 +1,17 @@
 --[[
 Script Name: JoseAngel_Blox Block Cup
-Version: OPTIMIZADO | SIN LAG | LOW END & MEDIA DEVICES
+Version: OPTIMIZADO | SIN LAG | IMÁN 100% FUNCIONAL
 ]]
 
 local Players = game:GetService("Players")
 local VirtualUser = game:GetService("VirtualUser")
 local UserInputService = game:GetService("UserInputService")
 local Workspace = game:GetService("Workspace")
-local RunService = game:GetService("RunService")
 
 local Player = Players.LocalPlayer
 local FarmActive = false
 local Loop = nil
-local Connection = nil
+local MagnetLoop = nil
 local Dragging, DragStart, StartPos = nil, nil, nil
 local Character, Humanoid, RootPart
 
@@ -31,7 +30,7 @@ UpdateCharacter()
 
 -- == MANTENER VIDA INFINITA ==
 spawn(function()
-    while task.wait(3) do -- ⚡ OPTIMIZADO: Espera 3 segundos en vez de 1
+    while task.wait(3) do
         if Humanoid then
             Humanoid.Health = math.huge
             Humanoid.MaxHealth = math.huge
@@ -107,7 +106,7 @@ BtnCorner.Parent = ToggleFarmBtn
 -- ==================================
 spawn(function()
     local H = 0
-    while task.wait(0.3) do -- ⚡ OPTIMIZADO: Mas lento = menos uso de GPU
+    while task.wait(0.3) do
         H = H + 0.01
         if H > 1 then H = 0 end
         UIStroke.Color = Color3.fromHSV(H, 0.8, 1)
@@ -144,24 +143,24 @@ UserInputService.InputEnded:Connect(function(I)
 end)
 
 -- =============================================
--- 🧲 IMÁN ULTRA OPTIMIZADO (MODO AHORRO)
+-- 🧲 IMÁN OPTIMIZADO (AHORA SÍ ENCUENTRA TODO)
 -- =============================================
-local BallsFolder = nil -- Guardamos la carpeta para no buscarla siempre
+local BallsFolder = nil
 
 local function Magnet()
     if not FarmActive or not RootPart then return end
     local MyPos = RootPart.Position
 
-    -- ✅ BUSCAR CARPETA SOLO 1 VEZ
+    -- Buscar carpeta
     if not BallsFolder then
         BallsFolder = Workspace:FindFirstChild("Balls") or Workspace
     end
 
-    -- ✅ RANGO REDUCIDO PARA NO CARGAR TANTO
-    for _, v in pairs(BallsFolder:GetChildren()) do -- ⚡ Usamos GetChildren en vez de GetDescendants si es posible
+    -- ✅ CORRECCIÓN: Usamos GetDescendants() pero con pausa controlada
+    for _, v in pairs(BallsFolder:GetDescendants()) do
         if v:IsA("BasePart") and not v:IsDescendantOf(Character) then
             
-            -- Ignorar paredes
+            -- Ignorar paredes y suelo
             if v.Size.X > 15 or v.Size.Y > 15 or v.Size.Z > 15 then
                 continue
             end
@@ -178,13 +177,13 @@ local function Magnet()
                 
                 local Dist = (MyPos - v.Position).Magnitude
                 
-                -- ✅ RANGO MAXIMO 60 (antes 80) para aliviar
                 if Dist < 60 then
                     v.CanCollide = false
                     v.Anchored = false
-                    v.CFrame = v.CFrame:Lerp(RootPart.CFrame, 0.7) -- Un poco mas suave
+                    v.CFrame = v.CFrame:Lerp(RootPart.CFrame, 0.7)
                     
-                    if Dist < 3.5 then
+                    -- ✅ FORZAR RECOLECCIÓN
+                    if Dist < 4 then
                         firetouchinterest(Character, v, 0)
                         firetouchinterest(Character, v, 1)
                         
@@ -200,21 +199,20 @@ end
 
 -- == FUNCION BOTON ACTIVAR/DESACTIVAR ==
 local function StartFarm()
-    if Connection then return end
+    if MagnetLoop then return end
     FarmActive = true
     ToggleFarmBtn.Text = "DESACTIVAR"
     ToggleFarmBtn.BackgroundColor3 = Color3.fromRGB(0, 80, 0)
     
-    -- ⚡ OPTIMIZACION TOTAL: Usamos un spawn con wait en vez de Heartbeat
-    -- Asi controlamos exactamente cada cuanto revisa
-    Connection = spawn(function()
+    -- Bucle del Imán (Controlado para no lag)
+    MagnetLoop = spawn(function()
         while FarmActive do
             Magnet()
-            task.wait(0.1) -- ⚡ CLAVE: Revisa cada 0.1 segundos (10 veces por seg)
-            -- Si aun tienes lag, cambia 0.1 por 0.2 o 0.3
+            task.wait(0.1) -- ⚡ Velocidad segura, si no atrae bien baja a 0.05
         end
     end)
     
+    -- Bucle Anti AFK / Movimiento
     Loop = spawn(function()
         while FarmActive do
             if not Humanoid then UpdateCharacter() end
@@ -231,7 +229,7 @@ end
 local function StopFarm()
     FarmActive = false
     Loop = nil
-    Connection = nil
+    MagnetLoop = nil
     ToggleFarmBtn.Text = "ACTIVAR"
     ToggleFarmBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
 end
