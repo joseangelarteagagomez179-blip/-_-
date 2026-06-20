@@ -1,6 +1,6 @@
 --[[
 Script Name: JoseAngel_Blox Block Cup
-Version: OPTIMIZADO | SIN LAG | IMÁN 100% FUNCIONAL
+Version: FINAL | SIN LAG | DISEÑO ELEGANTE
 ]]
 
 local Players = game:GetService("Players")
@@ -30,7 +30,7 @@ UpdateCharacter()
 
 -- == MANTENER VIDA INFINITA ==
 spawn(function()
-    while task.wait(3) do
+    while task.wait(4) do
         if Humanoid then
             Humanoid.Health = math.huge
             Humanoid.MaxHealth = math.huge
@@ -42,7 +42,7 @@ end)
 local ScreenGui = Instance.new("ScreenGui")
 local Main = Instance.new("Frame")
 local Title = Instance.new("TextLabel")
-local UICorner = Instance.new("UICorner")
+local UICorner = UICorner = Instance.new("UICorner")
 local UIStroke = Instance.new("UIStroke")
 local FarmLabel = Instance.new("TextLabel")
 local ToggleFarmBtn = Instance.new("TextButton")
@@ -52,23 +52,26 @@ ScreenGui.Name = "UI"
 ScreenGui.Parent = game:GetService("CoreGui")
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
+-- 🎨 MARCO PRINCIPAL: COLOR OSCURO ELEGANTE
 Main.Name = "Main"
 Main.Parent = ScreenGui
-Main.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+Main.BackgroundColor3 = Color3.fromRGB(25, 25, 35) -- Azul oscuro elegante
 Main.BorderSizePixel = 0
 Main.Position = UDim2.new(0.05, 0, 0.2, 0)
 Main.Size = UDim2.new(0, 180, 0, 140)
 Main.Active = true
 
-UICorner.CornerRadius = UDim.new(0, 12)
+UICorner.CornerRadius = UDim.new(0, 14)
 UICorner.Parent = Main
 
+-- 🎨 BORDE: COLOR CELESTE FIJO (SIN MOVIMIENTO)
 UIStroke.Name = "Border"
 UIStroke.Parent = Main
 UIStroke.Thickness = 2
-UIStroke.Color = Color3.new(1, 0, 0)
+UIStroke.Color = Color3.fromRGB(80, 200, 255) -- Color Azul Cielo bonito
 UIStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 
+-- TITULO
 Title.Name = "Title"
 Title.Parent = Main
 Title.BackgroundTransparency = 1
@@ -79,18 +82,20 @@ Title.Text = "JoseAngel_Blox"
 Title.TextColor3 = Color3.new(1, 1, 1)
 Title.TextSize = 16
 
+-- TEXTO AUTO FARM
 FarmLabel.Parent = Main
 FarmLabel.BackgroundTransparency = 1
 FarmLabel.Position = UDim2.new(0.05, 0, 0.32, 0)
 FarmLabel.Size = UDim2.new(0.9, 0, 0, 18)
 FarmLabel.Text = "Auto farm pelotas"
-FarmLabel.TextColor3 = Color3.new(1, 1, 1)
+FarmLabel.TextColor3 = Color3.new(0.9, 0.9, 0.9)
 FarmLabel.TextSize = 12
 
+-- BOTON
 ToggleFarmBtn.Name = "ToggleFarm"
 ToggleFarmBtn.Parent = Main
-ToggleFarmBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-ToggleFarmBtn.BorderColor3 = Color3.new(1, 1, 1)
+ToggleFarmBtn.BackgroundColor3 = Color3.fromRGB(45, 45, 60) -- Gris oscuro
+ToggleFarmBtn.BorderColor3 = Color3.fromRGB(80, 200, 255) -- Mismo color del borde
 ToggleFarmBtn.Position = UDim2.new(0.08, 0, 0.52, 0)
 ToggleFarmBtn.Size = UDim2.new(0.84, 0, 0, 40)
 ToggleFarmBtn.Text = "ACTIVAR"
@@ -98,20 +103,8 @@ ToggleFarmBtn.TextColor3 = Color3.new(1, 1, 1)
 ToggleFarmBtn.Font = Enum.Font.GothamBold
 ToggleFarmBtn.TextSize = 13
 
-BtnCorner.CornerRadius = UDim.new(0, 8)
+BtnCorner.CornerRadius = UDim.new(0, 10)
 BtnCorner.Parent = ToggleFarmBtn
-
--- ==================================
--- ✨ EFECTO RGB LIGERO
--- ==================================
-spawn(function()
-    local H = 0
-    while task.wait(0.3) do
-        H = H + 0.01
-        if H > 1 then H = 0 end
-        UIStroke.Color = Color3.fromHSV(H, 0.8, 1)
-    end
-end)
 
 -- ==================================
 -- 📱 MOVER / ARRASTRAR
@@ -143,7 +136,7 @@ UserInputService.InputEnded:Connect(function(I)
 end)
 
 -- =============================================
--- 🧲 IMÁN OPTIMIZADO (AHORA SÍ ENCUENTRA TODO)
+-- 🧲 IMÁN ULTRA OPTIMIZADO (MODO POTATO)
 -- =============================================
 local BallsFolder = nil
 
@@ -151,44 +144,41 @@ local function Magnet()
     if not FarmActive or not RootPart then return end
     local MyPos = RootPart.Position
 
-    -- Buscar carpeta
     if not BallsFolder then
         BallsFolder = Workspace:FindFirstChild("Balls") or Workspace
     end
 
-    -- ✅ CORRECCIÓN: Usamos GetDescendants() pero con pausa controlada
-    for _, v in pairs(BallsFolder:GetDescendants()) do
-        if v:IsA("BasePart") and not v:IsDescendantOf(Character) then
-            
-            -- Ignorar paredes y suelo
-            if v.Size.X > 15 or v.Size.Y > 15 or v.Size.Z > 15 then
-                continue
-            end
-            
-            local Name = string.lower(v.Name)
-            
-            if string.find(Name,"ball")
-            or string.find(Name,"legendary")
-            or string.find(Name,"mutat")
-            or string.find(Name,"doub")
-            or string.find(Name,"rare")
-            or string.find(Name,"epic")
-            then
+    local ObjetosCercanos = BallsFolder:GetChildren()
+    
+    for _, v in pairs(ObjetosCercanos) do
+        local objetos = v:IsA("Model") and v:GetChildren() or {v}
+        
+        for _, obj in pairs(objetos) do
+            if obj:IsA("BasePart") and not obj:IsDescendantOf(Character) then
                 
-                local Dist = (MyPos - v.Position).Magnitude
+                if obj.Size.X > 15 or obj.Size.Y > 15 or obj.Size.Z > 15 then
+                    continue
+                end
                 
-                if Dist < 60 then
-                    v.CanCollide = false
-                    v.Anchored = false
-                    v.CFrame = v.CFrame:Lerp(RootPart.CFrame, 0.7)
+                local Name = string.lower(obj.Name)
+                
+                if string.find(Name,"ball") or string.find(Name,"legendary") 
+                or string.find(Name,"mutat") or string.find(Name,"doub")
+                or string.find(Name,"rare") or string.find(Name,"epic") then
                     
-                    -- ✅ FORZAR RECOLECCIÓN
-                    if Dist < 4 then
-                        firetouchinterest(Character, v, 0)
-                        firetouchinterest(Character, v, 1)
+                    local Dist = (MyPos - obj.Position).Magnitude
+                    
+                    if Dist < 40 then
+                        obj.Anchored = false
+                        obj.CFrame = obj.CFrame:Lerp(RootPart.CFrame, 0.6)
                         
-                        if Dist < 2 then
-                            v.CFrame = RootPart.CFrame + Vector3.new(0, 1, 0.5)
+                        if Dist < 4 then
+                            firetouchinterest(Character, obj, 0)
+                            firetouchinterest(Character, obj, 1)
+                            
+                            if Dist < 2 then
+                                obj.CFrame = RootPart.CFrame + Vector3.new(0, 1, 0.5)
+                            end
                         end
                     end
                 end
@@ -202,26 +192,24 @@ local function StartFarm()
     if MagnetLoop then return end
     FarmActive = true
     ToggleFarmBtn.Text = "DESACTIVAR"
-    ToggleFarmBtn.BackgroundColor3 = Color3.fromRGB(0, 80, 0)
+    ToggleFarmBtn.BackgroundColor3 = Color3.fromRGB(0, 100, 50) -- Verde bonito
     
-    -- Bucle del Imán (Controlado para no lag)
     MagnetLoop = spawn(function()
         while FarmActive do
             Magnet()
-            task.wait(0.1) -- ⚡ Velocidad segura, si no atrae bien baja a 0.05
+            task.wait(0.2) -- Si hay lag, sube a 0.3 o 0.4
         end
     end)
     
-    -- Bucle Anti AFK / Movimiento
     Loop = spawn(function()
         while FarmActive do
             if not Humanoid then UpdateCharacter() end
             VirtualUser:Click()
-            task.wait(2.0)
+            task.wait(2.5)
             if Humanoid then
                 Humanoid:MoveTo(Vector3.new(-45, 0, 0))
             end
-            task.wait(3.0)
+            task.wait(3.5)
         end
     end)
 end
@@ -231,7 +219,7 @@ local function StopFarm()
     Loop = nil
     MagnetLoop = nil
     ToggleFarmBtn.Text = "ACTIVAR"
-    ToggleFarmBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    ToggleFarmBtn.BackgroundColor3 = Color3.fromRGB(45, 45, 60)
 end
 
 ToggleFarmBtn.MouseButton1Click:Connect(function()
