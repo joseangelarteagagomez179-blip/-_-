@@ -1,6 +1,6 @@
 --[[
 Script Name: JoseAngel_Blox Block Cup
-Version: FINAL | SIN LAG | DISEÑO ELEGANTE
+Version: FINAL OPTIMIZADA | 0 LAG | ATRAE TODO
 ]]
 
 local Players = game:GetService("Players")
@@ -52,10 +52,9 @@ ScreenGui.Name = "UI"
 ScreenGui.Parent = game:GetService("CoreGui")
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
--- 🎨 MARCO PRINCIPAL: COLOR OSCURO ELEGANTE
 Main.Name = "Main"
 Main.Parent = ScreenGui
-Main.BackgroundColor3 = Color3.fromRGB(25, 25, 35) -- Azul oscuro elegante
+Main.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
 Main.BorderSizePixel = 0
 Main.Position = UDim2.new(0.05, 0, 0.2, 0)
 Main.Size = UDim2.new(0, 180, 0, 140)
@@ -64,14 +63,12 @@ Main.Active = true
 UICorner.CornerRadius = UDim.new(0, 14)
 UICorner.Parent = Main
 
--- 🎨 BORDE: COLOR CELESTE FIJO (SIN MOVIMIENTO)
 UIStroke.Name = "Border"
 UIStroke.Parent = Main
 UIStroke.Thickness = 2
-UIStroke.Color = Color3.fromRGB(80, 200, 255) -- Color Azul Cielo bonito
+UIStroke.Color = Color3.fromRGB(80, 200, 255)
 UIStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 
--- TITULO
 Title.Name = "Title"
 Title.Parent = Main
 Title.BackgroundTransparency = 1
@@ -82,7 +79,6 @@ Title.Text = "JoseAngel_Blox"
 Title.TextColor3 = Color3.new(1, 1, 1)
 Title.TextSize = 16
 
--- TEXTO AUTO FARM
 FarmLabel.Parent = Main
 FarmLabel.BackgroundTransparency = 1
 FarmLabel.Position = UDim2.new(0.05, 0, 0.32, 0)
@@ -91,11 +87,10 @@ FarmLabel.Text = "Auto farm pelotas"
 FarmLabel.TextColor3 = Color3.new(0.9, 0.9, 0.9)
 FarmLabel.TextSize = 12
 
--- BOTON
 ToggleFarmBtn.Name = "ToggleFarm"
 ToggleFarmBtn.Parent = Main
-ToggleFarmBtn.BackgroundColor3 = Color3.fromRGB(45, 45, 60) -- Gris oscuro
-ToggleFarmBtn.BorderColor3 = Color3.fromRGB(80, 200, 255) -- Mismo color del borde
+ToggleFarmBtn.BackgroundColor3 = Color3.fromRGB(45, 45, 60)
+ToggleFarmBtn.BorderColor3 = Color3.fromRGB(80, 200, 255)
 ToggleFarmBtn.Position = UDim2.new(0.08, 0, 0.52, 0)
 ToggleFarmBtn.Size = UDim2.new(0.84, 0, 0, 40)
 ToggleFarmBtn.Text = "ACTIVAR"
@@ -136,7 +131,7 @@ UserInputService.InputEnded:Connect(function(I)
 end)
 
 -- =============================================
--- 🧲 IMÁN ULTRA OPTIMIZADO (MODO POTATO)
+-- 🧲 IMÁN: MODO BUSQUEDA COMPLETA PERO LIGERA
 -- =============================================
 local BallsFolder = nil
 
@@ -144,41 +139,44 @@ local function Magnet()
     if not FarmActive or not RootPart then return end
     local MyPos = RootPart.Position
 
+    -- Buscar carpeta solo una vez
     if not BallsFolder then
         BallsFolder = Workspace:FindFirstChild("Balls") or Workspace
     end
 
-    local ObjetosCercanos = BallsFolder:GetChildren()
-    
-    for _, v in pairs(ObjetosCercanos) do
-        local objetos = v:IsA("Model") and v:GetChildren() or {v}
-        
-        for _, obj in pairs(objetos) do
-            if obj:IsA("BasePart") and not obj:IsDescendantOf(Character) then
+    -- ✅ SOLUCION: Usamos GetDescendants() pero con bucle controlado
+    for _, v in pairs(BallsFolder:GetDescendants()) do
+        if v:IsA("BasePart") and not v:IsDescendantOf(Character) then
+            
+            -- Ignorar paredes y suelo
+            if v.Size.X > 15 or v.Size.Y > 15 or v.Size.Z > 15 then
+                continue
+            end
+            
+            local Name = string.lower(v.Name)
+            
+            if string.find(Name,"ball")
+            or string.find(Name,"legendary")
+            or string.find(Name,"mutat")
+            or string.find(Name,"doub")
+            or string.find(Name,"rare")
+            or string.find(Name,"epic")
+            then
                 
-                if obj.Size.X > 15 or obj.Size.Y > 15 or obj.Size.Z > 15 then
-                    continue
-                end
+                local Dist = (MyPos - v.Position).Magnitude
                 
-                local Name = string.lower(obj.Name)
-                
-                if string.find(Name,"ball") or string.find(Name,"legendary") 
-                or string.find(Name,"mutat") or string.find(Name,"doub")
-                or string.find(Name,"rare") or string.find(Name,"epic") then
+                -- ✅ Rango aumentado para que atraiga bien
+                if Dist < 60 then
+                    v.Anchored = false
+                    v.CanCollide = false -- Importante para que se muevan
+                    v.CFrame = v.CFrame:Lerp(RootPart.CFrame, 0.7)
                     
-                    local Dist = (MyPos - obj.Position).Magnitude
-                    
-                    if Dist < 40 then
-                        obj.Anchored = false
-                        obj.CFrame = obj.CFrame:Lerp(RootPart.CFrame, 0.6)
+                    if Dist < 4 then
+                        firetouchinterest(Character, v, 0)
+                        firetouchinterest(Character, v, 1)
                         
-                        if Dist < 4 then
-                            firetouchinterest(Character, obj, 0)
-                            firetouchinterest(Character, obj, 1)
-                            
-                            if Dist < 2 then
-                                obj.CFrame = RootPart.CFrame + Vector3.new(0, 1, 0.5)
-                            end
+                        if Dist < 2 then
+                            v.CFrame = RootPart.CFrame + Vector3.new(0, 1, 0.5)
                         end
                     end
                 end
@@ -192,12 +190,13 @@ local function StartFarm()
     if MagnetLoop then return end
     FarmActive = true
     ToggleFarmBtn.Text = "DESACTIVAR"
-    ToggleFarmBtn.BackgroundColor3 = Color3.fromRGB(0, 100, 50) -- Verde bonito
+    ToggleFarmBtn.BackgroundColor3 = Color3.fromRGB(0, 100, 50)
     
+    -- ⚡ Velocidad equilibrada: Ni muy rapido ni muy lento
     MagnetLoop = spawn(function()
         while FarmActive do
             Magnet()
-            task.wait(0.2) -- Si hay lag, sube a 0.3 o 0.4
+            task.wait(0.15) -- Si te da lag de nuevo, cambia a 0.25
         end
     end)
     
