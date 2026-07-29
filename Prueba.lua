@@ -1,5 +1,5 @@
 -- ==========================================
--- SCRIPT NATIVO: JoseAngel_Blox Kick Farm V1.5 (FINAL COMPLETO)
+-- SCRIPT NATIVO: JoseAngel_Blox Kick Farm V1.6 (FINAL NATIVO)
 -- Universal (PC & Móvil) para Delta Executor
 -- ==========================================
 
@@ -10,7 +10,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
-local guiName = "JoseAngel_Blox_KickFarm_V1.5"
+local guiName = "JoseAngel_Blox_KickFarm_V1.6"
 
 -- 1. Evitar ventanas duplicadas
 if CoreGui:FindFirstChild(guiName) then
@@ -221,8 +221,8 @@ end
 
 AddInfoText("Nombre del creador: JoseAngel_Blox")
 AddInfoText("Fecha de lanzamiento: 27/07/2026")
-AddInfoText("Versión: 1.5")
-AddInfoText("Update: Añadido Auto Train integrado y optimizado 100% funcional sin lag por JoseAngel_Blox", 55)
+AddInfoText("Versión: 1.6")
+AddInfoText("Update: Bonus Train nativo integrado extrayendo el código exacto de la imagen sin enlaces externos", 55)
 
 -- ==========================================
 -- COMPONENTE DE SELECTOR (TOGGLE UNIVERSAL)
@@ -288,7 +288,7 @@ local colorOff = Color3.fromRGB(220, 220, 220)
 
 local pkSwitch, pkSlider, pkButton = CreateVisualToggle(MainContainer, "Perfect Kick")
 local afSwitch, afSlider, afButton = CreateVisualToggle(MainContainer, "Auto farm", "Regresar a safe zone rápido")
-local atSwitch, atSlider, atButton = CreateVisualToggle(MainContainer, "Auto Train", "Ejecuta el script externo de entrenamiento")
+local btSwitch, btSlider, btButton = CreateVisualToggle(MainContainer, "Bonus Train", "Ejecuta el firesignal y FireServer(1) nativo")
 
 local function HandleToggle(switch, slider, button, callback)
     local isOn = false
@@ -387,13 +387,37 @@ HandleToggle(afSwitch, afSlider, afButton, function(isOn)
     end
 end)
 
--- 3) Auto Train (Carga el script externo visto en la imagen)
-local atActivo = false
-HandleToggle(atSwitch, atSlider, atButton, function(isOn)
-    atActivo = isOn
-    if atActivo then
-        pcall(function()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/gumanba/Scripts/refs/heads/main/KickaLuckyBlock"))()
+-- 3) Bonus Train (Código exacto extraído de la segunda imagen: RunFirst + RunSecond automático)
+local btActivo = false
+HandleToggle(btSwitch, btSlider, btButton, function(isOn)
+    btActivo = isOn
+    if btActivo then
+        task.spawn(function()
+            -- Ejecuta RunFirst (dispara el firesignal de velocidad tal cual estaba en tu código de la imagen)
+            pcall(function()
+                local speedEvent = ReplicatedStorage:FindFirstChild("Shared") 
+                    and ReplicatedStorage.Shared:FindFirstChild("Packages") 
+                    and ReplicatedStorage.Shared.Packages:FindFirstChild("Network") 
+                    and ReplicatedStorage.Shared.Packages.Network:FindFirstChild("rev_SPEED_UPDATE")
+                if speedEvent then
+                    firesignal(speedEvent.OnClientEvent, 125)
+                end
+            end)
+
+            -- Bucle RunSecond (dispara el FireServer(1) del evento de entrenamiento/kick continuo)
+            while btActivo do
+                pcall(function()
+                    local kickEvent = ReplicatedStorage:FindFirstChild("Shared") 
+                        and ReplicatedStorage.Shared:FindFirstChild("Packages") 
+                        and ReplicatedStorage.Shared.Packages:FindFirstChild("Network") 
+                        and ReplicatedStorage.Shared.Packages.Network:FindFirstChild("rev_KickEvent")
+                    
+                    if kickEvent then
+                        kickEvent:FireServer(1)
+                    end
+                end)
+                task.wait(0.05)
+            end
         end)
     end
 end)
