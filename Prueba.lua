@@ -1,5 +1,5 @@
 -- ==========================================
--- SCRIPT NATIVO: JoseAngel_Blox Kick Farm V1.2 (DEFINITIVO)
+-- SCRIPT NATIVO: JoseAngel_Blox Kick Farm V1.5 (FINAL COMPLETO)
 -- Universal (PC & Móvil) para Delta Executor
 -- ==========================================
 
@@ -10,7 +10,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
-local guiName = "JoseAngel_Blox_KickFarm_V1.2"
+local guiName = "JoseAngel_Blox_KickFarm_V1.5"
 
 -- 1. Evitar ventanas duplicadas
 if CoreGui:FindFirstChild(guiName) then
@@ -221,8 +221,8 @@ end
 
 AddInfoText("Nombre del creador: JoseAngel_Blox")
 AddInfoText("Fecha de lanzamiento: 27/07/2026")
-AddInfoText("Versión: 1.2")
-AddInfoText("Update: Nuevo script 100% funcional sin lag mayor compatibilidad 0bugs disfruta del script atentamente JoseAngel_Blox", 55)
+AddInfoText("Versión: 1.5")
+AddInfoText("Update: Añadido Auto Train integrado y optimizado 100% funcional sin lag por JoseAngel_Blox", 55)
 
 -- ==========================================
 -- COMPONENTE DE SELECTOR (TOGGLE UNIVERSAL)
@@ -288,6 +288,7 @@ local colorOff = Color3.fromRGB(220, 220, 220)
 
 local pkSwitch, pkSlider, pkButton = CreateVisualToggle(MainContainer, "Perfect Kick")
 local afSwitch, afSlider, afButton = CreateVisualToggle(MainContainer, "Auto farm", "Regresar a safe zone rápido")
+local atSwitch, atSlider, atButton = CreateVisualToggle(MainContainer, "Auto Train", "Ejecuta el script externo de entrenamiento")
 
 local function HandleToggle(switch, slider, button, callback)
     local isOn = false
@@ -310,12 +311,22 @@ local function HandleToggle(switch, slider, button, callback)
     end)
 end
 
--- 1) Perfect Kick (Fuerza al servidor el puntaje máximo y tiro perfecto)
+-- 1) Perfect Kick
 local pkActivo = false
 HandleToggle(pkSwitch, pkSlider, pkButton, function(isOn)
     pkActivo = isOn
     if pkActivo then
         task.spawn(function()
+            pcall(function()
+                local speedEvent = ReplicatedStorage:FindFirstChild("Shared") 
+                    and ReplicatedStorage.Shared:FindFirstChild("Packages") 
+                    and ReplicatedStorage.Shared.Packages:FindFirstChild("Network") 
+                    and ReplicatedStorage.Shared.Packages.Network:FindFirstChild("rev_SPEED_UPDATE")
+                if speedEvent then
+                    firesignal(speedEvent.OnClientEvent, 125)
+                end
+            end)
+
             while pkActivo do
                 pcall(function()
                     local kickEvent = ReplicatedStorage:FindFirstChild("Shared") 
@@ -324,8 +335,7 @@ HandleToggle(pkSwitch, pkSlider, pkButton, function(isOn)
                         and ReplicatedStorage.Shared.Packages.Network:FindFirstChild("rev_KickEvent")
                     
                     if kickEvent then
-                        -- Enviamos parámetros forzando el 100% de precisión y potencia máxima
-                        kickEvent:FireServer(1, true) 
+                        kickEvent:FireServer(1)
                     end
                 end)
                 task.wait(0.05)
@@ -334,7 +344,7 @@ HandleToggle(pkSwitch, pkSlider, pkButton, function(isOn)
     end
 end)
 
--- 2) Auto farm (Velocidad a 250 para regresar rápido a la Safe Zone)
+-- 2) Auto farm
 local afActivo = false
 HandleToggle(afSwitch, afSlider, afButton, function(isOn)
     afActivo = isOn
@@ -374,5 +384,16 @@ HandleToggle(afSwitch, afSlider, afButton, function(isOn)
         if LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid") then
             LocalPlayer.Character:FindFirstChildOfClass("Humanoid").WalkSpeed = 16 
         end
+    end
+end)
+
+-- 3) Auto Train (Carga el script externo visto en la imagen)
+local atActivo = false
+HandleToggle(atSwitch, atSlider, atButton, function(isOn)
+    atActivo = isOn
+    if atActivo then
+        pcall(function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/gumanba/Scripts/refs/heads/main/KickaLuckyBlock"))()
+        end)
     end
 end)
