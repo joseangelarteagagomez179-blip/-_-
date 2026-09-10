@@ -1,531 +1,917 @@
--- =================================================================
+--==============================================================
 -- SCRIPT: JoseAngel_Blox Steal An Egg
--- Creado por: JoseAngel_Blox
--- Fecha: 08/09/2026 | Versión: 1.1
--- =================================================================
+-- CREADO POR: JoseAngel_Blox
+-- VERSIÓN: 1.1
+-- FECHA: 09/09/2026
+--==============================================================
 
+--// SERVICIOS
 local Players = game:GetService("Players")
-local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
-local Workspace = game:GetService("Workspace")
-local CoreGui = game:GetService("CoreGui")
+local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+local StarterGui = game:GetService("StarterGui")
 
 local LocalPlayer = Players.LocalPlayer
+local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 
--- Eliminar versión previa si existía en pantalla
-if CoreGui:FindFirstChild("JoseAngel_StealAnEgg") then
-    CoreGui:FindFirstChild("JoseAngel_StealAnEgg"):Destroy()
-end
+--// ELIMINAR GUI ANTERIOR SI EXISTE
+local oldGui = PlayerGui:FindFirstChild("JoseAngel_Blox_StealAnEgg")
+if oldGui then oldGui:Destroy() end
 
+--==============================================================
+--// CREAR INTERFAZ PRINCIPAL
+--==============================================================
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "JoseAngel_StealAnEgg"
+ScreenGui.Name = "JoseAngel_Blox_StealAnEgg"
 ScreenGui.ResetOnSpawn = false
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+ScreenGui.Parent = PlayerGui
 
-pcall(function()
-    ScreenGui.Parent = CoreGui
-end)
-if not ScreenGui.Parent then
-    ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
-end
-
---------------------------------------------------------------------
--- 1. PANTALLA DE CARGA (LOADING SCREEN)
---------------------------------------------------------------------
-local LoadingFrame = Instance.new("Frame")
-LoadingFrame.Name = "LoadingFrame"
-LoadingFrame.Size = UDim2.new(0, 380, 0, 180)
-LoadingFrame.Position = UDim2.new(0.5, -190, 0.5, -90)
-LoadingFrame.BackgroundColor3 = Color3.fromRGB(10, 16, 32)
-LoadingFrame.BorderSizePixel = 0
-LoadingFrame.Parent = ScreenGui
-
-local LoadingCorner = Instance.new("UICorner")
-LoadingCorner.CornerRadius = UDim.new(0, 14)
-LoadingCorner.Parent = LoadingFrame
-
-local LoadingStroke = Instance.new("UIStroke")
-LoadingStroke.Color = Color3.fromRGB(0, 140, 255)
-LoadingStroke.Thickness = 1.5
-LoadingStroke.Parent = LoadingFrame
-
-local WelcomeLabel = Instance.new("TextLabel")
-WelcomeLabel.Size = UDim2.new(1, -20, 0, 40)
-WelcomeLabel.Position = UDim2.new(0, 10, 0, 20)
-WelcomeLabel.BackgroundTransparency = 1
-WelcomeLabel.Text = "Bienvenidos a Script JoseAngel_Blox"
-WelcomeLabel.TextColor3 = Color3.fromRGB(0, 170, 255)
-WelcomeLabel.TextSize = 18
-WelcomeLabel.Font = Enum.Font.GothamBold
-WelcomeLabel.TextWrapped = true
-WelcomeLabel.Parent = LoadingFrame
-
-local ProgressBarBG = Instance.new("Frame")
-ProgressBarBG.Size = UDim2.new(0.85, 0, 0, 18)
-ProgressBarBG.Position = UDim2.new(0.075, 0, 0.55, 0)
-ProgressBarBG.BackgroundColor3 = Color3.fromRGB(20, 30, 50)
-ProgressBarBG.BorderSizePixel = 0
-ProgressBarBG.Parent = LoadingFrame
-
-local BarCorner = Instance.new("UICorner")
-BarCorner.CornerRadius = UDim.new(0, 9)
-BarCorner.Parent = ProgressBarBG
-
-local ProgressBarFill = Instance.new("Frame")
-ProgressBarFill.Size = UDim2.new(0, 0, 1, 0)
-ProgressBarFill.BackgroundColor3 = Color3.fromRGB(0, 150, 255)
-ProgressBarFill.BorderSizePixel = 0
-ProgressBarFill.Parent = ProgressBarBG
-
-local FillCorner = Instance.new("UICorner")
-FillCorner.CornerRadius = UDim.new(0, 9)
-FillCorner.Parent = ProgressBarFill
-
-local ProgressText = Instance.new("TextLabel")
-ProgressText.Size = UDim2.new(1, 0, 0, 20)
-ProgressText.Position = UDim2.new(0, 0, 0.78, 0)
-ProgressText.BackgroundTransparency = 1
-ProgressText.Text = "0%"
-ProgressText.TextColor3 = Color3.fromRGB(200, 220, 255)
-ProgressText.TextSize = 14
-ProgressText.Font = Enum.Font.GothamMedium
-ProgressText.Parent = LoadingFrame
-
---------------------------------------------------------------------
--- 2. MARCO PRINCIPAL DE LA VENTANA (MAIN GUI)
---------------------------------------------------------------------
+--// VENTANA PRINCIPAL (cuadrada con esquinas redondeadas)
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
-MainFrame.Size = UDim2.new(0, 560, 0, 360)
-MainFrame.Position = UDim2.new(0.5, -280, 0.5, -180)
-MainFrame.BackgroundColor3 = Color3.fromRGB(10, 16, 32) -- Fondo Azul Marino
+MainFrame.Size = UDim2.new(0, 550, 0, 400)
+MainFrame.Position = UDim2.new(0.5, -275, 0.5, -200)
+MainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
 MainFrame.BorderSizePixel = 0
-MainFrame.Visible = false
 MainFrame.Active = true
 MainFrame.Draggable = true
 MainFrame.Parent = ScreenGui
 
 local MainCorner = Instance.new("UICorner")
-MainCorner.CornerRadius = UDim.new(0, 14)
+MainCorner.CornerRadius = UDim.new(0, 16)
 MainCorner.Parent = MainFrame
 
 local MainStroke = Instance.new("UIStroke")
-MainStroke.Color = Color3.fromRGB(0, 120, 230)
-MainStroke.Thickness = 1.5
+MainStroke.Color = Color3.fromRGB(0, 150, 255)
+MainStroke.Thickness = 2
 MainStroke.Parent = MainFrame
 
--- TÍTULO CON EFECTO ANIMADO DE MOVIMIENTO EN LETRAS AZULES
+--==============================================================
+--// TÍTULO CON LETRAS AZULES EN MOVIMIENTO
+--==============================================================
+local TitleFrame = Instance.new("Frame")
+TitleFrame.Size = UDim2.new(1, 0, 0, 60)
+TitleFrame.Position = UDim2.new(0, 0, 0, 0)
+TitleFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 25)
+TitleFrame.BorderSizePixel = 0
+TitleFrame.Parent = MainFrame
+
+local TitleCorner = Instance.new("UICorner")
+TitleCorner.CornerRadius = UDim.new(0, 16)
+TitleCorner.Parent = TitleFrame
+
+-- Parche para que las esquinas inferiores del título no queden redondeadas
+local TitlePatch = Instance.new("Frame")
+TitlePatch.Size = UDim2.new(1, 0, 0, 16)
+TitlePatch.Position = UDim2.new(0, 0, 1, -16)
+TitlePatch.BackgroundColor3 = Color3.fromRGB(15, 15, 25)
+TitlePatch.BorderSizePixel = 0
+TitlePatch.Parent = TitleFrame
+
 local TitleLabel = Instance.new("TextLabel")
 TitleLabel.Name = "TitleLabel"
-TitleLabel.Size = UDim2.new(1, -20, 0, 30)
-TitleLabel.Position = UDim2.new(0, 15, 0, 10)
+TitleLabel.Size = UDim2.new(1, 0, 1, 0)
 TitleLabel.BackgroundTransparency = 1
 TitleLabel.Text = "JoseAngel_Blox Steal An Egg"
-TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-TitleLabel.TextSize = 22
+TitleLabel.TextColor3 = Color3.fromRGB(0, 170, 255)
 TitleLabel.Font = Enum.Font.GothamBold
-TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
-TitleLabel.Parent = MainFrame
+TitleLabel.TextScaled = true
+TitleLabel.TextSize = 28
+TitleLabel.Parent = TitleFrame
 
-local TitleGradient = Instance.new("UIGradient")
-TitleGradient.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 170, 255)),
-    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(120, 230, 255)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 100, 255))
-})
-TitleGradient.Parent = TitleLabel
+local TitlePadding = Instance.new("UIPadding")
+TitlePadding.PaddingLeft = UDim.new(0, 10)
+TitlePadding.PaddingRight = UDim.new(0, 10)
+TitlePadding.Parent = TitleLabel
 
-local rot = 0
-RunService.RenderStepped:Connect(function(dt)
-    rot = (rot + dt * 120) % 360
-    TitleGradient.Rotation = rot
+-- Efecto de texto en movimiento (degradado azul animado)
+local titleText = "JoseAngel_Blox Steal An Egg"
+local hueOffset = 0
+task.spawn(function()
+    while ScreenGui.Parent do
+        hueOffset = (hueOffset + 0.005) % 1
+        local color = Color3.fromHSV(hueOffset * 0.15 + 0.55, 1, 1) -- Rango azul
+        TitleLabel.TextColor3 = color
+        task.wait(0.05)
+    end
 end)
 
--- SUBTÍTULO EN LETRAS TRANSPARENTES
+-- Efecto adicional: el texto se desplaza ligeramente
+task.spawn(function()
+    while ScreenGui.Parent do
+        for i = 1, 30 do
+            TitleLabel.Position = UDim2.new(0, math.sin(i * 0.2) * 3, 0, 0)
+            task.wait(0.03)
+        end
+    end
+end)
+
+--==============================================================
+--// SUBTÍTULO: "Creado por JoseAngel_Blox" (transparente)
+--==============================================================
 local SubtitleLabel = Instance.new("TextLabel")
-SubtitleLabel.Size = UDim2.new(1, -20, 0, 18)
-SubtitleLabel.Position = UDim2.new(0, 15, 0, 38)
+SubtitleLabel.Name = "SubtitleLabel"
+SubtitleLabel.Size = UDim2.new(1, 0, 0, 20)
+SubtitleLabel.Position = UDim2.new(0, 0, 0, 55)
 SubtitleLabel.BackgroundTransparency = 1
-SubtitleLabel.Text = "creado por JoseAngel_Blox"
-SubtitleLabel.TextColor3 = Color3.fromRGB(150, 180, 220)
-SubtitleLabel.TextTransparency = 0.45
-SubtitleLabel.TextSize = 13
+SubtitleLabel.Text = "Creado por JoseAngel_Blox"
+SubtitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+SubtitleLabel.TextTransparency = 0.5 -- Transparente
 SubtitleLabel.Font = Enum.Font.Gotham
-SubtitleLabel.TextXAlignment = Enum.TextXAlignment.Left
+SubtitleLabel.TextSize = 14
 SubtitleLabel.Parent = MainFrame
 
-local Line = Instance.new("Frame")
-Line.Size = UDim2.new(1, -30, 0, 1)
-Line.Position = UDim2.new(0, 15, 0, 62)
-Line.BackgroundColor3 = Color3.fromRGB(25, 40, 70)
-Line.BorderSizePixel = 0
-Line.Parent = MainFrame
+--==============================================================
+--// PANEL IZQUIERDO (PESTAÑAS)
+--==============================================================
+local TabPanel = Instance.new("Frame")
+TabPanel.Name = "TabPanel"
+TabPanel.Size = UDim2.new(0, 140, 1, -110)
+TabPanel.Position = UDim2.new(0, 10, 0, 85)
+TabPanel.BackgroundColor3 = Color3.fromRGB(18, 18, 28)
+TabPanel.BorderSizePixel = 0
+TabPanel.Parent = MainFrame
 
--- CONTENEDOR DE PESTAÑAS (IZQUIERDA)
-local Sidebar = Instance.new("Frame")
-Sidebar.Name = "Sidebar"
-Sidebar.Size = UDim2.new(0, 130, 1, -75)
-Sidebar.Position = UDim2.new(0, 15, 0, 68)
-Sidebar.BackgroundColor3 = Color3.fromRGB(15, 23, 44)
-Sidebar.BorderSizePixel = 0
-Sidebar.Parent = MainFrame
+local TabPanelCorner = Instance.new("UICorner")
+TabPanelCorner.CornerRadius = UDim.new(0, 10)
+TabPanelCorner.Parent = TabPanel
 
-local SidebarCorner = Instance.new("UICorner")
-SidebarCorner.CornerRadius = UDim.new(0, 10)
-SidebarCorner.Parent = Sidebar
+local TabLayout = Instance.new("UIListLayout")
+TabLayout.Padding = UDim.new(0, 6)
+TabLayout.SortOrder = Enum.SortOrder.LayoutOrder
+TabLayout.Parent = TabPanel
 
-local SidebarList = Instance.new("UIListLayout")
-SidebarList.Padding = UDim.new(0, 8)
-SidebarList.HorizontalAlignment = Enum.HorizontalAlignment.Center
-SidebarList.SortOrder = Enum.SortOrder.LayoutOrder
-SidebarList.Parent = Sidebar
+local TabPadding = Instance.new("UIPadding")
+TabPadding.PaddingTop = UDim.new(0, 8)
+TabPadding.PaddingLeft = UDim.new(0, 6)
+TabPadding.PaddingRight = UDim.new(0, 6)
+TabPadding.Parent = TabPanel
 
-local SidebarPadding = Instance.new("UIPadding")
-SidebarPadding.PaddingTop = UDim.new(0, 10)
-SidebarPadding.Parent = Sidebar
-
--- CONTENEDOR DE FUNCIONES (DERECHA)
-local ContentFrame = Instance.new("Frame")
-ContentFrame.Name = "ContentFrame"
-ContentFrame.Size = UDim2.new(1, -170, 1, -75)
-ContentFrame.Position = UDim2.new(0, 155, 0, 68)
-ContentFrame.BackgroundColor3 = Color3.fromRGB(15, 23, 44)
-ContentFrame.BorderSizePixel = 0
-ContentFrame.Parent = MainFrame
+--==============================================================
+--// PANEL DERECHO (CONTENIDO)
+--==============================================================
+local ContentPanel = Instance.new("Frame")
+ContentPanel.Name = "ContentPanel"
+ContentPanel.Size = UDim2.new(1, -170, 1, -110)
+ContentPanel.Position = UDim2.new(0, 160, 0, 85)
+ContentPanel.BackgroundColor3 = Color3.fromRGB(18, 18, 28)
+ContentPanel.BorderSizePixel = 0
+ContentPanel.Parent = MainFrame
 
 local ContentCorner = Instance.new("UICorner")
 ContentCorner.CornerRadius = UDim.new(0, 10)
-ContentCorner.Parent = ContentFrame
+ContentCorner.Parent = ContentPanel
 
---------------------------------------------------------------------
--- SISTEMA DE PESTAÑAS (TABS)
---------------------------------------------------------------------
+local ContentPadding = Instance.new("UIPadding")
+ContentPadding.PaddingTop = UDim.new(0, 10)
+ContentPadding.PaddingLeft = UDim.new(0, 10)
+ContentPadding.PaddingRight = UDim.new(0, 10)
+ContentPadding.PaddingBottom = UDim.new(0, 10)
+ContentPadding.Parent = ContentPanel
+
+--==============================================================
+--// SISTEMA DE PESTAÑAS
+--==============================================================
 local tabs = {}
-local tabButtons = {}
+local activeTab = nil
 
-local function CreateTab(name)
-    local TabButton = Instance.new("TextButton")
-    TabButton.Size = UDim2.new(0.9, 0, 0, 35)
-    TabButton.BackgroundColor3 = Color3.fromRGB(22, 33, 60)
-    TabButton.BorderSizePixel = 0
-    TabButton.Text = name
-    TabButton.TextColor3 = Color3.fromRGB(180, 200, 230)
-    TabButton.Font = Enum.Font.GothamMedium
-    TabButton.TextSize = 14
-    TabButton.Parent = Sidebar
+local function createTab(name)
+    local button = Instance.new("TextButton")
+    button.Name = name .. "Tab"
+    button.Size = UDim2.new(1, 0, 0, 38)
+    button.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
+    button.Text = name
+    button.TextColor3 = Color3.fromRGB(200, 200, 200)
+    button.Font = Enum.Font.GothamBold
+    button.TextSize = 14
+    button.BorderSizePixel = 0
+    button.Parent = TabPanel
 
-    local BtnCorner = Instance.new("UICorner")
-    BtnCorner.CornerRadius = UDim.new(0, 8)
-    BtnCorner.Parent = TabButton
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 8)
+    corner.Parent = button
 
-    local TabPage = Instance.new("ScrollingFrame")
-    TabPage.Name = name .. "Page"
-    TabPage.Size = UDim2.new(1, -16, 1, -16)
-    TabPage.Position = UDim2.new(0, 8, 0, 8)
-    TabPage.BackgroundTransparency = 1
-    TabPage.BorderSizePixel = 0
-    TabPage.ScrollBarThickness = 4
-    TabPage.ScrollBarImageColor3 = Color3.fromRGB(0, 140, 255)
-    TabPage.Visible = false
-    TabPage.Parent = ContentFrame
+    -- Página de contenido
+    local page = Instance.new("Frame")
+    page.Name = name .. "Page"
+    page.Size = UDim2.new(1, 0, 1, 0)
+    page.BackgroundTransparency = 1
+    page.Visible = false
+    page.Parent = ContentPanel
 
-    local PageList = Instance.new("UIListLayout")
-    PageList.Padding = UDim.new(0, 8)
-    PageList.SortOrder = Enum.SortOrder.LayoutOrder
-    PageList.Parent = TabPage
+    tabs[name] = { Button = button, Page = page }
 
-    tabs[name] = TabPage
-    tabButtons[name] = TabButton
-
-    TabButton.MouseButton1Click:Connect(function()
-        for tName, page in pairs(tabs) do
-            page.Visible = (tName == name)
-            tabButtons[tName].BackgroundColor3 = (tName == name) and Color3.fromRGB(0, 120, 230) or Color3.fromRGB(22, 33, 60)
-            tabButtons[tName].TextColor3 = (tName == name) and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(180, 200, 230)
+    button.MouseButton1Click:Connect(function()
+        for _, tab in pairs(tabs) do
+            tab.Page.Visible = false
+            tab.Button.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
+            tab.Button.TextColor3 = Color3.fromRGB(200, 200, 200)
         end
+        page.Visible = true
+        button.BackgroundColor3 = Color3.fromRGB(0, 150, 255)
+        button.TextColor3 = Color3.fromRGB(255, 255, 255)
+        activeTab = name
     end)
 
-    return TabPage
+    return page
 end
 
-local InfoPage = CreateTab("Info")
-local MainPage = CreateTab("Main")
+--==============================================================
+--// PESTAÑA 1: INFO
+--==============================================================
+local infoPage = createTab("Info")
 
-tabs["Info"].Visible = true
-tabButtons["Info"].BackgroundColor3 = Color3.fromRGB(0, 120, 230)
-tabButtons["Info"].TextColor3 = Color3.fromRGB(255, 255, 255)
+local infoScroll = Instance.new("ScrollingFrame")
+infoScroll.Size = UDim2.new(1, 0, 1, 0)
+infoScroll.BackgroundTransparency = 1
+infoScroll.BorderSizePixel = 0
+infoScroll.ScrollBarThickness = 5
+infoScroll.CanvasSize = UDim2.new(0, 0, 0, 400)
+infoScroll.Parent = infoPage
 
---------------------------------------------------------------------
--- PESTAÑA 1: INFO
---------------------------------------------------------------------
-local function AddInfoLabel(title, text)
-    local Card = Instance.new("Frame")
-    Card.Size = UDim2.new(1, -10, 0, 45)
-    Card.BackgroundColor3 = Color3.fromRGB(20, 30, 55)
-    Card.BorderSizePixel = 0
-    Card.Parent = InfoPage
+local infoLayout = Instance.new("UIListLayout")
+infoLayout.Padding = UDim.new(0, 6)
+infoLayout.SortOrder = Enum.SortOrder.LayoutOrder
+infoLayout.Parent = infoScroll
 
-    local CardCorner = Instance.new("UICorner")
-    CardCorner.CornerRadius = UDim.new(0, 8)
-    CardCorner.Parent = Card
-
-    local TitleL = Instance.new("TextLabel")
-    TitleL.Size = UDim2.new(1, -16, 0, 18)
-    TitleL.Position = UDim2.new(0, 8, 0, 4)
-    TitleL.BackgroundTransparency = 1
-    TitleL.Text = title
-    TitleL.TextColor3 = Color3.fromRGB(0, 170, 255)
-    TitleL.Font = Enum.Font.GothamBold
-    TitleL.TextSize = 13
-    TitleL.TextXAlignment = Enum.TextXAlignment.Left
-    TitleL.Parent = Card
-
-    local TextL = Instance.new("TextLabel")
-    TextL.Size = UDim2.new(1, -16, 0, 18)
-    TextL.Position = UDim2.new(0, 8, 0, 22)
-    TextL.BackgroundTransparency = 1
-    TextL.Text = text
-    TextL.TextColor3 = Color3.fromRGB(220, 230, 250)
-    TextL.Font = Enum.Font.Gotham
-    TextL.TextSize = 12
-    TextL.TextXAlignment = Enum.TextXAlignment.Left
-    TextL.Parent = Card
+local function createInfoLabel(text, color, size)
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(1, -10, 0, size or 22)
+    label.BackgroundTransparency = 1
+    label.Text = text
+    label.TextColor3 = color or Color3.fromRGB(220, 220, 220)
+    label.Font = Enum.Font.Gotham
+    label.TextSize = 14
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    label.TextWrapped = true
+    label.Parent = infoScroll
+    return label
 end
 
-AddInfoLabel("Nombre del Creador:", "JoseAngel_Blox")
-AddInfoLabel("Fecha de lanzamiento:", "08/09/2026")
-AddInfoLabel("Versión:", "1.1")
+createInfoLabel("Nombre del Creador: JoseAngel_Blox", Color3.fromRGB(0, 170, 255), 24)
+createInfoLabel("Fecha de lanzamiento: 09/09/2026", Color3.fromRGB(220, 220, 220))
+createInfoLabel("Versión: 1.1", Color3.fromRGB(220, 220, 220))
+createInfoLabel("", Color3.fromRGB(220, 220, 220), 10)
+createInfoLabel("UPDATE:", Color3.fromRGB(0, 255, 150), 22)
+createInfoLabel(
+    "Bienvenido o bienvenida a mi Script, este script es nuevo para este juego llamado roba un huevo y es uno de los mejores scripts básico. Si eres nuevo o nueva usando Delta, este es el mejor script fácil para este juego, así que espero que disfrutes del script. Atentamente, JoseAngel_Blox.",
+    Color3.fromRGB(200, 200, 200),
+    80
+)
 
-local UpdateCard = Instance.new("Frame")
-UpdateCard.Size = UDim2.new(1, -10, 0, 95)
-UpdateCard.BackgroundColor3 = Color3.fromRGB(20, 30, 55)
-UpdateCard.BorderSizePixel = 0
-UpdateCard.Parent = InfoPage
+--==============================================================
+--// PESTAÑA 2: MAIN
+--==============================================================
+local mainPage = createTab("Main")
 
-local UpCorner = Instance.new("UICorner")
-UpCorner.CornerRadius = UDim.new(0, 8)
-UpCorner.Parent = UpdateCard
+local mainScroll = Instance.new("ScrollingFrame")
+mainScroll.Size = UDim2.new(1, 0, 1, 0)
+mainScroll.BackgroundTransparency = 1
+mainScroll.BorderSizePixel = 0
+mainScroll.ScrollBarThickness = 5
+mainScroll.CanvasSize = UDim2.new(0, 0, 0, 400)
+mainScroll.Parent = mainPage
 
-local UpTitle = Instance.new("TextLabel")
-UpTitle.Size = UDim2.new(1, -16, 0, 20)
-UpTitle.Position = UDim2.new(0, 8, 0, 4)
-UpTitle.BackgroundTransparency = 1
-UpTitle.Text = "UPDATE:"
-UpTitle.TextColor3 = Color3.fromRGB(0, 170, 255)
-UpTitle.Font = Enum.Font.GothamBold
-UpTitle.TextSize = 13
-UpTitle.TextXAlignment = Enum.TextXAlignment.Left
-UpTitle.Parent = UpdateCard
+local mainLayout = Instance.new("UIListLayout")
+mainLayout.Padding = UDim.new(0, 8)
+mainLayout.SortOrder = Enum.SortOrder.LayoutOrder
+mainLayout.Parent = mainScroll
 
-local UpText = Instance.new("TextLabel")
-UpText.Size = UDim2.new(1, -16, 0, 65)
-UpText.Position = UDim2.new(0, 8, 0, 24)
-UpText.BackgroundTransparency = 1
-UpText.Text = "Nuevo script para Steal An Egg este es un script básico para aprender a usar un script para este juego espero y lo disfrutes mucho.."
-UpText.TextColor3 = Color3.fromRGB(220, 230, 250)
-UpText.Font = Enum.Font.Gotham
-UpText.TextSize = 11
-UpText.TextWrapped = true
-UpText.TextXAlignment = Enum.TextXAlignment.Left
-UpText.TextYAlignment = Enum.TextYAlignment.Top
-UpText.Parent = UpdateCard
+-- Función para crear botones de toggle
+local function createToggle(text, callback)
+    local frame = Instance.new("Frame")
+    frame.Size = UDim2.new(1, -10, 0, 40)
+    frame.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
+    frame.BorderSizePixel = 0
+    frame.Parent = mainScroll
 
---------------------------------------------------------------------
--- PESTAÑA 2: MAIN (TOGGLES Y FUNCIONES)
---------------------------------------------------------------------
-local function CreateToggle(parent, name, callback)
-    local ToggleFrame = Instance.new("Frame")
-    ToggleFrame.Size = UDim2.new(1, -10, 0, 40)
-    ToggleFrame.BackgroundColor3 = Color3.fromRGB(20, 30, 55)
-    ToggleFrame.BorderSizePixel = 0
-    ToggleFrame.Parent = parent
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 8)
+    corner.Parent = frame
 
-    local TCorner = Instance.new("UICorner")
-    TCorner.CornerRadius = UDim.new(0, 8)
-    TCorner.Parent = ToggleFrame
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(1, -70, 1, 0)
+    label.Position = UDim2.new(0, 12, 0, 0)
+    label.BackgroundTransparency = 1
+    label.Text = text
+    label.TextColor3 = Color3.fromRGB(230, 230, 230)
+    label.Font = Enum.Font.Gotham
+    label.TextSize = 14
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    label.Parent = frame
 
-    local Label = Instance.new("TextLabel")
-    Label.Size = UDim2.new(0.7, 0, 1, 0)
-    Label.Position = UDim2.new(0, 12, 0, 0)
-    Label.BackgroundTransparency = 1
-    Label.Text = name
-    Label.TextColor3 = Color3.fromRGB(230, 240, 255)
-    Label.Font = Enum.Font.GothamMedium
-    Label.TextSize = 13
-    Label.TextXAlignment = Enum.TextXAlignment.Left
-    Label.Parent = ToggleFrame
+    local toggleBtn = Instance.new("TextButton")
+    toggleBtn.Size = UDim2.new(0, 50, 0, 26)
+    toggleBtn.Position = UDim2.new(1, -60, 0.5, -13)
+    toggleBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 80)
+    toggleBtn.Text = "OFF"
+    toggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    toggleBtn.Font = Enum.Font.GothamBold
+    toggleBtn.TextSize = 12
+    toggleBtn.BorderSizePixel = 0
+    toggleBtn.Parent = frame
 
-    local Button = Instance.new("TextButton")
-    Button.Size = UDim2.new(0, 48, 0, 24)
-    Button.Position = UDim2.new(1, -58, 0.5, -12)
-    Button.BackgroundColor3 = Color3.fromRGB(40, 50, 75)
-    Button.BorderSizePixel = 0
-    Button.Text = ""
-    Button.Parent = ToggleFrame
+    local btnCorner = Instance.new("UICorner")
+    btnCorner.CornerRadius = UDim.new(0, 6)
+    btnCorner.Parent = toggleBtn
 
-    local BCorner = Instance.new("UICorner")
-    BCorner.CornerRadius = UDim.new(1, 0)
-    BCorner.Parent = Button
-
-    local Circle = Instance.new("Frame")
-    Circle.Size = UDim2.new(0, 18, 0, 18)
-    Circle.Position = UDim2.new(0, 3, 0.5, -9)
-    Circle.BackgroundColor3 = Color3.fromRGB(200, 210, 230)
-    Circle.BorderSizePixel = 0
-    Circle.Parent = Button
-
-    local CCorner = Instance.new("UICorner")
-    CCorner.CornerRadius = UDim.new(1, 0)
-    CCorner.Parent = Circle
-
-    local enabled = false
-    Button.MouseButton1Click:Connect(function()
-        enabled = not enabled
-        if enabled then
-            TweenService:Create(Button, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(0, 150, 255)}):Play()
-            TweenService:Create(Circle, TweenInfo.new(0.2), {Position = UDim2.new(1, -21, 0.5, -9)}):Play()
-        else
-            TweenService:Create(Button, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(40, 50, 75)}):Play()
-            TweenService:Create(Circle, TweenInfo.new(0.2), {Position = UDim2.new(0, 3, 0.5, -9)}):Play()
-        end
-        task.spawn(function()
-            callback(enabled)
-        end)
+    local state = false
+    toggleBtn.MouseButton1Click:Connect(function()
+        state = not state
+        toggleBtn.Text = state and "ON" or "OFF"
+        toggleBtn.BackgroundColor3 = state and Color3.fromRGB(0, 170, 255) or Color3.fromRGB(60, 60, 80)
+        callback(state)
     end)
+
+    return frame
 end
 
--- 1. Auto Robar Huevos
-local autoRobEnabled = false
-CreateToggle(MainPage, "Auto Robar Huevos", function(state)
-    autoRobEnabled = state
-    while autoRobEnabled do
-        pcall(function()
+--==============================================================
+--// FUNCIONES DEL SCRIPT
+--==============================================================
+
+--// 1. AUTO FARM (teletransportar a StartArea)
+local autoFarmEnabled = false
+local function startAutoFarm()
+    task.spawn(function()
+        while autoFarmEnabled do
             local char = LocalPlayer.Character
             if char and char:FindFirstChild("HumanoidRootPart") then
-                for _, obj in pairs(Workspace:GetDescendants()) do
-                    if not autoRobEnabled then break end
-                    if obj:IsA("ProximityPrompt") and (obj.Parent.Name:lower():find("egg") or obj.Parent.Name:lower():find("huevo")) then
-                        char.HumanoidRootPart.CFrame = obj.Parent:GetPivot()
-                        fireproximityprompt(obj)
-                        task.wait(0.3)
+                local startArea = workspace:FindFirstChild("StartArea")
+                    or workspace:FindFirstChild("SpawnLocation")
+                    or workspace:FindFirstChild("Start")
+                if startArea then
+                    char.HumanoidRootPart.CFrame = CFrame.new(startArea.Position + Vector3.new(0, 5, 0))
+                end
+            end
+            task.wait(1)
+        end
+    end)
+end
+
+createToggle("Auto Farm (ir a StartArea)", function(state)
+    autoFarmEnabled = state
+    if state then startAutoFarm() end
+end)
+
+--// 2. AUTO COLLECT EGGS
+local autoCollectEnabled = false
+local function startAutoCollect()
+    task.spawn(function()
+        while autoCollectEnabled do
+            local char = LocalPlayer.Character
+            if char and char:FindFirstChild("HumanoidRootPart") then
+                local myPos = char.HumanoidRootPart.Position
+                for _, obj in pairs(workspace:GetDescendants()) do
+                    if obj:IsA("BasePart") and (obj.Name:lower():find("egg") or obj.Name:lower():find("huevo")) then
+                        local dist = (obj.Position - myPos).Magnitude
+                        if dist < 15 then
+                            char.HumanoidRootPart.CFrame = CFrame.new(obj.Position + Vector3.new(0, 3, 0))
+                            task.wait(0.1)
+                        end
                     end
                 end
             end
-        end)
-        task.wait(0.5)
-    end
+            task.wait(0.5)
+        end
+    end)
+end
+
+createToggle("Auto-Collect Eggs", function(state)
+    autoCollectEnabled = state
+    if state then startAutoCollect() end
 end)
 
--- 2. Auto Eclosionar
+--// 3. SPEED HACK
+local speedEnabled = false
+local defaultSpeed = 16
+local function applySpeed()
+    task.spawn(function()
+        while speedEnabled do
+            local char = LocalPlayer.Character
+            if char and char:FindFirstChild("Humanoid") then
+                char.Humanoid.WalkSpeed = 100
+            end
+            task.wait(0.2)
+        end
+        -- Restaurar al desactivar
+        local char = LocalPlayer.Character
+        if char and char:FindFirstChild("Humanoid") then
+            char.Humanoid.WalkSpeed = defaultSpeed
+        end
+    end)
+end
+
+createToggle("Speed Hack", function(state)
+    speedEnabled = state
+    if state then applySpeed() end
+end)
+
+--// 4. AUTO HATCH EGGS
 local autoHatchEnabled = false
-CreateToggle(MainPage, "Auto Eclosionar", function(state)
+local function startAutoHatch()
+    task.spawn(function()
+        while autoHatchEnabled do
+            local char = LocalPlayer.Character
+            if char and char:FindFirstChild("HumanoidRootPart") then
+                -- Buscar objetos que parezcan incubadoras o zonas de hatch
+                for _, obj in pairs(workspace:GetDescendants()) do
+                    if obj:IsA("BasePart") then
+                        local name = obj.Name:lower()
+                        if name:find("hatch") or name:find("incubat") or name:find("incubad") then
+                            char.HumanoidRootPart.CFrame = CFrame.new(obj.Position + Vector3.new(0, 4, 0))
+                            task.wait(0.3)
+                        end
+                    end
+                end
+            end
+            task.wait(1)
+        end
+    end)
+end
+
+createToggle("Auto Hatch Eggs", function(state)
     autoHatchEnabled = state
-    while autoHatchEnabled do
-        pcall(function()
-            for _, obj in pairs(Workspace:GetDescendants()) do
-                if not autoHatchEnabled then break end
-                if obj:IsA("ProximityPrompt") and (obj.Parent.Name:lower():find("hatch") or obj.Parent.Name:lower():find("incub")) then
-                    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-                        LocalPlayer.Character.HumanoidRootPart.CFrame = obj.Parent:GetPivot()
-                        fireproximityprompt(obj)
-                    end
-                end
-            end
-        end)
-        task.wait(1)
-    end
+    if state then startAutoHatch() end
 end)
 
--- 3. Velocidad x3
-local normalSpeed = 16
-CreateToggle(MainPage, "Velocidad x3", function(state)
-    if state then
-        if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
-            LocalPlayer.Character.Humanoid.WalkSpeed = 48
-        end
-    else
-        if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
-            LocalPlayer.Character.Humanoid.WalkSpeed = normalSpeed
-        end
-    end
+--==============================================================
+--// ACTIVAR PESTAÑA INFO POR DEFECTO
+--==============================================================
+tabs["Info"].Button.BackgroundColor3 = Color3.fromRGB(0, 150, 255)
+tabs["Info"].Button.TextColor3 = Color3.fromRGB(255, 255, 255)
+tabs["Info"].Page.Visible = true
+activeTab = "Info"
+
+--==============================================================
+--// NOTIFICACIÓN
+--==============================================================
+pcall(function()
+    StarterGui:SetCore("SendNotification", {
+        Title = "JoseAngel_Blox Steal An Egg",
+        Text = "Script cargado correctamente. Versión 1.1",
+        Duration = 5,
+    })
 end)
 
--- 4. ESP Huevos
-local espHighlights = {}
-CreateToggle(MainPage, "ESP Huevos", function(state)
-    if state then
-        pcall(function()
-            for _, obj in pairs(Workspace:GetDescendants()) do
-                if obj:IsA("Model") and (obj.Name:lower():find("egg") or obj.Name:lower():find("huevo")) then
-                    if not obj:FindFirstChild("EggHighlight") then
-                        local hl = Instance.new("Highlight")
-                        hl.Name = "EggHighlight"
-                        hl.FillColor = Color3.fromRGB(0, 180, 255)
-                        hl.OutlineColor = Color3.fromRGB(255, 255, 255)
-                        hl.FillTransparency = 0.4
-                        hl.Parent = obj
-                        table.insert(espHighlights, hl)
-                    end
-                end
-            end
-        end)
-    else
-        for _, hl in pairs(espHighlights) do
-            if hl then hl:Destroy() end
-        end
-        espHighlights = {}
-    end
-end)
+print("[JoseAngel_Blox Steal An Egg] Script cargado - Versión 1.1")--==============================================================
+-- SCRIPT: JoseAngel_Blox Steal An Egg
+-- CREADO POR: JoseAngel_Blox
+-- VERSIÓN: 1.1
+-- FECHA: 09/09/2026
+--==============================================================
 
--- 5. Auto Vender Mascotas
-local autoSellEnabled = false
-CreateToggle(MainPage, "Auto Vender Mascotas", function(state)
-    autoSellEnabled = state
-    while autoSellEnabled do
-        print("[JoseAngel_Blox] Buscando mascotas para vender...")
-        task.wait(2)
-    end
-end)
+--// SERVICIOS
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+local StarterGui = game:GetService("StarterGui")
 
--- 6. Auto Cinta de Correr
-local autoTreadmillEnabled = false
-CreateToggle(MainPage, "Auto Cinta de Correr", function(state)
-    autoTreadmillEnabled = state
-    while autoTreadmillEnabled do
-        pcall(function()
-            for _, obj in pairs(Workspace:GetDescendants()) do
-                if not autoTreadmillEnabled then break end
-                if obj.Name:lower():find("treadmill") or obj.Name:lower():find("cinta") then
-                    if obj:IsA("ProximityPrompt") then
-                        fireproximityprompt(obj)
-                    elseif obj:IsA("BasePart") and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-                        LocalPlayer.Character.HumanoidRootPart.CFrame = obj.CFrame + Vector3.new(0, 3, 0)
-                    end
-                end
-            end
-        end)
-        task.wait(1)
-    end
-end)
+local LocalPlayer = Players.LocalPlayer
+local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 
---------------------------------------------------------------------
--- ANIMACIÓN DE CARGA (1% -> 100%) Y APERTURA
---------------------------------------------------------------------
+--// ELIMINAR GUI ANTERIOR SI EXISTE
+local oldGui = PlayerGui:FindFirstChild("JoseAngel_Blox_StealAnEgg")
+if oldGui then oldGui:Destroy() end
+
+--==============================================================
+--// CREAR INTERFAZ PRINCIPAL
+--==============================================================
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "JoseAngel_Blox_StealAnEgg"
+ScreenGui.ResetOnSpawn = false
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+ScreenGui.Parent = PlayerGui
+
+--// VENTANA PRINCIPAL (cuadrada con esquinas redondeadas)
+local MainFrame = Instance.new("Frame")
+MainFrame.Name = "MainFrame"
+MainFrame.Size = UDim2.new(0, 550, 0, 400)
+MainFrame.Position = UDim2.new(0.5, -275, 0.5, -200)
+MainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+MainFrame.BorderSizePixel = 0
+MainFrame.Active = true
+MainFrame.Draggable = true
+MainFrame.Parent = ScreenGui
+
+local MainCorner = Instance.new("UICorner")
+MainCorner.CornerRadius = UDim.new(0, 16)
+MainCorner.Parent = MainFrame
+
+local MainStroke = Instance.new("UIStroke")
+MainStroke.Color = Color3.fromRGB(0, 150, 255)
+MainStroke.Thickness = 2
+MainStroke.Parent = MainFrame
+
+--==============================================================
+--// TÍTULO CON LETRAS AZULES EN MOVIMIENTO
+--==============================================================
+local TitleFrame = Instance.new("Frame")
+TitleFrame.Size = UDim2.new(1, 0, 0, 60)
+TitleFrame.Position = UDim2.new(0, 0, 0, 0)
+TitleFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 25)
+TitleFrame.BorderSizePixel = 0
+TitleFrame.Parent = MainFrame
+
+local TitleCorner = Instance.new("UICorner")
+TitleCorner.CornerRadius = UDim.new(0, 16)
+TitleCorner.Parent = TitleFrame
+
+-- Parche para que las esquinas inferiores del título no queden redondeadas
+local TitlePatch = Instance.new("Frame")
+TitlePatch.Size = UDim2.new(1, 0, 0, 16)
+TitlePatch.Position = UDim2.new(0, 0, 1, -16)
+TitlePatch.BackgroundColor3 = Color3.fromRGB(15, 15, 25)
+TitlePatch.BorderSizePixel = 0
+TitlePatch.Parent = TitleFrame
+
+local TitleLabel = Instance.new("TextLabel")
+TitleLabel.Name = "TitleLabel"
+TitleLabel.Size = UDim2.new(1, 0, 1, 0)
+TitleLabel.BackgroundTransparency = 1
+TitleLabel.Text = "JoseAngel_Blox Steal An Egg"
+TitleLabel.TextColor3 = Color3.fromRGB(0, 170, 255)
+TitleLabel.Font = Enum.Font.GothamBold
+TitleLabel.TextScaled = true
+TitleLabel.TextSize = 28
+TitleLabel.Parent = TitleFrame
+
+local TitlePadding = Instance.new("UIPadding")
+TitlePadding.PaddingLeft = UDim.new(0, 10)
+TitlePadding.PaddingRight = UDim.new(0, 10)
+TitlePadding.Parent = TitleLabel
+
+-- Efecto de texto en movimiento (degradado azul animado)
+local titleText = "JoseAngel_Blox Steal An Egg"
+local hueOffset = 0
 task.spawn(function()
-    for i = 1, 100 do
-        ProgressBarFill.Size = UDim2.new(i / 100, 0, 1, 0)
-        ProgressText.Text = i .. "%"
-        task.wait(0.025)
+    while ScreenGui.Parent do
+        hueOffset = (hueOffset + 0.005) % 1
+        local color = Color3.fromHSV(hueOffset * 0.15 + 0.55, 1, 1) -- Rango azul
+        TitleLabel.TextColor3 = color
+        task.wait(0.05)
     end
-
-    TweenService:Create(LoadingFrame, TweenInfo.new(0.4), {BackgroundTransparency = 1}):Play()
-    task.wait(0.4)
-    LoadingFrame:Destroy()
-
-    MainFrame.Visible = true
-    MainFrame.Size = UDim2.new(0, 0, 0, 0)
-    MainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
-    TweenService:Create(MainFrame, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
-        Size = UDim2.new(0, 560, 0, 360),
-        Position = UDim2.new(0.5, -280, 0.5, -180)
-    }):Play()
 end)
+
+-- Efecto adicional: el texto se desplaza ligeramente
+task.spawn(function()
+    while ScreenGui.Parent do
+        for i = 1, 30 do
+            TitleLabel.Position = UDim2.new(0, math.sin(i * 0.2) * 3, 0, 0)
+            task.wait(0.03)
+        end
+    end
+end)
+
+--==============================================================
+--// SUBTÍTULO: "Creado por JoseAngel_Blox" (transparente)
+--==============================================================
+local SubtitleLabel = Instance.new("TextLabel")
+SubtitleLabel.Name = "SubtitleLabel"
+SubtitleLabel.Size = UDim2.new(1, 0, 0, 20)
+SubtitleLabel.Position = UDim2.new(0, 0, 0, 55)
+SubtitleLabel.BackgroundTransparency = 1
+SubtitleLabel.Text = "Creado por JoseAngel_Blox"
+SubtitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+SubtitleLabel.TextTransparency = 0.5 -- Transparente
+SubtitleLabel.Font = Enum.Font.Gotham
+SubtitleLabel.TextSize = 14
+SubtitleLabel.Parent = MainFrame
+
+--==============================================================
+--// PANEL IZQUIERDO (PESTAÑAS)
+--==============================================================
+local TabPanel = Instance.new("Frame")
+TabPanel.Name = "TabPanel"
+TabPanel.Size = UDim2.new(0, 140, 1, -110)
+TabPanel.Position = UDim2.new(0, 10, 0, 85)
+TabPanel.BackgroundColor3 = Color3.fromRGB(18, 18, 28)
+TabPanel.BorderSizePixel = 0
+TabPanel.Parent = MainFrame
+
+local TabPanelCorner = Instance.new("UICorner")
+TabPanelCorner.CornerRadius = UDim.new(0, 10)
+TabPanelCorner.Parent = TabPanel
+
+local TabLayout = Instance.new("UIListLayout")
+TabLayout.Padding = UDim.new(0, 6)
+TabLayout.SortOrder = Enum.SortOrder.LayoutOrder
+TabLayout.Parent = TabPanel
+
+local TabPadding = Instance.new("UIPadding")
+TabPadding.PaddingTop = UDim.new(0, 8)
+TabPadding.PaddingLeft = UDim.new(0, 6)
+TabPadding.PaddingRight = UDim.new(0, 6)
+TabPadding.Parent = TabPanel
+
+--==============================================================
+--// PANEL DERECHO (CONTENIDO)
+--==============================================================
+local ContentPanel = Instance.new("Frame")
+ContentPanel.Name = "ContentPanel"
+ContentPanel.Size = UDim2.new(1, -170, 1, -110)
+ContentPanel.Position = UDim2.new(0, 160, 0, 85)
+ContentPanel.BackgroundColor3 = Color3.fromRGB(18, 18, 28)
+ContentPanel.BorderSizePixel = 0
+ContentPanel.Parent = MainFrame
+
+local ContentCorner = Instance.new("UICorner")
+ContentCorner.CornerRadius = UDim.new(0, 10)
+ContentCorner.Parent = ContentPanel
+
+local ContentPadding = Instance.new("UIPadding")
+ContentPadding.PaddingTop = UDim.new(0, 10)
+ContentPadding.PaddingLeft = UDim.new(0, 10)
+ContentPadding.PaddingRight = UDim.new(0, 10)
+ContentPadding.PaddingBottom = UDim.new(0, 10)
+ContentPadding.Parent = ContentPanel
+
+--==============================================================
+--// SISTEMA DE PESTAÑAS
+--==============================================================
+local tabs = {}
+local activeTab = nil
+
+local function createTab(name)
+    local button = Instance.new("TextButton")
+    button.Name = name .. "Tab"
+    button.Size = UDim2.new(1, 0, 0, 38)
+    button.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
+    button.Text = name
+    button.TextColor3 = Color3.fromRGB(200, 200, 200)
+    button.Font = Enum.Font.GothamBold
+    button.TextSize = 14
+    button.BorderSizePixel = 0
+    button.Parent = TabPanel
+
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 8)
+    corner.Parent = button
+
+    -- Página de contenido
+    local page = Instance.new("Frame")
+    page.Name = name .. "Page"
+    page.Size = UDim2.new(1, 0, 1, 0)
+    page.BackgroundTransparency = 1
+    page.Visible = false
+    page.Parent = ContentPanel
+
+    tabs[name] = { Button = button, Page = page }
+
+    button.MouseButton1Click:Connect(function()
+        for _, tab in pairs(tabs) do
+            tab.Page.Visible = false
+            tab.Button.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
+            tab.Button.TextColor3 = Color3.fromRGB(200, 200, 200)
+        end
+        page.Visible = true
+        button.BackgroundColor3 = Color3.fromRGB(0, 150, 255)
+        button.TextColor3 = Color3.fromRGB(255, 255, 255)
+        activeTab = name
+    end)
+
+    return page
+end
+
+--==============================================================
+--// PESTAÑA 1: INFO
+--==============================================================
+local infoPage = createTab("Info")
+
+local infoScroll = Instance.new("ScrollingFrame")
+infoScroll.Size = UDim2.new(1, 0, 1, 0)
+infoScroll.BackgroundTransparency = 1
+infoScroll.BorderSizePixel = 0
+infoScroll.ScrollBarThickness = 5
+infoScroll.CanvasSize = UDim2.new(0, 0, 0, 400)
+infoScroll.Parent = infoPage
+
+local infoLayout = Instance.new("UIListLayout")
+infoLayout.Padding = UDim.new(0, 6)
+infoLayout.SortOrder = Enum.SortOrder.LayoutOrder
+infoLayout.Parent = infoScroll
+
+local function createInfoLabel(text, color, size)
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(1, -10, 0, size or 22)
+    label.BackgroundTransparency = 1
+    label.Text = text
+    label.TextColor3 = color or Color3.fromRGB(220, 220, 220)
+    label.Font = Enum.Font.Gotham
+    label.TextSize = 14
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    label.TextWrapped = true
+    label.Parent = infoScroll
+    return label
+end
+
+createInfoLabel("Nombre del Creador: JoseAngel_Blox", Color3.fromRGB(0, 170, 255), 24)
+createInfoLabel("Fecha de lanzamiento: 09/09/2026", Color3.fromRGB(220, 220, 220))
+createInfoLabel("Versión: 1.1", Color3.fromRGB(220, 220, 220))
+createInfoLabel("", Color3.fromRGB(220, 220, 220), 10)
+createInfoLabel("UPDATE:", Color3.fromRGB(0, 255, 150), 22)
+createInfoLabel(
+    "Bienvenido o bienvenida a mi Script, este script es nuevo para este juego llamado roba un huevo y es uno de los mejores scripts básico. Si eres nuevo o nueva usando Delta, este es el mejor script fácil para este juego, así que espero que disfrutes del script. Atentamente, JoseAngel_Blox.",
+    Color3.fromRGB(200, 200, 200),
+    80
+)
+
+--==============================================================
+--// PESTAÑA 2: MAIN
+--==============================================================
+local mainPage = createTab("Main")
+
+local mainScroll = Instance.new("ScrollingFrame")
+mainScroll.Size = UDim2.new(1, 0, 1, 0)
+mainScroll.BackgroundTransparency = 1
+mainScroll.BorderSizePixel = 0
+mainScroll.ScrollBarThickness = 5
+mainScroll.CanvasSize = UDim2.new(0, 0, 0, 400)
+mainScroll.Parent = mainPage
+
+local mainLayout = Instance.new("UIListLayout")
+mainLayout.Padding = UDim.new(0, 8)
+mainLayout.SortOrder = Enum.SortOrder.LayoutOrder
+mainLayout.Parent = mainScroll
+
+-- Función para crear botones de toggle
+local function createToggle(text, callback)
+    local frame = Instance.new("Frame")
+    frame.Size = UDim2.new(1, -10, 0, 40)
+    frame.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
+    frame.BorderSizePixel = 0
+    frame.Parent = mainScroll
+
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 8)
+    corner.Parent = frame
+
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(1, -70, 1, 0)
+    label.Position = UDim2.new(0, 12, 0, 0)
+    label.BackgroundTransparency = 1
+    label.Text = text
+    label.TextColor3 = Color3.fromRGB(230, 230, 230)
+    label.Font = Enum.Font.Gotham
+    label.TextSize = 14
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    label.Parent = frame
+
+    local toggleBtn = Instance.new("TextButton")
+    toggleBtn.Size = UDim2.new(0, 50, 0, 26)
+    toggleBtn.Position = UDim2.new(1, -60, 0.5, -13)
+    toggleBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 80)
+    toggleBtn.Text = "OFF"
+    toggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    toggleBtn.Font = Enum.Font.GothamBold
+    toggleBtn.TextSize = 12
+    toggleBtn.BorderSizePixel = 0
+    toggleBtn.Parent = frame
+
+    local btnCorner = Instance.new("UICorner")
+    btnCorner.CornerRadius = UDim.new(0, 6)
+    btnCorner.Parent = toggleBtn
+
+    local state = false
+    toggleBtn.MouseButton1Click:Connect(function()
+        state = not state
+        toggleBtn.Text = state and "ON" or "OFF"
+        toggleBtn.BackgroundColor3 = state and Color3.fromRGB(0, 170, 255) or Color3.fromRGB(60, 60, 80)
+        callback(state)
+    end)
+
+    return frame
+end
+
+--==============================================================
+--// FUNCIONES DEL SCRIPT
+--==============================================================
+
+--// 1. AUTO FARM (teletransportar a StartArea)
+local autoFarmEnabled = false
+local function startAutoFarm()
+    task.spawn(function()
+        while autoFarmEnabled do
+            local char = LocalPlayer.Character
+            if char and char:FindFirstChild("HumanoidRootPart") then
+                local startArea = workspace:FindFirstChild("StartArea")
+                    or workspace:FindFirstChild("SpawnLocation")
+                    or workspace:FindFirstChild("Start")
+                if startArea then
+                    char.HumanoidRootPart.CFrame = CFrame.new(startArea.Position + Vector3.new(0, 5, 0))
+                end
+            end
+            task.wait(1)
+        end
+    end)
+end
+
+createToggle("Auto Farm (ir a StartArea)", function(state)
+    autoFarmEnabled = state
+    if state then startAutoFarm() end
+end)
+
+--// 2. AUTO COLLECT EGGS
+local autoCollectEnabled = false
+local function startAutoCollect()
+    task.spawn(function()
+        while autoCollectEnabled do
+            local char = LocalPlayer.Character
+            if char and char:FindFirstChild("HumanoidRootPart") then
+                local myPos = char.HumanoidRootPart.Position
+                for _, obj in pairs(workspace:GetDescendants()) do
+                    if obj:IsA("BasePart") and (obj.Name:lower():find("egg") or obj.Name:lower():find("huevo")) then
+                        local dist = (obj.Position - myPos).Magnitude
+                        if dist < 15 then
+                            char.HumanoidRootPart.CFrame = CFrame.new(obj.Position + Vector3.new(0, 3, 0))
+                            task.wait(0.1)
+                        end
+                    end
+                end
+            end
+            task.wait(0.5)
+        end
+    end)
+end
+
+createToggle("Auto-Collect Eggs", function(state)
+    autoCollectEnabled = state
+    if state then startAutoCollect() end
+end)
+
+--// 3. SPEED HACK
+local speedEnabled = false
+local defaultSpeed = 16
+local function applySpeed()
+    task.spawn(function()
+        while speedEnabled do
+            local char = LocalPlayer.Character
+            if char and char:FindFirstChild("Humanoid") then
+                char.Humanoid.WalkSpeed = 100
+            end
+            task.wait(0.2)
+        end
+        -- Restaurar al desactivar
+        local char = LocalPlayer.Character
+        if char and char:FindFirstChild("Humanoid") then
+            char.Humanoid.WalkSpeed = defaultSpeed
+        end
+    end)
+end
+
+createToggle("Speed Hack", function(state)
+    speedEnabled = state
+    if state then applySpeed() end
+end)
+
+--// 4. AUTO HATCH EGGS
+local autoHatchEnabled = false
+local function startAutoHatch()
+    task.spawn(function()
+        while autoHatchEnabled do
+            local char = LocalPlayer.Character
+            if char and char:FindFirstChild("HumanoidRootPart") then
+                -- Buscar objetos que parezcan incubadoras o zonas de hatch
+                for _, obj in pairs(workspace:GetDescendants()) do
+                    if obj:IsA("BasePart") then
+                        local name = obj.Name:lower()
+                        if name:find("hatch") or name:find("incubat") or name:find("incubad") then
+                            char.HumanoidRootPart.CFrame = CFrame.new(obj.Position + Vector3.new(0, 4, 0))
+                            task.wait(0.3)
+                        end
+                    end
+                end
+            end
+            task.wait(1)
+        end
+    end)
+end
+
+createToggle("Auto Hatch Eggs", function(state)
+    autoHatchEnabled = state
+    if state then startAutoHatch() end
+end)
+
+--==============================================================
+--// ACTIVAR PESTAÑA INFO POR DEFECTO
+--==============================================================
+tabs["Info"].Button.BackgroundColor3 = Color3.fromRGB(0, 150, 255)
+tabs["Info"].Button.TextColor3 = Color3.fromRGB(255, 255, 255)
+tabs["Info"].Page.Visible = true
+activeTab = "Info"
+
+--==============================================================
+--// NOTIFICACIÓN
+--==============================================================
+pcall(function()
+    StarterGui:SetCore("SendNotification", {
+        Title = "JoseAngel_Blox Steal An Egg",
+        Text = "Script cargado correctamente. Versión 1.1",
+        Duration = 5,
+    })
+end)
+
+print("[JoseAngel_Blox Steal An Egg] Script cargado - Versión 1.1")
